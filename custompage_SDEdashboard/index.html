@@ -1,0 +1,628 @@
+<!doctype html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>SDE Dashboard</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/animate.css" />
+    <link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/bootstrap.min.css">
+	<link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/main.css">
+	<!-- <link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/style.css"> -->
+	<link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/santos.css">
+	<link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/ng-modal.css">
+
+	<!-- comment this two lines to get back the BootStrap look and feel  -->
+	<!-- <link rel="stylesheet" type="text/css" href="themeResource?theme=portal&amp;location=bonita.css">
+ 	<link rel="stylesheet" type="text/css" href="themeResource?theme=portal&amp;location=bonita-skin.css">  -->
+ 	
+
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="https://www.google.com/uds/?file=visualization&amp;v=1&amp;hl=fr&amp;packages=corechart&amp;async=2"></script>
+	<link type="text/css" href="https://www.google.com/uds/api/visualization/1.0/ff67c3772da186a412ae3231c32409e9/ui+fr.css" rel="stylesheet">
+	<script type="text/javascript" src="https://www.google.com/uds/api/visualization/1.0/ff67c3772da186a412ae3231c32409e9/format+fr,default+fr,ui+fr,corechart+fr.I.js"></script>
+	<link href="https://ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css" rel="stylesheet" type="text/css">
+
+	<!-- Third party dependencies -->
+
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/jquery.min.js"></script>
+
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/angular.min.js"></script>
+
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/angular-resource.min.js"></script>
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/angular-cookies.min.js"></script>
+
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/bootstrap/js/bootstrap.min.js"></script>
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/angular-bootstrap-tpls.min.js"></script>
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/angular-file-upload.js"></script>
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/ng-google-chart.js"></script>
+
+
+<!-- Application dependencies -->
+
+<script src="pageResource?page=custompage_SDEdashboard&location=dashboardapp.js"></script>
+	
+<script src="pageResource?page=custompage_SDEdashboard&location=3rd-party/ng-modal.min.js"></script>
+
+</head>
+<body ng-app="dashboardapp" >
+
+
+<!--  remove the class class="container" -->
+
+<div ng-controller="DashboardControler as dashctrl">
+
+
+			
+	<!-- ******************************************************************************** -->
+	<!--                                                                                  -->
+	<!--                Header                                                        -->
+	<!--                                                                                  -->
+	<!--                                                                                  -->
+	<!-- ******************************************************************************** -->
+
+	<div class="container-fluid" >
+		<div class="santosHeader voffset2">
+			<!--<img src="pageResource?page=custompage_SDEdashboard&location=img/santos-energy-logo.jpg"/> -->
+			<h3 class="vcenter">Dashboard</h3>
+		</div>
+		<div style="background-color: #237CCB;">
+			<table><tr>
+			<td>
+				<button ng-click="dashctrl.showViewForm();" ng-class="dashctrl.getButtonClass( dashctrl.isshowcases)">Well Tracker Dashboard</button>
+			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
+			<td>
+				<button ng-click="dashctrl.showViewUpdateSde();" ng-class="dashctrl.getButtonClass( dashctrl.isshowUpdateSdeDetails)">Update Sde Details</button>
+			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
+			<td>
+				<button ng-click="dashctrl.showViewSystemSummary();" ng-class="dashctrl.getButtonClass( dashctrl.isshowSystemSummary)">System Summary</button>
+			</td></tr>
+			</table>
+		</div>
+	</div> 
+		
+		
+			
+	<!-- ******************************************************************************** -->
+	<!--                                                                                  -->
+	<!--               Well Tracker Dashboard                                             -->
+	<!--                                                                                  -->
+	<!--                                                                                  -->
+	<!-- ******************************************************************************** -->
+
+	<div class="col-lg-11"  style="margin-left:35px" ng-show="dashctrl.isshowcases">
+		<h1>Well Tracker Dashboard</h1>
+		
+		<div class="row voffset2">			
+			<div class="col-md-2">
+				<span class="label label-success" >{{dashctrl.message}}</span><br>
+				<span class="label label-danger" >{{dashctrl.errormessage}}</span><br>
+			</div>
+		</div>
+			
+			
+		<div class="row voffset2">
+			<div class="col-md-6">
+				<form class="form-inline">
+					<div class="form-group">
+						<!-- @Lionel the label is not visible ??-->
+						<label class="sr-only" for="maximumCaseRetrieve">Maximum cases retrieved</label>
+						<input type="text" class="form-control form-control-sm" id="maximumCaseRetrieve" placeholder="maximumCaseRetrieve"
+							ng-model="dashctrl.casemaxresult">
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" ng-model="dashctrl.scheduledOnlineDateInFutur"> Only new Well
+						</label>
+					</div>
+					<button id="refresh" ng-click="dashctrl.refreshcases()"><span class="glyphicon glyphicon-refresh"></span></button></
+				</form>
+			</div>
+		</div>	
+				
+				
+			
+		<div class="row voffset2">
+			<div class="col-md-12">
+				<table class="table table-striped table-condensed  table-bordered">
+					<thead>
+					<tr>
+						<td ng-repeat="headerlabel in dashctrl.listheader track by $index">
+						<div>
+							<a class="table-header" href="#" ng-click="dashctrl.setorder( headerlabel.id, ! dashctrl.reverseSort);">
+									{{headerlabel.title}}
+									<span ng-show="dashctrl.orderByField === headerlabel.id && dashctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
+									<span ng-show="dashctrl.orderByField === headerlabel.id && ! dashctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
+								</a>							
+								<input type="text" ng-model="dashctrl.filtercase[headerlabel.id]"
+									ng-show="headerlabel.ctrl != 'semaphore' && headerlabel.ctrl != 'button'" class="form-control filter-control"
+									title="Filter: only lines which contains this value are shown"/>
+						</div>
+						</td>
+					</tr>
+					</thead>
+					
+					<!-- | orderBy:dashctrl.orderByField:dashctrl.reverseSort -->
+					<tbody  ng-repeat="onetask in dashctrl.getCasesPage() track by $index">
+						<tr style="height:40px">
+							<td ng-repeat="headerlabel in dashctrl.listheader track by $index">
+								<!-- {{onetask[headerlabel.id]}} -->
+								<div ng-show="headerlabel.ctrl == null">
+									{{onetask[headerlabel.id]}}
+								</div>
+								<div ng-show="headerlabel.ctrl == 'link'">
+									<a href="" ng-click="dashctrl.link( headerlabel, onetask)">{{onetask[headerlabel.id]}}</a>
+								</div>
+								<div ng-show="headerlabel.ctrl == 'button'">
+									<!-- display all buttons -->
+									<div ng-show="onetask.initiateSdeRequest">
+										<button ng-click="dashctrl.initiateSdeRequestbutton( headerlabel, onetask)" class="btn btn-xs  btn-warning"
+										style="background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Initiate SDE Request</button>
+										
+									</div>
+									<div ng-show="onetask.accesstask">
+										<button ng-click="dashctrl.accessTaskButton( headerlabel, onetask)" class="btn btn-xs btn-info" 
+										style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Access SDE Request</button>
+									</div>
+									<div ng-show="onetask.caseid != null">
+										<button ng-click="dashctrl.accessCaseOverviewButton( headerlabel, onetask)" 
+											class="btn btn-xs btn-success" 
+											style="background-color: #5cb85c;border-color: #5cb85c;padding: 0px 10px;">SDE Request</button>
+										</div>
+								</div>
+								<div ng-show="headerlabel.ctrl == 'date'">
+									{{onetask[headerlabel.id] | date:'yyyy-MM-dd' }}
+								</div>
+								<div ng-show="headerlabel.ctrl == 'semaphore'">
+									<button ng-click="dashctrl.showDetails( onetask )" title="Click here to see the details of the line" data-toggle="modal" data-target="#myModalDetails">
+										<span ng-show="onetask[headerlabel.id] == 'RED'"  style="color:red" class="glyphicon glyphicon-adjust" ></span>
+										<span ng-show="onetask[headerlabel.id] == 'ORANGE' || onetask[headerlabel.id] == 'AMBER' "  style="color:orange" class="glyphicon glyphicon-adjust" ></span>
+										<span ng-show="onetask[headerlabel.id] == 'GREEN'"  style="color:green" class="glyphicon glyphicon-adjust" ></span>
+										<span style="font-size:x-small">{{onetask[headerlabel.id]}}</span>
+									</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>			
+		</div>
+			
+			
+		<div class="row voffset2">
+			<div class="col-md-4">
+				Nb line per page:
+				<select ng-model="dashctrl.caseitemsperpage">
+						<option value="10">10</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="row voffset2">
+				<div class="col-md-4">
+				<pagination ng-model="dashctrl.casepagenumber" total-items="dashctrl.listcases.length" items-per-page="dashctrl.caseitemsperpage">
+				</pagination>
+			</div>
+		</div>
+		
+		
+		<!-- MODAL : how details -->
+		 
+		
+		<modal-dialog show='dashctrl.dialogShown' dialog-title='Details' width='75%' height='80%'>
+			<div class="modal-content" width='100%' height='100%'> 
+
+					<input type="checkbox" ng-model="dashctrl.isshowdetailcontributor"/>&nbsp;Show Contributor<br>
+					<!-- style="border-width:3px; border-style:solid; border-color:black;"-->
+					<table class="table table-striped table-hover table-condensed table-bordered"  >
+						<tr ><td >Basic Well Information</td>
+							<td style="background-color: #ADADF5;text-align: center;">Mandatory</td>
+							<td style="background-color: #ADADF5;text-align: center;">Data</td>
+							<td style="background-color: #ADADF5;text-align: center;" ng-show="dashctrl.isshowdetailcontributor">Data Contributor<br>(for follow up)</td>
+						</tr>
+					
+						<tr><td style="background-color: #ADADF5">Sde Number</td>
+							<td></td>
+							<td>{{dashctrl.detailHistory.sdenumber}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor"{{dashctrl.detailHistoryDataContributor.sdenumber}}</td>
+						</tr>
+						
+						<tr><td style="background-color: #ADADF5">Request Status</td>
+							<td></td>
+							<td>{{dashctrl.detailHistory.sdestatus}}</td>
+						</tr>
+							
+						<tr><td style="background-color: #ADADF5">Scheduled Online Date</td>
+							<td style="text-align: center;">Y</td>
+							<td>{{dashctrl.detailHistory.ScheduledOnlineDate  | date:'yyyy-MM-dd'}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.ScheduledOnlineDate}}</td>
+						</tr>
+						
+						<tr><td style="background-color: #ADADF5">Well Code:</td>
+							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.WellCode}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCode}}</td>
+						</tr>
+						
+						<tr><td style="background-color: #ADADF5">Well Full Name:</td>
+							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.WellFullName}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellFullName}}</td>
+						</tr>
+
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
+							<td style="background-color: #ADADF5">Well Alias:</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.WellAlias}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellAlias}}</td>
+						</tr>
+
+						<tr><td style="background-color: #ADADF5">Field Name:</td>
+							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.FieldName}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.FieldName}}</td>
+						</tr>
+
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
+							<td style="background-color: #ADADF5">Area Number:</td>
+							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.AreaNumber}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.AreaNumber}}</td>
+						</tr>
+						
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
+							<td style="background-color: #ADADF5">Well Category (Primary):</td>
+							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.WellCategoryPrimary}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCategoryPrimary}}</td>
+						</tr>
+						
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
+							<td style="background-color: #ADADF5">Well Category (Secondary 1):</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.WellCategorySecondary1}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCategorySecondary1}}</td>
+						</tr>
+						
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
+							<td style="background-color: #ADADF5">Well Category (Secondary 2):</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.WellCategorySecondary2}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCategorySecondary2}}</td>
+						</tr>
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
+							<td style="background-color: #ADADF5">Well Category (Secondary 3):</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.WellCategorySecondary3}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCategorySecondary3}}</td>
+						</tr>
+						
+						<tr><td style="background-color: #ADADF5">Permit (surface):</td>
+							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.PermitSurface}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.PermitSurface}}</td>
+						</tr>
+						
+						<tr><td style="background-color: #ADADF5">Permit (bottom hole):</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.PermitBottomHole}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.PermitBottomHole}}</td>
+							</tr>
+							
+						<tr><td style="background-color: #ADADF5">Pad Name:</td><td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.PadName}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.PadName}}</td></tr>
+							
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'EABU'">
+							<td style="background-color: #ADADF5">Joint Venture Name:</td><td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.JointVentureName}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.JointVentureName}}</td></tr>
+							
+						<tr><td style="background-color: #ADADF5">Surface Latitude:</td><td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.SurfaceLatitude}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.SurfaceLatitude}}</td>
+						</tr>
+						
+						<tr><td style="background-color: #ADADF5">Surface Longitude:</td><td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.SurfaceLongitude}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.SurfaceLongitude}}</td>
+						</tr>
+						<tr><td style="background-color: #ADADF5">Bottom Hole Latitude:</td><td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.BottomHoleLatitude}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.BottomHoleLatitude}}</td>
+						</tr>
+						
+						<tr><td style="background-color: #ADADF5">Bottom Hole Longitude:</td><td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.BottomHoleLongitude}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.BottomHoleLongitude}}</td>
+						</tr>
+						
+						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'EABU'"><td style="background-color: #ADADF5">Completion Type:</td><td style="text-align: center;">Y</td>
+							<td>{{dashctrl.detailHistory.CompletionType}}</td>
+							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.CompletionType}}</td>
+						</tr>
+						
+						<tr><td colspan="4" style="height:30px">
+							<div style="text-align: center;">
+							<button class="btn btn-sm btn-primary " data-toggle="modal" data-target="#myModalDetails" style="height:40px">Close</button> 
+							</div>
+						</td></tr>
+					</table>
+
+			
+			
+			</div>
+			 </modal-dialog>
+			
+			 
+			
+			
+			
+			
+		
+			
+	</div> <!-- show case -->
+
+		
+	<!-- ******************************************************************************** -->
+	<!--                                                                                  -->
+	<!--                Show Form                                                        -->
+	<!--                                                                                  -->
+	<!--                                                                                  -->
+	<!-- ******************************************************************************** -->
+
+	<div class="col-lg-11" ng-show="dashctrl.isshowform" style="margin-left:35px">
+		<h1>Tasks</h1>
+		<legend class="text-primary"><span class="glyphicon glyphicon-th"></span>{{dashctrl.formtitle}}</legend>
+		<iframe src="{{dashctrl.sourceformurl}}" style="width:100%; height:600px; border:0px"></iframe>
+	</div>
+	
+	
+	<!-- ******************************************************************************** -->
+	<!--                                                                                  -->
+	<!--                System Summary                                                    -->
+	<!--                                                                                  -->
+	<!--                                                                                  -->
+	<!-- ******************************************************************************** -->
+	<div class="col-lg-11" ng-show="dashctrl.isshowSystemSummary">
+		<h1>System Summary</h1>
+		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
+		<tr><td colspan="4"><h2>Search</h2></td></tr>
+		<tr>
+			<td >UWI:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filteruwi"></td>
+			<td>Well Full Name:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filterwellfullname"></td>
+		</tr>
+		<tr>
+			<td>SDE Status:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filtersdestatus"></td>
+			<td>Business Unit:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filterbusinessunit"></td>
+		</tr>
+		<tr>
+			<td>SDE Number:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filtersdenumber"></td>
+			<td>Request type:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filterrequesttype"></td>
+		</tr>
+		<tr>
+			<td>Well Template:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filterwelltemplate"></td>
+			<td>Well Category:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filterwellcategory"></td>
+		</tr>
+		<tr>
+			<td>Well Online Date Range</td></tr>
+		<tr>
+			<td>From date:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filteronlinedatefrom"></td>
+			<td>To date:</td><td><input type="text" ng-model="dashctrl.systemSummary.search.filteronlinedateto"></td>
+		</tr>
+
+		<td colspan="4"><center><button ng-click="dashctrl.searchSystemSummary()" class="btn btn-primary">Search</button></center></td>
+		</tr>
+		</table>
+		
+		<span class="label label-success" >{{dashctrl.systemSummary.message}}</span><br>
+		<span class="label label-danger" >{{dashctrl.systemSummary.errormessage}}</span><br>
+			
+		<h2>Result</h2>
+		<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
+		<tr>
+			<th colspan="7"><span class="table-header">Well Details</span></th>
+			<th colspan="3"><span class="table-header">Schedule Data</span></th>
+			<th colspan="3"><span class="table-header">Source Data</span></th>
+			<th colspan="9"><span class="table-header">Target Systems</span></th>
+			<th colspan="2"><span class="table-header">SDE Process</span></th>
+		</tr>
+		<tr>
+			<th><span class="table-header">SDENbr</span>
+				<input type="text" ng-model="dashctrl.systemSummary.filter.SDE_NUMBER" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">UWO</span>
+				<input type="text" ng-model="dashctrl.systemSummary.filter.UWI" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Well Full Name</span>
+				<input type="text" ng-model="dashctrl.systemSummary.filter.WELL_FULL_NAME" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Request Type</span>
+				<input type="text" ng-model="dashctrl.systemSummary.filter.REQUEST_TYPE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Business Unit</span>
+				<input type="text" ng-model="dashctrl.systemSummary.filter.BUSINESS_UNIT" size="10" 
+							class="form-control filter-control"	
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Well Template</span>
+				<input type="text" ng-model="dashctrl.systemSummary.filter.WELL_TEMPLATE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>			
+			<th><span class="table-header">Well Category</span>
+				<input type="text" ng-model="dashctrl.systemSummary.filter.WELL_CATEGORY_PRIMARY" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Day to Online</span></th>
+			<th><span class="table-header">Estimate</span></th>
+			<th><span class="table-header">Actual</span></th>
+			<th><span class="table-header">Well Data</span></th>
+			<th><span class="table-header">Comp Data</span></th>
+			<th><span class="table-header">Resp officier</span></th>
+			<th><span class="table-header">EC</span></th>
+			<th><span class="table-header">Enable</span></th>
+			<th><span class="table-header">Ampla</span></th>
+			<th><span class="table-header">GWS</span></th>
+			<th><span class="table-header">OFM</span></th>
+			<th><span class="table-header">Oil ODR</span></th>
+			<th><span class="table-header">PODS</span></th>
+			<th><span class="table-header">SALAS</span></th>
+			<th><span class="table-header">WPM GLNG</span></th>
+			<th><span class="table-header">Status</span></th>
+			<th><span class="table-header">Date</span></th>
+			
+			</tr>
+			<tbody  ng-repeat="onesynthesis in dashctrl.getSystemSummaryPage() track by $index">
+			<tr >
+				<td>{{onesynthesis.SDE_NUMBER}}</td>
+				<td>{{onesynthesis.UWI}}</td>
+				<td>{{onesynthesis.WELL_FULL_NAME}}</td>
+				<td>{{onesynthesis.REQUEST_TYPE}}</td>
+				<td>{{onesynthesis.BUSINESS_UNIT}}</td>
+				<td>{{onesynthesis.WELL_TEMPLATE}}</td>
+				<td>{{onesynthesis.WELL_CATEGORY_PRIMARY}}</td>
+				<td style="{{onesynthesis.DAYSTOONLINE_STYLE}}">{{onesynthesis.DAYSTOONLINE}}</td>
+				<td>{{onesynthesis.SCHEDULED_ONLINE_DATE_ST}}</td>
+				
+				<td style="{{onesynthesis.ACTUAL_ONLINE_DATE_STYLE}}">{{onesynthesis.ACTUAL_ONLINE_DATE_ST}}</td>
+			
+				<td style="text-align:center"><span ng-show="onesynthesis.WELL_DATA_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok" ></span><br>
+					{{onesynthesis.WELL_DATA_DATE_ST}}</td>
+				<td style="text-align:center"><span ng-show="onesynthesis.COMP_DATA_STATUS == 'Y'"  style="color:green"  class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.COMP_DATA_DATE_ST}}</td>
+				<td style="text-align:center"><span ng-show="onesynthesis.RESP_OFFICER_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.RESP_OFFICER_DATE_ST}}</td>
+				
+				<!-- target system -->
+				<td style="{{onesynthesis.EC_STATUS_STYLE}}"><span ng-show="onesynthesis.EC_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.EC_DATE_ST}}</span></td>
+					
+				<td style="{{onesynthesis.ENABLE_STATUS_STYLE}}"><span ng-show="onesynthesis.ENABLE_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.ENABLE_DATE_ST}}</td>
+				<td style="{{onesynthesis.AMPLA_STATUS_STYLE}}"><span ng-show="onesynthesis.AMPLA_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.AMPLA_DATE_ST}}</td>
+				<td style="{{onesynthesis.GWS_STATUS_STYLE}}"><span ng-show="onesynthesis.GWS_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.GWS_DATE_ST}}</td>
+
+				<td style="{{onesynthesis.OFM_STATUS_STYLE}}"><span ng-show="onesynthesis.OFM_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.OFM_DATE_ST}}</td>
+				<td style="{{onesynthesis.OIL_ODR_STATUS_STYLE}}"><span ng-show="onesynthesis.OIL_ODR_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.OIL_ODR_DATE_ST}}</td>
+				<td style="{{onesynthesis.PODS_STATUS_STYLE}}"><span ng-show="onesynthesis.PODS_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.PODS_DATE_ST}}</td>
+				<td style="{{onesynthesis.SALAS_STATUS_STYLE}}"><span ng-show="onesynthesis.SALAS_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.SALAS_DATE_ST}}</td>
+				<td style="{{onesynthesis.WPM_GLNG_STATUS_STYLE}}"><span ng-show="onesynthesis.WPM_GLNG_STATUS == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.WPM_GLNG_DATE_ST}}</td>
+				<!-- SDE Process -->
+				<td style="{{onesynthesis.SDEPROCESSSTATUS_STYLE}}">
+					{{onesynthesis.SDEPROCESSSTATUS}}</td>
+
+				<td style="{{onesynthesis.SDEPROCESSSTATUS_STYLE}}"><span ng-show="onesynthesis.SDEPROCESSDATECOMPLETE == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+					{{onesynthesis.SDEPROCESSDATE_ST}}</td>
+					
+
+
+				</tr>
+			
+			</table>
+	</div>
+
+	<!-- ******************************************************************************** -->
+	<!--                                                                                  -->
+	<!--                Update Sde Details                                                -->
+	<!--                                                                                  -->
+	<!--                                                                                  -->
+	<!-- ******************************************************************************** -->
+	<div class="col-lg-11" ng-show="dashctrl.isshowUpdateSdeDetails">
+		<h1>Update Sde Details</h1>
+			
+		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
+		<tr><td colspan="4"><h2>Search</h2></td></tr>
+		<tr>
+			<td >UWI:</td><td><input type="text" ng-model="dashctrl.updatesdedetails.search.filteruwi"></td>
+			<td>Well Full Name:</td><td><input type="text" ng-model="dashctrl.updatesdedetails.search.filterwellfullname"></td>
+		</tr>
+		<tr>
+			<td>Business Unit:</td><td><input type="text" ng-model="dashctrl.updatesdedetails.search.filterbusinessunit"></td>
+			<td>Field Name:</td><td><input type="text" ng-model="dashctrl.updatesdedetails.search.filterfieldname"></td></tr>
+		</tr>
+		<tr>
+			<td colspan="4"><center><button ng-click="dashctrl.searchWellList()" class="btn btn-primary">Search</button></center></td>
+		</tr>
+		</table>
+		
+		<span class="label label-success" >{{dashctrl.welllistmessage}}</span><br>
+		<span class="label label-danger" >{{dashctrl.welllisterrormessage}}</span><br>
+						 
+		<h2>Result</h2>
+		
+		<!-- style="color: #867E7E;height: 15px;border: solid 1px #c9c9c9; background-color:#B1F1F1; font-size:x-small" -->
+		<div class="row voffset2">
+			<div class="col-md-12">
+				<table class="table table-striped table-condensed  table-bordered">
+					<thead>
+					<tr>
+					<th><span class="table-header">UWI</span>
+						<input type="text" ng-model="dashctrl.filterwelllist.UWI" size="10" 
+								class="form-control filter-control"							
+								title="Filter: only lines which contains this value are shown"/>	
+					</th>
+					<th><span class="table-header">Well Full Name</span>
+						<input type="text" ng-model="dashctrl.filterwelllist.WELL_FULL_NAME" size="10" 
+									class="form-control filter-control"							
+									title="Filter: only lines which contains this value are shown"/>	
+					</th>
+					<th><span class="table-header">Business Unit</span>
+						<input type="text" ng-model="dashctrl.filterwelllist.BUSINESS_UNIT" size="10" 
+									class="form-control filter-control"														
+									title="Filter: only lines which contains this value are shown"/>	
+					</th>
+					<th><span class="table-header">Field Name</span>
+						<input type="text" ng-model="dashctrl.filterwelllist.FIELD_NAME" size="10" 
+									class="form-control filter-control"														
+									title="Filter: only lines which contains this value are shown"/>	
+					</th>
+					<th></th>
+				</tr>
+				<tbody  ng-repeat="onewelllist in dashctrl.getWellListPage() track by $index">
+					<tr style="height:40px">
+						<td>{{onewelllist.UWI}}</td>
+						<td>{{onewelllist.WELL_FULL_NAME}}</td>
+						<td>{{onewelllist.BUSINESS_UNIT}}</td>
+						<td>{{onewelllist.FIELD_NAME}}</td>
+						<td><button ng-click="dashctrl.createWellList( onewelllist )" class="btn btn-primary">Update SDE Data</button></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- ******************************************************************************** -->
+	<!--                                                                                  -->
+	<!--                PA Dashboard                                                      -->
+	<!--                                                                                  -->
+	<!--                                                                                  -->
+	<!-- ******************************************************************************** -->
+	<div class="col-lg-11" ng-show="dashctrl.isshowPaDashboard" style="margin-left:35px">
+		<h1>PA Dashboard</h1>
+		<button ng-click="dashctrl.showViewForm();" class="btn btn-lg btn-primary" 
+			style="font-size:15px;background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Well Tracker Dashboard</button><p>
+		
+	</div>
+
+	<!-- end div controler -->	
+	</div>
+
+
+</div>
+
+
+
+
+
+</body>
+</html>
