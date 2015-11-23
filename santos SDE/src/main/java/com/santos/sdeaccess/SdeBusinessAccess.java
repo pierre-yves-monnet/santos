@@ -1491,8 +1491,8 @@ public class SdeBusinessAccess {
 
         listStaticValues = new ArrayList<Map<String, Object>>();
         sdeData.listsValue.put("ltap_well", listStaticValues);
-        addInList(listStaticValues, "Ltap1", "Ltap1");
-        addInList(listStaticValues, "Ltap2", "Ltap2");
+        addInList(listStaticValues, "Yes", "Yes");
+        addInList(listStaticValues, "No", "No");
 
         // basic_well_info.business_unit
 
@@ -1527,12 +1527,59 @@ public class SdeBusinessAccess {
                 logger.info(" list[" + definition.name + "] nbResult(" + listValues.size() + ") by sqlRequest [" + sqlRequest + "]");
 
                 sdeData.listsValue.put(definition.name, listValues);
+
             } catch (final SQLException e)
             {
                 logger.severe("Error during calculating list [" + definition.name + "] by SqlRequest[" + sqlRequest + "] " + e.toString());
                 logDetails += "Error: list[" + definition.name + "]: by SqlRequest[" + sqlRequest + "] SqlState:" + e.getSQLState() + ";";
             }
         }
+
+        // list value Composition
+
+        final Map<String, Map<String, Object>> listFWSComposition = new HashMap<String, Map<String, Object>>();
+        final String sqlRequestComposition = "select r.rmu_name as RmuName, UPPER(c.reservoir), c.CO2 * 100 as CO2, c.N2 * 100 as N2, "
+                + "c.C1 * 100 as C1,"
+                + "c.C2 * 100 as C2,"
+                + "c.C3 * 100 as C3,"
+                + "c.ic4 * 100 as IC4,"
+                + "c.nC4 * 100 as NC4,"
+                + "c.NC5 * 100 as NC5,"
+                + "c.IC5 * 100 as IC5,"
+                + "c.C6 * 100 as C6,"
+                + "c.C7PLUS * 100 as C7PLUS,"
+
+                + "c.C8PLUS * 100 as C8PLUS"
+
+                + " from rmu_composition c, r_reservoir_management_unit r  "
+                + " where c.year_end in (select max(year_end) from rmu_composition) and c.product='Raw Gas' and c.scenario='1P' and UPPER(r.rmu_name)=UPPER(c.reservoir)";
+        final ResultSet rs = stmt.executeQuery(sqlRequestComposition);
+        final ResultSetMetaData rsmd = rs.getMetaData();
+        String message = "";
+
+        while (rs.next())
+        {
+            final Map<String, Object> record = new HashMap<String, Object>();
+
+            final int count = rsmd.getColumnCount();
+            for (int i = 1; i <= count; i++)
+            {
+                String key = rsmd.getColumnName(i);
+                key = key.toUpperCase();
+                record.put(key, rs.getObject(i));
+                if (rs.getObject(i) == null)
+                {
+                    message += "Rmu[" + (String) record.get("RMUNAME") + "] value[" + key + "] is null;";
+                }
+            }
+
+            listFWSComposition.put((String) record.get("RMUNAME"), record);
+
+        }
+
+        sdeData.listsValue.put("FWSComposition", listFWSComposition);
+        sdeData.listsValue.put("FWSCompositionMessage", message);
+
         sdeData.listsValue.put("status", logDetails);
 
         logger.info("   / loadList END ---------------- businessUnit[" + businessUnit + "]");

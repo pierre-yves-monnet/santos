@@ -1,5 +1,7 @@
 package com.santos.sdeaccess;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -12,10 +14,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
+import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
@@ -25,6 +29,8 @@ import org.bonitasoft.engine.bpm.process.ProcessDefinitionNotFoundException;
 import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.exception.SearchException;
+import org.bonitasoft.engine.profile.Profile;
+import org.bonitasoft.engine.profile.ProfileCriterion;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.session.APISession;
@@ -200,6 +206,12 @@ public class SdeAccess {
                     } else {
                         caseMap.put("initiateSdeRequest", false);
                     }
+                    // rule #51 : if the status is RED, the initiateSdeRequest is not available
+                    final String status = Toolbox.getString(sdeInfo.get(SdeBusinessAccess.TableDashBoard.BWD_STATUS), null);
+                    if ("RED".equals(status)) {
+                        caseMap.put("initiateSdeRequest", false);
+                    }
+
                     logger.info("SdeNumber[" + sdeInfo.get(TableDashBoard.SDE_NUMBER) + "] Date ["
                             + (scheduledOnlineDate == null ? "null" : sdf.format(scheduledOnlineDate)) + "] Limit=[" + sdf.format(limitToInitiateSde.getTime())
                             + "] : access=" + caseMap.get("initiateSdeRequest") + "]");
@@ -218,6 +230,8 @@ public class SdeAccess {
                     final HumanTaskInstance humanTask = mapSdeNumberToTask.get(keySdeNumberStatus.getKey());
                     if (humanTask != null)
                     {
+                        caseMap.put("initiateSdeRequest", false);
+
                         caseMap.put("accesstask", true);
                         caseMap.put("caseid", humanTask.getParentProcessInstanceId());
                         caseMap.put("taskid", humanTask.getId());
@@ -463,6 +477,14 @@ public class SdeAccess {
             }
         } // end sourceIsProcess
 
+        // last case : if there are a caseId, doe not show the initiateSdeRequest
+        for (final Map<String, Object> caseMap : listCases)
+        {
+            if (caseMap.get("caseid") != null) {
+                caseMap.put("initiateSdeRequest", false);
+            }
+        }
+
         result.put("listcases", listCases);
 
         logger.info("listCases= " + result + "] trace=" + traceinfo);
@@ -542,7 +564,6 @@ public class SdeAccess {
         return result;
     }
 
-
     /* ******************************************************************************** */
     /*                                                                                  */
     /* getListSystemSummary */
@@ -557,11 +578,12 @@ public class SdeAccess {
      * @param sdeParameter
      * @return
      */
-    public static Map<String, Object> getListSystemSummary(final SystemSummaryParameter systemSummaryParameter, final APISession apiSession, final ProcessAPI processAPI)
+    public static Map<String, Object> getListSystemSummary(final SystemSummaryParameter systemSummaryParameter, final APISession apiSession,
+            final ProcessAPI processAPI)
     {
         final String[] listSystemSummarydateToString = new String[] { TableDashBoard.SCHEDULED_ONLINE_DATE, TableDashBoard.ACTUAL_ONLINE_DATE,
                 "WELL_DATA_DATE", "COMP_DATA_DATE", "RESP_OFFICER_DATE", "EC_DATE", "ENABLE_DATE", "AMPLA_DATE", "GWS_DATE", "OFM_DATE", "OIL_ODR_DATE",
-                "PODS_DATE", "SALAS_DATE", "WPM_GLNG_DATE" };
+                "PODS_DATE", "SALAS_DATE", "WPM_GLNG_DATE", "SDE_PROCESS_DATE" };
         final String[] listSystemSummarystyle = new String[] { "EC_STATUS", "ENABLE_STATUS", "AMPLA_STATUS", "GWS_STATUS", "OFM_STATUS", "OIL_ODR_STATUS",
                 "PODS_STATUS", "SALAS_STATUS", "WPM_GLNG_STATUS" };
 
@@ -575,13 +597,14 @@ public class SdeAccess {
 
         final ProcessDefinition processDefinition = getProcessDefinition(systemSummaryParameter.processName, systemSummaryParameter.processVersion, processAPI);
         // to give access to the TASKID, then search all task available for the user. Then create a map of SDENUMBER/SDESTATUS -> TaskInstance
-        final Map<String, HumanTaskInstance> mapSdeNumberToTask = getAllTasksForUser(processDefinition==null ? null : processDefinition.getId(), apiSession.getUserId(), processAPI);
+        final Map<String, HumanTaskInstance> mapSdeNumberToTask = getAllTasksForUser(processDefinition == null ? null : processDefinition.getId(),
+                apiSession.getUserId(), processAPI);
 
         final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         final SdeResult sdeResult = sdeBusinessAccess.getListSummary(systemSummaryParameter);
         // now, prepare each line for the look and feel
         if (sdeResult.listRecords != null) {
-            for (final Map<String,Object> oneLine : sdeResult.listRecords)
+            for (final Map<String, Object> oneLine : sdeResult.listRecords)
             {
                 // record contains : {PERMIT_SURFACE=permitsource, JOINT_VENTURE_NAME=JOINT_VENTURE, SALAS_DATE=null, BWD_STATUS=GREEN,
                 // OFM_DATE=null, EC_WELL_CODE=EC_WELL_CODE, ARTIFICIAL_LIFT_SYSTEM=LIFT_SYSTEM, STRING_SUFFIX=S, MODIFIED_DATE=1442991600000,
@@ -606,15 +629,14 @@ public class SdeAccess {
                 // HISTORIAN_STATUS=null, EC_DATE=null, WELL_HOOK_UP_DETAILS=WELL_HOOK_UP_DETAILS, WELL_CATEGORY_SECONDARY_3=CATEGORY_SEC_3, FUEL_GAS_CONSUMPTION_RATE=53,
                 // WELL_CATEGORY_FINAL=CATEGORY_FINAL, RESP_OFFICER_DATE=null}]
 
-
                 // calcul the number of date to get online
-                final Date scheduledOnlineDate = Toolbox.getDate( oneLine.get(TableDashBoard.SCHEDULED_ONLINE_DATE), null );
+                final Date scheduledOnlineDate = Toolbox.getDate(oneLine.get(TableDashBoard.SCHEDULED_ONLINE_DATE), null);
                 String dayOnLineStyle = "text-align:right";
 
-                if (scheduledOnlineDate !=null)
+                if (scheduledOnlineDate != null)
                 {
                     final long nbDays = scheduledOnlineDate.getTime() / (1000 * 60 * 60 * 24) - currentDate.getTimeInMillis() / (1000 * 60 * 60 * 24);
-                    if (nbDays>0)
+                    if (nbDays > 0)
                     {
                         oneLine.put("DAYSTOONLINE", nbDays);
                         if (nbDays >= 15) {
@@ -626,7 +648,7 @@ public class SdeAccess {
                         }
                     }
                     else {
-                        dayOnLineStyle+=";background-color:#DBE5F1"; //  GREY 219 229 241
+                        dayOnLineStyle += ";background-color:#DBE5F1"; //  GREY 219 229 241
                     }
 
                 }
@@ -640,9 +662,9 @@ public class SdeAccess {
                     oneLine.put(TableDashBoard.ACTUAL_ONLINE_DATE + "_STYLE", "text-align:right");
                 }
 
-                final Long sdeNumber = Toolbox.getLong(oneLine.get(TableDashBoard.SDE_NUMBER ), -1L);
-                final Long sdeStatus = Toolbox.getLong( oneLine.get(TableDashBoard.SDE_STATUS ), -1L);
-                        final SdeNumberStatus sdeNumberStatus = SdeNumberStatus.getInstance(sdeNumber.longValue(), sdeStatus.longValue());
+                final Long sdeNumber = Toolbox.getLong(oneLine.get(TableDashBoard.SDE_NUMBER), -1L);
+                final Long sdeStatus = Toolbox.getLong(oneLine.get(TableDashBoard.SDE_STATUS), -1L);
+                final SdeNumberStatus sdeNumberStatus = SdeNumberStatus.getInstance(sdeNumber.longValue(), sdeStatus.longValue());
 
                 final HumanTaskInstance humanTask = mapSdeNumberToTask.get(sdeNumberStatus.getKey());
                 if (humanTask != null && humanTask.getName().equals(systemSummaryParameter.paTaskName))
@@ -677,12 +699,12 @@ public class SdeAccess {
                     oneLine.put("SDEPROCESSSTATUS", "Complete");
                 } else if ("Y".equals(sdeStatus8))
                 {
-                    oneLine.put("SDEPROCESSSTATUS_STYLE", "background-color:#E6B9B8");
+                    oneLine.put("SDEPROCESSSTATUS_STYLE", "background-color:#E6B9B8;text-align:center");
                     oneLine.put("SDEPROCESSSTATUS", "Integration Error");
                 }
                 else
                 {
-                    oneLine.put("SDEPROCESSSTATUS_STYLE", "background-color:#FFFF99");
+                    oneLine.put("SDEPROCESSSTATUS_STYLE", "background-color:#FFFF99;text-align:center");
                     oneLine.put("SDEPROCESSSTATUS", "In progress");
                 }
 
@@ -694,6 +716,7 @@ public class SdeAccess {
 
         return result;
     }
+
     /* ******************************************************************************** */
     /*                                                                                  */
     /* startProcess */
@@ -872,13 +895,105 @@ public class SdeAccess {
         return result;
     }
 
+    /* ******************************************************************************** */
+    /*                                                                                  */
+    /* Properties access */
+    /*                                                                                  */
+    /*                                                                                  */
+    /* ******************************************************************************** */
+    public static boolean isAdminProfile(final Long userId, final ProfileAPI profileAPI)
+    {
+        List<Profile> listProfile;
+        listProfile = profileAPI.getProfilesForUser(userId, 0, 1000, ProfileCriterion.NAME_ASC);
 
-    /* ******************************************************************************** */
-    /*                                                                                  */
-    /* WellList */
-    /*                                                                                  */
-    /*                                                                                  */
-    /* ******************************************************************************** */
+        for (final Profile profile : listProfile)
+        {
+            if (profile.isDefault() && "Administrator".equals(profile.getName())) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    /**
+     * get properties
+     *
+     * @param propertieFile
+     * @return
+     */
+    public static Map<String, String> getProperties(final String propertieFile)
+    {
+        final Map<String, String> result = new HashMap<String, String>();
+
+        final Properties properties = new Properties();
+        try
+        {
+            final FileInputStream is = new FileInputStream(propertieFile);
+            properties.load(is);
+            is.close();
+            for (final Object key : properties.keySet())
+            {
+                result.put(key.toString(), properties.get(key).toString());
+            }
+        } catch (final Exception e)
+        {
+        }
+
+        return result;
+    }
+
+    /** get the propertuies file */
+
+    public static String getProperties(final String propertieFile, final String attribut)
+    {
+        return getProperties(propertieFile).get(attribut);
+    }
+
+    /**
+     * set the properties file
+     *
+     * @param propertieFile
+     * @param jsonSt
+     */
+    public static String setProperties(final String propertieFile, final String jsonSt)
+    {
+        final Map<String, Object> jsonHash = (Map<String, Object>) JSONValue.parse(jsonSt);
+        logger.info("setProperties jsonst=" + jsonSt + " Hash=" + jsonHash + " file=" + propertieFile);
+
+        if (jsonSt != null && jsonSt.length() > 0 && jsonHash == null) {
+            return "Can't decode the Json";
+        }
+
+        final Properties properties = new Properties();
+        try
+        {
+            final FileInputStream is = new FileInputStream(propertieFile);
+            properties.load(is);
+            is.close();
+        } catch (final Exception e)
+        {
+        } // don't care
+        try
+        {
+            if (jsonHash != null) {
+                properties.putAll(jsonHash);
+            }
+            final FileOutputStream os = new FileOutputStream(propertieFile);
+            properties.store(os, "");
+            os.close();
+            return "File [" + propertieFile + "] updated ";
+        } catch (final Exception e)
+        {
+
+            final StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            final String exceptionDetails = sw.toString();
+
+            logger.severe("setProperties : " + e.toString() + " at " + exceptionDetails);
+            return "Error : " + e.toString();
+        }
+    }
 
     /* ******************************************************************************** */
     /*                                                                                  */
@@ -887,10 +1002,10 @@ public class SdeAccess {
     /*                                                                                  */
     /* ******************************************************************************** */
 
-    private static void resolveCaseId( final Map<Integer, Map<String,Object>> acumulatorCase, final ProcessAPI processAPI )
+    private static void resolveCaseId(final Map<Integer, Map<String, Object>> acumulatorCase, final ProcessAPI processAPI)
     {
         final Map<Long, ProcessDefinition> mapProcessDefinition = new HashMap<Long, ProcessDefinition>();
-        final SearchOptionsBuilder searchOptionBuilder = new SearchOptionsBuilder(0,1000);
+        final SearchOptionsBuilder searchOptionBuilder = new SearchOptionsBuilder(0, 1000);
         searchOptionBuilder.filter(ProcessInstanceSearchDescriptor.STRING_INDEX_1, "-1");
         for (final Integer sdeNumber : acumulatorCase.keySet())
         {
@@ -900,11 +1015,12 @@ public class SdeAccess {
         SearchResult<ProcessInstance> searchResult;
         try {
             searchResult = processAPI.searchProcessInstances(searchOptionBuilder.done());
-        for (final ProcessInstance processInstance : searchResult.getResult())
-        {
+            for (final ProcessInstance processInstance : searchResult.getResult())
+            {
                 final Map<String, Object> caseMap = acumulatorCase.get(Toolbox.getInteger(processInstance.getStringIndex1(), null));
-            if (caseMap!=null) {
-                caseMap.put("caseid", processInstance.getRootProcessInstanceId());
+                if (caseMap != null) {
+                    caseMap.put("caseid", processInstance.getRootProcessInstanceId());
+
                     ProcessDefinition processDefinition = mapProcessDefinition.get(processInstance.getProcessDefinitionId());
                     if (processDefinition == null)
                     {
@@ -917,8 +1033,8 @@ public class SdeAccess {
                         caseMap.put("processversion", processDefinition.getVersion());
                         caseMap.put("processid", processDefinition.getId());
                     }
+                }
             }
-        }
         } catch (final SearchException | ProcessDefinitionNotFoundException e) {
             logger.severe("SearchResolveCaseId " + e.toString());
         }

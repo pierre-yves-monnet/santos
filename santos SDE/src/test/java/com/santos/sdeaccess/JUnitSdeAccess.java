@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 import org.bonitasoft.engine.api.ApiAccessType;
 import org.bonitasoft.engine.api.LoginAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
+import org.bonitasoft.engine.exception.ServerAPIException;
+import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.util.APITypeManager;
 import org.junit.Test;
@@ -23,7 +26,28 @@ public class JUnitSdeAccess {
 
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    @Test
+    //@Test
+    public void testIdAdmin()
+    {
+        final APISession apiSession = getLogin();
+        boolean isAdmin;
+        try {
+            isAdmin = SdeAccess.isAdminProfile(apiSession.getUserId(), TenantAPIAccessor.getProfileAPI(apiSession));
+            System.out.println("IsAdmin=" + isAdmin);
+        } catch (final BonitaHomeNotSetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final ServerAPIException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final UnknownAPITypeException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    //@Test
     public void testListCaseForSdeDashboard() {
         try
         {
@@ -51,7 +75,7 @@ public class JUnitSdeAccess {
 
     }
 
-    @Test
+    //@Test
     public void testListSystemSummary() {
         try
         {
@@ -71,7 +95,7 @@ public class JUnitSdeAccess {
 
     }
 
-    @Test
+    //@Test
     public void testRList() {
         try
         {
@@ -89,7 +113,8 @@ public class JUnitSdeAccess {
         }
 
     }
-    // @Test
+
+    @Test
     public void testReadDatabase()
     {
         final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
