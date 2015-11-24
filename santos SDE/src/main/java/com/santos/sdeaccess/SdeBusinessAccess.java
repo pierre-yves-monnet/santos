@@ -573,6 +573,7 @@ public class SdeBusinessAccess {
         return sdeResult;
     }
 
+
     /**
      * create the Well data
      */
@@ -676,7 +677,93 @@ public class SdeBusinessAccess {
         return sdeResult;
     }
 
+    /* ******************************************************************************** */
+    /*                                                                                  */
+    /* PADashboard */
+    /*                                                                                  */
+    /*                                                                                  */
+    /* ******************************************************************************** */
+    public static class PADashboardParameter {
 
+        public String filterUWI = null;
+        public String filterWellFullName;
+        public String filterSDENumber;
+        public String filterBusinessUnit;
+        public String filterSdeOriginator;
+        public String filterDateRangeFrom;
+        public String filterDateRangeTo;
+
+        public boolean allowDirectConnection = false;
+
+        public int maxRecord = 100;
+        public String orderByField = TableRWellList.UWI;
+        public boolean formatDateJson = true;
+
+        public boolean tableNameUpperCase = false;
+        public boolean enquoteTableName = false;
+        public boolean colNameUpperCase = false;
+
+        public static PADashboardParameter getFromJson(final String jsonSt)
+        {
+            final PADashboardParameter paDashboardParameter = new PADashboardParameter();
+            if (jsonSt == null) {
+                return paDashboardParameter;
+            }
+            final Map<String, Object> jsonHash = (Map<String, Object>) JSONValue.parse(jsonSt);
+            if (jsonHash == null) {
+                return paDashboardParameter;
+            }
+
+            paDashboardParameter.filterUWI = (String) jsonHash.get("filteruwi");
+            paDashboardParameter.filterWellFullName = (String) jsonHash.get("filterwellfullname");
+            paDashboardParameter.filterSDENumber = (String) jsonHash.get("filtersdenumber");
+            paDashboardParameter.filterBusinessUnit = (String) jsonHash.get("filterbusinessunit");
+            paDashboardParameter.filterSdeOriginator = (String) jsonHash.get("filteroriginator");
+            paDashboardParameter.filterDateRangeFrom = (String) jsonHash.get("filteronlinedatefrom");
+            paDashboardParameter.filterDateRangeTo = (String) jsonHash.get("filteronlinedateto");
+            return paDashboardParameter;
+        }
+
+    };
+
+    /** get the list of the PADashboard */
+    public SdeResult getListPaDashboard(final PADashboardParameter paDashboardParameter)
+    {
+        final SdeResult sdeResult = new SdeResult();
+        Connection con = getConnection(paDashboardParameter.allowDirectConnection);
+        if (con == null)
+        {
+            sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
+            sdeResult.errorstatus = "Can't access the datasource [" + DATASOURCE_NAME + "]";
+
+            return sdeResult;
+        }
+        final String sqlRequest = "";
+        try
+        {
+
+            // SANTOS : list to get all informations
+
+            sdeResult.listRecords.add(new HashMap<String, Object>());
+
+            sdeResult.status = "OK";
+
+        } catch (final Exception e)
+        {
+            final StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+
+            logger.severe("Error during the sql request [" + sqlRequest + "] call " + e.toString() + " at " + sw.toString());
+            sdeResult.status = "Fail";
+            sdeResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
+            sdeResult.listRecords = null;
+        }
+        if (con != null)
+        {
+            con = null; // finish to use the connection
+        }
+        return sdeResult;
+    }
 
     /* ******************************************************************************** */
     /*                                                                                  */
@@ -1394,7 +1481,7 @@ public class SdeBusinessAccess {
         // final String name, final String colKey, final String colValue, final String table
         lists.add(new ListDefinition("r_area_numbers_by_field", "area_number", "area_name", "r_area_numbers_by_field", null));
         lists.add(new ListDefinition("r_genset_make_models", "energy_input_gj_hr", "engine_make_and_model", "r_genset_make_models", null));
-        lists.add(new ListDefinition("ov_well_hole", "op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null));
+        lists.add(new ListDefinition("ov_well_hole", "distinct op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null));
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list

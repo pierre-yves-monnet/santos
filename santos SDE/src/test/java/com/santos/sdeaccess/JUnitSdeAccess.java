@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.santos.sdeaccess.SdeAccess.ListCasesParameter;
 import com.santos.sdeaccess.SdeAccess.StartprocessParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
+import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SdeData;
 import com.santos.sdeaccess.SdeBusinessAccess.SystemSummaryParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.TableDashBoard;
@@ -47,7 +48,7 @@ public class JUnitSdeAccess {
 
     }
 
-    //@Test
+    @Test
     public void testListCaseForSdeDashboard() {
         try
         {
@@ -66,6 +67,26 @@ public class JUnitSdeAccess {
             result = SdeAccess.getWellTrackerDashboardList(listCasesParameter, apiSession,
                     TenantAPIAccessor.getProcessAPI(apiSession),
                     TenantAPIAccessor.getIdentityAPI(apiSession));
+            System.out.print("Result=" + result);
+
+        } catch (final Exception e)
+        {
+            logger.severe("Exception =" + e.toString());
+        }
+
+    }
+
+    @Test
+    public void testPADashboard() {
+        try
+        {
+            final APISession apiSession = getLogin();
+            final PADashboardParameter paDashboardParameter = new PADashboardParameter();
+            paDashboardParameter.allowDirectConnection = true;
+            paDashboardParameter.filterUWI = "A";
+
+            final Map<String, Object> result = SdeAccess.getListPADAshboard(paDashboardParameter, apiSession,
+                    TenantAPIAccessor.getProcessAPI(apiSession));
             System.out.print("Result=" + result);
 
         } catch (final Exception e)

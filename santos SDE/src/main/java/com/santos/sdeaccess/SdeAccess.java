@@ -38,6 +38,7 @@ import org.json.simple.JSONValue;
 
 import com.bonitasoft.engine.bpm.process.impl.ProcessInstanceSearchDescriptor;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
+import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SdeNumberStatus;
 import com.santos.sdeaccess.SdeBusinessAccess.SdeParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SdeResult;
@@ -156,7 +157,7 @@ public class SdeAccess {
         final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
 
         SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, listCasesParameter.maxResult);
-        String traceinfo = "SdeAccess.getListCasesForSdeDashboard:";
+        String traceinfo = "SdeAccess.getWellTrackerDashboardList:";
 
         final List<SdeNumberStatus> listSdeNumber = new ArrayList<SdeNumberStatus>();
         final HashMap<SdeNumberStatus, HashMap<String, Object>> mapCasesBySdeNumberStatus = new HashMap<SdeNumberStatus, HashMap<String, Object>>();
@@ -742,6 +743,8 @@ public class SdeAccess {
         public String processVersion;
 
         public boolean waitFirstTask = false;
+
+        public boolean assignTaskToUser = true;
         /**
          * in the situation of the "wait the time", then this is the delay to wait the first task
          */
@@ -855,6 +858,10 @@ public class SdeAccess {
                     {
                         taskId = searchResult.getResult().get(0).getId();
                         final ActivityInstance activityInstance = processAPI.getActivityInstance(taskId);
+                        if (startprocessParameter.assignTaskToUser) {
+                            processAPI.assignUserTask(taskId, apiSession.getUserId());
+                        }
+
                         result.put("taskName", activityInstance.getName());
                         result.put("taskDescription", activityInstance.getDescription());
                         result.put("taskid", taskId);
@@ -892,6 +899,29 @@ public class SdeAccess {
 
         }
         logger.info("StartprocessParameter: result=[" + result.toString() + "]");
+        return result;
+    }
+
+    /* ******************************************************************************** */
+    /*                                                                                  */
+    /* PADashboard */
+    /*                                                                                  */
+    /*                                                                                  */
+    /* ******************************************************************************** */
+
+    public static Map<String, Object> getListPADAshboard(final PADashboardParameter paDashboardParameter, final APISession session, final ProcessAPI processAPI)
+    {
+        final Map<String, Object> result = new HashMap<String, Object>();
+
+        // calculate the list
+        final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
+
+        final SdeResult sdeResult = sdeBusinessAccess.getListPaDashboard(paDashboardParameter);
+
+        result.put("LISTPADASHBOARD", sdeResult.listRecords);
+        result.put("MESSAGE", sdeResult.status);
+        result.put("ERRORMESSAGE", sdeResult.errorstatus);
+
         return result;
     }
 
@@ -1017,6 +1047,11 @@ public class SdeAccess {
             searchResult = processAPI.searchProcessInstances(searchOptionBuilder.done());
             for (final ProcessInstance processInstance : searchResult.getResult())
             {
+                // StringIndex3 contains the Cancel value
+                final String isCancel = processInstance.getStringIndex3();
+                if ("Y".equals(isCancel)) {
+                    continue;
+                }
                 final Map<String, Object> caseMap = acumulatorCase.get(Toolbox.getInteger(processInstance.getStringIndex1(), null));
                 if (caseMap != null) {
                     caseMap.put("caseid", processInstance.getRootProcessInstanceId());
@@ -1130,8 +1165,14 @@ public class SdeAccess {
             if (processDefinitionId != null) {
                 searchOptionBuilder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
             }
-            final SearchResult<HumanTaskInstance> searchResultHumanTask = processAPI.searchPendingTasksForUser(userId, searchOptionBuilder.done());
-            for (final HumanTaskInstance humanTask : searchResultHumanTask.getResult())
+            final SearchResult<HumanTaskInstance> searchResultPendingHumanTask = processAPI.searchPendingTasksForUser(userId, searchOptionBuilder.done());
+            final SearchResult<HumanTaskInstance> searchResultAssignedHumanTask = processAPI.searchAssignedAndPendingHumanTasksFor(processDefinitionId, userId,
+                    searchOptionBuilder.done());
+            final List<HumanTaskInstance> allTasks = new ArrayList<HumanTaskInstance>();
+            allTasks.addAll(searchResultPendingHumanTask.getResult());
+            allTasks.addAll(searchResultAssignedHumanTask.getResult());
+
+            for (final HumanTaskInstance humanTask : allTasks)
             {
                 processInstanceId = humanTask.getParentProcessInstanceId();
                 final ProcessInstance processInstance = processAPI.getProcessInstance(processInstanceId);
