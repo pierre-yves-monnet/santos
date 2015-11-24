@@ -85,6 +85,14 @@ appCommand.controller('DashboardControler',
 		$http.get( '../API/system/session/1').success( function (data ) {
 			self.userid = data.user_id; 
 			});
+		$http.get( '?page=custompage_SDEdashboard&action=init')
+			.then( function ( jsonResult ) {	
+						self.isAllowPropertiesView = jsonResult.data.isAllowPropertiesView;
+						self.properties.updatesdeurl= jsonResult.data.updatesdeurl;
+					},
+					function ( jsonResult ) {
+							});
+		
 	 };
 	this.init();
 	
@@ -323,11 +331,16 @@ appCommand.controller('DashboardControler',
 		this.welllisterrormessage="";
 		
 		var json= angular.toJson(onewell, false);
-	
-		$http.get( '?page=custompage_SDEdashboard&action=createWellList&json='+json )
+		var url = this.properties.updatesdeurl;
+		var url = url.replace("{{UWI}}", onewell.UWI);
+		var url = url.replace("{{WELL_FULL_NAME}}", onewell.WELL_FULL_NAME);
+		var url = url.replace("{{BUSINESS_UNIT}}", onewell.BUSINESS_UNIT);
+		var url = url.replace("{{FIELD_NAME}}", onewell.FIELD_NAME);
+		console.log("Call URL UpdateSdeDetail : "+url);
+		$http.get( url )
 			.then( function ( jsonResult ) {		
-						self.welllistmessage= jsonResult.data.STATUS;
-						self.welllisterrormessage= jsonResult.data.ERRORSTATUS;
+						self.welllistmessage= "Success";
+						// self.welllisterrormessage= jsonResult.data.ERRORSTATUS;
 					},
 					function ( jsonResult ) {
 								self.welllisterrormessage	= "Error during get"+jsonResult.status;
@@ -364,7 +377,7 @@ appCommand.controller('DashboardControler',
 	// --------------------------------------------------------------------------
 	//
 	//   SystemSummary
-	//bob
+	//
 	// --------------------------------------------------------------------------
 
 	this.systemSummary={};
@@ -420,6 +433,98 @@ appCommand.controller('DashboardControler',
 
 	// --------------------------------------------------------------------------
 	//
+	//   PA Dashboard
+	//
+	// --------------------------------------------------------------------------
+	this.padashboard = {};
+	this.padashboard.search ={};
+	this.padashboard.sdeperpage = 50;
+	this.padashboard.pagenumber = 1;
+	this.padashboard.orderByField="";
+	this.padashboard.reversesort= false;
+	this.padashboard.listdata = [];
+	
+	this.searchPADashboard = function() {
+		var self=this;
+		var json= angular.toJson(this.padashboard.search, false);
+		console.log("Call URL PADashboard : "+url);
+		$http.get( '?page=custompage_SDEdashboard&action=getPADashboard&json='+json ) )
+			.then( function ( jsonResult ) {
+						self.padashboard.listdata = jsonResult.data.LISTPADASHBOARD	
+						self.padashboard.message= jsonResult.data.MESSAGE;
+						self.padashboard.errormessage= jsonResult.data.ERRORMESSAGE;
+					},
+					function ( jsonResult ) {
+						self.padashboard.errormessage	= "Error during get"+jsonResult.status;
+						self.padashboard.message= "";
+						alert("Error during the request "+angular.toJson(jsonResult));
+					});
+	};
+	
+	
+	this.getPADashboardPage = function() {
+	// console.log("---- getSystemSummaryPage : start list["+angular.toJson(this.systemSummary.listsde )+"]");
+		if (this.padashboard.listdata==null)
+		{
+			this.padashboard.listdata=[];
+			return this.padashboard.listdata;
+		}
+		if (this.padashboard.listdata.length ==0)
+		{
+			return this.padashboard.listdata;
+		}		
+		var begin = ((this.padashboard.pagenumber - 1) * this.padashboard.sdeperpage);
+		var end = begin + this.padashboard.sdeperpage;
+		this.padashboard.listdata = $filter('orderBy')(this.padashboard.listdata, this.padashboard.orderByField, this.padashboard.reversesort);
+		// console.log('-- getSystemSummaryPage orderBy='+ angular.toJson( this.systemSummary.listsde,true ));
+		
+		var listfiltered = $filter('filter') (this.padashboard.listdata, this.padashboard.filter );
+		console.log('-- getPage filter='+angular.toJson(this.padashboard.filter)+' listfiltered='+ angular.toJson( listfiltered,true ) +' Order='+  this.padashboard.listdata + ' reservesort='+this.padashboard.reversesort);
+		
+		return listfiltered.slice(begin, end);
+		
+	};
+	this.checkPALine = function( oneSynthesis, checkBoxName) {
+		if (oneSynthesis[ checkBoxName ]==true) {
+			// uncheck the another checkbox
+			oneSynthesis["HOLD_CLARIFICATION"] = false;
+			oneSynthesis["DO_NOT_LOAD"] = false;
+			oneSynthesis["UPDATE_EC"] = false;
+			oneSynthesis[ checkBoxName ] = true;
+			
+		}
+		
+	}
+	this.submitPADashboard = function() {
+	};
+	
+	// --------------------------------------------------------------------------
+	//
+	//   properties management
+	//
+	// --------------------------------------------------------------------------
+	this.properties ={};
+	this.properties.updatesdeurl="";
+	this.setproperties = function() 
+	{
+		this.propertiesmessage="Processing...";
+		var json= angular.toJson(this.properties, false);
+
+		var self=this;
+		$http.get( '?page=custompage_SDEdashboard&action=setproperties&json='+json )
+				.then( function ( jsonResult ) {
+					// console.log('searchSystemSummary: Sucess is '+angular.toJson(jsonResult.data ));
+					self.propertiesmessage			= jsonResult.data.status;
+
+				}, function( jsonResult) {
+					alert('an error occure during set properties');
+					console.log('error receive' , jsonResult.status);
+					self.propertiesmessage="Error "+ jsonResult.status;
+				});
+	};
+	
+	// --------------------------------------------------------------------------
+	//
 	//   show pages
 	//
 	// --------------------------------------------------------------------------
@@ -428,16 +533,19 @@ appCommand.controller('DashboardControler',
 	this.isshowform=false;
 	this.isshowSystemSummary=false;
 	this.isshowUpdateSdeDetails=false;
-	this.isshowPaDashboard=false;
-
+	this.isshowProperties=false;
+	this.isAllowPropertiesView=false;
+	this.isshowPADashboard = false;
+	
 	this.resetView = function()
 	{
 		this.isshowcases=false;
 		this.isshowform=false;
 		this.isshowSystemSummary=false;
 		this.isshowUpdateSdeDetails=false;
-		this.isshowPaDashboard=false;
 		this.isshowdetailcontributor=false;
+		this.isshowProperties=false;
+		this.isshowPADashboard=false;
 	}
 	this.showViewForm = function() {
 		this.resetView();
@@ -449,11 +557,22 @@ appCommand.controller('DashboardControler',
 		this.isshowUpdateSdeDetails= true;
 		
 	};
+	this.showViewPADashboard  = function() {
+		this.resetView();
+		this.isshowPADashboard= true;
+		
+	};
 	this.showViewSystemSummary = function() {
 		this.resetView();
 		this.isshowSystemSummary= true;
 	};
-	
+	this.showProperties = function() {
+		this.resetView();
+		this.isshowProperties= true;
+	};
+	this.allowPropertiesView = function() {
+		return this.isAllowPropertiesView;
+	}
 
 	this.getButtonClass = function (isCurrent ) {
 		if (isCurrent) 

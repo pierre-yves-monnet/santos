@@ -72,7 +72,7 @@ public class Index implements PageController {
 	public void doGet(HttpServletRequest request, HttpServletResponse response, PageResourceProvider pageResourceProvider, PageContext pageContext) {
 	
 		Logger logger= Logger.getLogger("org.bonitasoft");
-		HashMap<String,Object> result=null;
+		Map<String,Object> result=null;
 		PrintWriter out = response.getWriter()
 
 		
@@ -80,7 +80,11 @@ public class Index implements PageController {
 			def String indexContent;
 			pageResourceProvider.getResourceAsStream("Index.groovy").withStream { InputStream s-> indexContent = s.getText() };
 			response.setCharacterEncoding("UTF-8");
-
+	
+			File pageDirectory = pageResourceProvider.getPageDirectory();
+			String fileExternalProperties = pageDirectory.getPath()+"/externalservice.properties";
+	
+	
 			String action=request.getParameter("action");
 			logger.info("###################################### action is["+action+"] V4!");
 			if (action==null || action.length()==0 )
@@ -96,8 +100,14 @@ public class Index implements PageController {
 			ProfileAPI profileAPI = TenantAPIAccessor.getProfileAPI(session);
 			PlatformMonitoringAPI platformMonitoringAPI = TenantAPIAccessor.getPlatformMonitoringAPI(session);
 			IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-			
-			if ("getWellTrackerDashboardList".equals(action))
+
+			if ("init".equals(action))
+			{
+				result = SdeAccess.getProperties(fileExternalProperties);
+				logger.info("GetProperties in file ["+fileExternalProperties+"] : "+result);
+            	result.put("isAllowPropertiesView", SdeAccess.isAdminProfile( session.getUserId(), profileAPI));
+			}
+			else if ("getWellTrackerDashboardList".equals(action))
 			{
 				String json= request.getParameter("json");
 				logger.info("SdeDashBoard.groovy: ParamJson ="+json);
@@ -139,7 +149,26 @@ public class Index implements PageController {
 				result = SdeAccess.getListSystemSummary(systemSummaryParameter, session, processAPI );
 				logger.info("getListCasesForSdeDashboard:Result="+result.toString());
 			}	
-			
+			else if ("getPADashboard".equals(action))
+			{
+				String json= request.getParameter("json");
+				logger.info("getPADashboard.groovy: ParamJson ="+json);
+				PADashBoardParameter PADashboardParameter = PADashBoardParameter.getFromJson(json);
+				result = SdeAccess.getListPADAshboard(PADashboardParameter, session, processAPI );
+				logger.info("PADashboardParameter:Result="+result.toString());
+		
+			}
+			else if ("getproperties".equals(action))
+			{
+			  result = SdeAccess.getProperties(fileExternalProperties);
+            }
+			else if ("setproperties".equals(action))
+			{
+			  String json= request.getParameter("json");
+			  result = new HashMap<String,Object>();
+			  result.put("status",SdeAccess.setProperties(fileExternalProperties,json));
+            }
+				 
 			if (result!=null)
 			{
 				String jsonDetailsSt = JSONValue.toJSONString( result );

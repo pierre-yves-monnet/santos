@@ -83,9 +83,20 @@
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
 				<button ng-click="dashctrl.showViewSystemSummary();" ng-class="dashctrl.getButtonClass( dashctrl.isshowSystemSummary)">System Summary</button>
-			</td></tr>
+			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
+			<td>
+				<button ng-click="dashctrl.showViewPADashboard();" 
+						ng-class="dashctrl.getButtonClass( dashctrl.isshowPADashboard)">PA Dashboard</button>
+			</td>
+			<td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
+			<td>
+				<button ng-show="dashctrl.allowPropertiesView()" 
+					ng-click="dashctrl.showProperties();" ng-class="dashctrl.getButtonClass( dashctrl.isshowProperties)">Properties</button>
+			</td>
+			</tr>
 			</table>
 		</div>
+
 	</div> 
 		
 		
@@ -169,12 +180,12 @@
 									</div>
 									<div ng-show="onetask.accesstask">
 										<button ng-click="dashctrl.accessTaskButton( headerlabel, onetask)" class="btn btn-xs btn-info" 
-										style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Access SDE Request</button>
+										style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Access SDE Request Task</button>
 									</div>
 									<div ng-show="onetask.caseid != null">
 										<button ng-click="dashctrl.accessCaseOverviewButton( headerlabel, onetask)" 
 											class="btn btn-xs btn-success" 
-											style="background-color: #5cb85c;border-color: #5cb85c;padding: 0px 10px;">SDE Request</button>
+											style="background-color: #5cb85c;border-color: #5cb85c;padding: 0px 10px;">SDE Overview</button>
 										</div>
 								</div>
 								<div ng-show="headerlabel.ctrl == 'date'">
@@ -336,7 +347,7 @@
 						
 						<tr><td colspan="4" style="height:30px">
 							<div style="text-align: center;">
-							<button class="btn btn-sm btn-primary " data-toggle="modal" data-target="#myModalDetails" style="height:40px">Close</button> 
+							<button class="btn btn-sm btn-primary " ng-click="dashctrl.dialogShown = false" style="height:40px">Close</button> 
 							</div>
 						</td></tr>
 					</table>
@@ -520,8 +531,10 @@
 				<td style="{{onesynthesis.SDEPROCESSSTATUS_STYLE}}">
 					{{onesynthesis.SDEPROCESSSTATUS}}</td>
 
-				<td style="{{onesynthesis.SDEPROCESSSTATUS_STYLE}}"><span ng-show="onesynthesis.SDEPROCESSDATECOMPLETE == 'Y'"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
-					{{onesynthesis.SDEPROCESSDATE_ST}}</td>
+				<td style="{{onesynthesis.SDEPROCESSSTATUS_STYLE}}">
+				
+					<span ng-show="onesynthesis.SDE_PROCESS_DATE_ST != null"  style="color:green" class="glyphicon glyphicon-ok"></span><br>
+						{{onesynthesis.SDE_PROCESS_DATE_ST}}</td>
 					
 
 
@@ -593,7 +606,7 @@
 						<td>{{onewelllist.WELL_FULL_NAME}}</td>
 						<td>{{onewelllist.BUSINESS_UNIT}}</td>
 						<td>{{onewelllist.FIELD_NAME}}</td>
-						<td><button ng-click="dashctrl.createWellList( onewelllist )" class="btn btn-primary">Update SDE Data</button></td>
+						<td><button ng-click="dashctrl.createWellList( onewelllist )" class="btn btn-info">Update SDE Data</button></td>
 					</tr>
 				</table>
 			</div>
@@ -607,13 +620,136 @@
 	<!--                                                                                  -->
 	<!--                                                                                  -->
 	<!-- ******************************************************************************** -->
-	<div class="col-lg-11" ng-show="dashctrl.isshowPaDashboard" style="margin-left:35px">
+	<div class="col-lg-11" ng-show="dashctrl.isshowPADashboard" style="margin-left:35px">
 		<h1>PA Dashboard</h1>
-		<button ng-click="dashctrl.showViewForm();" class="btn btn-lg btn-primary" 
-			style="font-size:15px;background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Well Tracker Dashboard</button><p>
+		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
+		<tr><td colspan="4"><h2>Search</h2></td></tr>
+		<tr>
+			<td>UWI:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteruwi"></td>
+			<td>Well Full Name:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterwellfullname"></td>
+		</tr>
+		<tr>
+			<td>SDE Number:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filtersdenumber"></td>
+			<td>Business Unit:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterbusinessunit"></td>
+		</tr>
+		<tr>
+			<td>SDE Originator:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteroriginator"></td>
+			<td>Request type:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterrequesttype"></td>			
+		</tr>
+		<tr>
+			<td>Well Online Date Range</td></tr>
+		<tr>
+			<td>From date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedatefrom"></td>
+			<td>To date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedateto"></td>
+		</tr>
+
+		<td colspan="4"><center><button ng-click="dashctrl.searchPADashboard()" class="btn btn-primary">Search</button></center></td>
+		</tr>
+		</table>
 		
+			
+		
+		<span class="label label-success" >{{dashctrl.padashboard.message}}</span><br>
+		<span class="label label-danger" >{{dashctrl.padashboard.errormessage}}</span><br>
+			
+		<h2>Result</h2>
+		<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
+		<tr>
+			<th><span class="table-header">Date Receive</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.DATE_RECEIVE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">SDE Number</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.SDE_NUMBER" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">UWI</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.UWI" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Well Full Name</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.WELL_FULL_NAME" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Request Type</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_TYPE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Schedule Online Date</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.SCHEDULED_ONLINE_DATE" size="10" 
+							class="form-control filter-control"	
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Update Effective Date</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.UPDATE_EFFECTIVE_DATE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>			
+			<th><span class="table-header">Actual Online Date</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.ACTUAL_ONLINE_DATE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Request Status</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_STATUS" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Hold Clarification</span></th>
+			<th><span class="table-header">Do not Load</span></th>
+			<th><span class="table-header">Update EC</span></th>			
+			</tr>
+			<tbody  ng-repeat="onesynthesis in dashctrl.getPADashboardPage() track by $index">
+			<tr >
+			
+				<td>{{onesynthesis.DATE_RECEIVE_ST}}</td>			
+				<td>{{onesynthesis.SDE_NUMBER}}</td>
+				<td>{{onesynthesis.UWI}}</td>
+				<td>{{onesynthesis.WELL_FULL_NAME}}</td>
+				<td>{{onesynthesis.REQUEST_TYPE}}</td>
+				<td>{{onesynthesis.SCHEDULED_ONLINE_DATE_ST}}</td>
+				<td>{{onesynthesis.UPDATE_EFFECTIVE_DATE_ST}}</td>
+				<td>{{onesynthesis.ACTUAL_ONLINE_DATE_ST}}</td>
+				<td>{{onesynthesis.REQUEST_STATUS}}</td>
+				
+				<td><input type="checkbox" ng-model="onesynthesis.HOLD_CLARIFICATION" ng-change="dashctrl.checkPALine( onesynthesis, 'HOLD_CLARIFICATION')"</td>
+				<td><input type="checkbox" ng-model="onesynthesis.DO_NOT_LOAD" ng-change="dashctrl.checkPALine( onesynthesis, 'DO_NOT_LOAD')"></td>
+				<td><input type="checkbox" ng-model="onesynthesis.UPDATE_EC" ng-change="dashctrl.checkPALine( onesynthesis, 'UPDATE_EC') "></td>
+				</tr>
+			</table>
+			{{dashctrl.getPADashboardPage()}}
+			<button ng-click="dashctrl.submitPADashboard()" 
+			class = "btn btn-success">Submit</button>
 	</div>
 
+	
+		
+	<!-- ******************************************************************************** -->
+	<!--                                                                                  -->
+	<!--                Show properties                                                        -->
+	<!--                                                                                  -->
+	<!--                                                                                  -->
+	<!-- ******************************************************************************** -->
+<div class="col-lg-11" ng-show="dashctrl.isshowProperties" style="margin-left:35px">
+		<h1>Properties</h1>
+		
+		Update Sde URL : <input ng-model="dashctrl.properties.updatesdeurl" size="60"><p>
+			You can use the place holder { {UWI}}, { {WELL_FULL_NAME}}, { {BUSINESS_UNIT}}, { {FIELD_NAME}}<p>
+	
+	
+	
+		<button ng-click="dashctrl.setproperties();" class="btn btn-lg btn-primary" 
+			style="font-size:15px;background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Update properties</button><p>
+		<span class="label label-success">{{dashctrl.propertiesmessage}}</span>
+	</div>
+
+	
+	
 	<!-- end div controler -->	
 	</div>
 
