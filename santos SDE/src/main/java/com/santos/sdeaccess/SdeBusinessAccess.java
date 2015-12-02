@@ -26,6 +26,8 @@ import javax.sql.DataSource;
 
 import org.json.simple.JSONValue;
 
+import com.santos.toolbox.Toolbox;
+
 public class SdeBusinessAccess {
 
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
@@ -1482,6 +1484,13 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("r_area_numbers_by_field", "area_number", "area_name", "r_area_numbers_by_field", null));
         lists.add(new ListDefinition("r_genset_make_models", "energy_input_gj_hr", "engine_make_and_model", "r_genset_make_models", null));
         lists.add(new ListDefinition("ov_well_hole", "distinct op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null));
+
+        lists.add(new ListDefinition("r_well_group", "distinct value", "value", "r_form_data", "type = 'well_group'"));
+        lists.add(new ListDefinition("r_well_category", "value", "value", "r_form_data", "type='well_cat'"));
+        lists.add(new ListDefinition("r_gas_inlet", "value", "value", "r_form_data", "type='gas_inlet'"));
+        lists.add(new ListDefinition("r_wtr_dis", "value", "value", "r_form_data", "type='wtr_dis'"));
+        lists.add(new ListDefinition("r_well_lcyc", "value", "value", "r_form_data", "type='well_lcyc'"));
+        lists.add(new ListDefinition("r_well_opst", "value", "value", "r_form_data", "type='well_opst'"));
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list

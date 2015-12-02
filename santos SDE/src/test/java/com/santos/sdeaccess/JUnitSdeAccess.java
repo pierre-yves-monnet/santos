@@ -116,12 +116,11 @@ public class JUnitSdeAccess {
 
     }
 
-    //@Test
+    @Test
     public void testRList() {
         try
         {
             final WellListParameter listCasesParameter = new WellListParameter();
-
             listCasesParameter.allowDirectConnection = true;
             listCasesParameter.filterUWI = "34";
             listCasesParameter.filterWellFullName = "FULLNAME";
