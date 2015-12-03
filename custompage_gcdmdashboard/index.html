@@ -14,14 +14,14 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/animate.css" />
     <link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/bootstrap.min.css">
-	<link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/main.css">
+	<!--<link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/main.css">-->
 	<link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/style.css">
-<link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/ng-modal.css">
+<link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/ng-modal.css">
 
-	 <link rel="stylesheet" href="pageResource?page=custompage_SDEdashboard&location=style/santos.css">
-	<!-- comment this two lines to get back the BootStrap look and feel -->
+	 <link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/santos.css">
+	<!-- comment this two lines to get back the BootStrap look and feel 
 	<link rel="stylesheet" type="text/css" href="themeResource?theme=portal&amp;location=bonita.css">
- 	<link rel="stylesheet" type="text/css" href="themeResource?theme=portal&amp;location=bonita-skin.css">
+ 	<link rel="stylesheet" type="text/css" href="themeResource?theme=portal&amp;location=bonita-skin.css"> -->
 
 
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -65,57 +65,118 @@
 	<!--                                                                                  -->
 	<!-- ******************************************************************************** -->
 	<div ng-controller="GcdmControler as gcdmctrl">
-
+	<div class="container-fluid" >
+	<div class="row">
 		<!----  CONTROL -------->
-		<div class="left-accordion">
-			<!-- <legend class="text-primary"><span class="glyphicon glyphicon-th"></span>Control</legend> -->
-
-			<div class="section section_filters_panel filters_panel even primary_panel">
-				<div class="body">
-					<div class="section section_primary_filters even primary_filters">
-						<div class="body">
-							<a class="available current">Gas Composition</a>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showGasCompositionDefaults()">Defaults</a></td>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showGasCompositionMinimum()">Minimum</a></td>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showGasCompositionBlendsAlarm()">Blends Alarm</a></td>
-						</div>
-					</div>
-					<div class="section section_secondary_filters odd secondary_filters">
-						<div class="body">
-							<a class="available">Pressure</a>
-							<a class="unassigned" href="" ng-click="gcdmctrl.showallcases()" >Thresholds</a></td>
-						</div>
-					</div>
-					<div class="section section_secondary_filters odd secondary_filters">
-						<div class="body">
-							<a class="available">Reports Gas Composition</a>
-							<!-- <button id="refreshapp" class="btn btn-success btn-xs ng-hide" ng-click="gcdmctrl.refreshprocesses()"> -->
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showReportGasCompositionDefaults()">Defaults</a></td>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showReportGasCompositionMinimum()">Minimum</a></td>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showReportGasCompositionBlendsAlarm()">Blends Alarm</a></td>
-							<a class="available">Reports Pressure</a>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showReportPressure()">Thresholds</a></td>
-							
-						</div>
-					</div>
-					<div class="section section_secondary_filters odd secondary_filters">
-						<div class="body">
-							<a class="available">Admin</a>
-							<!-- <button id="refreshapp" class="btn btn-success btn-xs ng-hide" ng-click="gcdmctrl.refreshprocesses()"> -->
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showReportGasCompositionDefaults()">Users</a></td>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showReportGasCompositionMinimum()">Supply Chain points</a></td>
-							<a class="unassigned"  href="" ng-click="gcdmctrl.showReportGasCompositionBlendsAlarm()">Gas Components</a></td>
-						</div>						
-					</div>
-					<div class="section section_secondary_filters odd secondary_filters">
-						<div class="body">
-							<a class="available">Help</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
+		<div class="col-md-3">
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-folder-close">
+                            </span>Gas Composition</a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tbody><tr>
+                                    <td>
+                                        <span class="glyphicon glyphicon-pencil text-primary"></span><a href="" ng-click="gcdmctrl.showGasCompositionDefaults()">Defaults</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="glyphicon glyphicon-flash text-success"></span><a href="" ng-click="gcdmctrl.showGasCompositionMinimum()">Minimum</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="glyphicon glyphicon-file text-info"></span><a href="" ng-click="gcdmctrl.showGasCompositionBlendsAlarm()">Blends Alarm</a>
+                                    </td>
+                                </tr>                                
+                            </tbody></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><span class="glyphicon glyphicon-th">
+                            </span>Pressure</a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <table class="table">
+                                <tbody><tr>
+                                    <td>
+                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionDefaults()">Defaults</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionMinimum()">Minimum</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionBlendsAlarm()">Blends Alarm</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a>Reports Pressure</a>
+                                    </td>
+                                </tr>
+								 <tr>
+                                    <td>
+                                        <a href="" ng-click="gcdmctrl.showReportPressure()">Thresholds</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><span class="glyphicon glyphicon-user">
+                            </span>Admin</a>
+                        </h4>
+                    </div>
+                    <div id="collapseThree" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <table class="table">
+                                <tbody><tr>
+                                    <td>
+                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionDefaults()">Users</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionMinimum()">Supply Chain points</a> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionBlendsAlarm()">Gas Components</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><span class="glyphicon glyphicon-file">
+                            </span>Help</a>
+                        </h4>
+                    </div>                  
+                </div>
+            </div>
+        </div>
 
 		
 		<!-- ******************************************************************************** -->
@@ -124,7 +185,7 @@
 		<!--                                                                                  -->
 		<!--                                                                                  -->
 		<!-- ******************************************************************************** -->
-		<div class="col-lg-9" ng-show="gcdmctrl.isshowGasCompositionDefault" ng-disabled="gcdmctrl.isinprogress" style="margin-left:35px">
+		<div class="col-lg-9" ng-show="gcdmctrl.isshowGasCompositionDefault" ng-disabled="gcdmctrl.isinprogress">
 			<legend class="text-primary"><span class="glyphicon glyphicon-th"></span>Gas Composition Defaults</legend>
 
 			<span class="label label-success">{{gcdmctrl.message}}</span><br>
@@ -303,7 +364,8 @@
 				
 		</div>
 
-			
+		</div>
+		</div>		
 		<!-- ******************************************************************************** -->
 		<!--                                                                                  -->
 		<!--                Show Form				                                          -->
