@@ -44,7 +44,10 @@
 .voffset9 { margin-top: 150px; }
 
 
-.santosheadertable { 
+#santosheadertable { 
 	background-color: #538DD5; 
+}
+
+#santosheadertable   a { 
 	color: #FFFFFF 
 }
