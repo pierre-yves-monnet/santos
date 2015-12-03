@@ -448,7 +448,7 @@ appCommand.controller('DashboardControler',
 		var self=this;
 		var json= angular.toJson(this.padashboard.search, false);
 		console.log("Call URL PADashboard : "+url);
-		$http.get( '?page=custompage_SDEdashboard&action=getPADashboard&json='+json ) )
+		$http.get( '?page=custompage_SDEdashboard&action=getPADashboard&json='+json )
 			.then( function ( jsonResult ) {
 						self.padashboard.listdata = jsonResult.data.LISTPADASHBOARD	
 						self.padashboard.message= jsonResult.data.MESSAGE;

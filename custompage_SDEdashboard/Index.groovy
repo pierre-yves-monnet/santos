@@ -63,7 +63,8 @@ import com.santos.sdeaccess.SdeAccess.ListCasesParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SystemSummaryParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.WellListParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
-
+import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
+ 
 import com.santos.sdeaccess.SdeAccess.StartprocessParameter;
   
 public class Index implements PageController {
@@ -153,8 +154,8 @@ public class Index implements PageController {
 			{
 				String json= request.getParameter("json");
 				logger.info("getPADashboard.groovy: ParamJson ="+json);
-				PADashBoardParameter PADashboardParameter = PADashBoardParameter.getFromJson(json);
-				result = SdeAccess.getListPADAshboard(PADashboardParameter, session, processAPI );
+				PADashboardParameter paDashboardParameter = PADashboardParameter.getFromJson(json);
+				result = SdeAccess.getListPADAshboard(paDashboardParameter, session, processAPI );
 				logger.info("PADashboardParameter:Result="+result.toString());
 		
 			}

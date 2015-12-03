@@ -56,16 +56,13 @@ public class SdeBusinessAccess {
         public static String BUSINESS_UNIT = "BUSINESS_UNIT";
 
         public static String SCHEDULED_ONLINE_DATE = "SCHEDULED_ONLINE_DATE";
-        public static String COMPLETE_SCHEDULED_ONLINE_DATE = TABLE_NAME + "." + SCHEDULED_ONLINE_DATE;
         public static String WELL_CODE = "WELL_CODE";
-        public static String COMPLETE_WELL_CODE = TABLE_NAME + "." + WELL_CODE;
         public static String SDE_NUMBER = "SDE_NUMBER";
-        public static String COMPLETE_SDE_NUMBER = TABLE_NAME + "." + SDE_NUMBER;
         public static String SDE_STATUS = "SDE_STATUS";
         public static String SUBMITTED = "SUBMITTED";
+        public static String INITIATED = "INITIATED";
         public static String WELL_TEMPLATE = "WELL_TEMPLATE";
         public static String WELL_CATEGORY_PRIMARY = "WELL_CATEGORY_PRIMARY";
-        public static String COMPLETE_SDE_STATUS = TABLE_NAME + "." + SDE_STATUS;
         public static String WELL_FULL_NAME = "WELL_FULL_NAME";
         public static String REQUEST_TYPE = "REQUEST_TYPE";
         public static String BWD_STATUS = "BWD_STATUS";
@@ -74,6 +71,11 @@ public class SdeBusinessAccess {
         public static String DATE_WELL_IDENTIFIED = "DATE_WELL_IDENTIFIED";
         public static String ACTUAL_ONLINE_DATE = "ACTUAL_ONLINE_DATE";
         public static String ON_HOLD = "ON_HOLD";
+
+        public static String getCompleteAttribut(final String attribut)
+        {
+            return TABLE_NAME + "." + attribut;
+        }
     }
 
     public final static class TableWellInfo {
@@ -303,7 +305,7 @@ public class SdeBusinessAccess {
                     + dashBoard.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName) + ", "
                     + wellInfo.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName)
                     + " where  " + wellInfo.getLinkToFather();
-            sqlRequest += " and " + TableDashBoard.COMPLETE_SDE_STATUS + " in (9) ";
+            sqlRequest += " and " + TableDashBoard.getCompleteAttribut(TableDashBoard.SDE_STATUS) + " in (9) ";
             if (sdeParameter.scheduledOnlineDateInFutur)
             {
                 // Only data with DASHBOARD.SCHEDULED_ONLINE_DATE - CURRENT_DATE >14 are display
@@ -311,7 +313,7 @@ public class SdeBusinessAccess {
 
                 listDataValue.add(new Date());
                 listDataValue.add(Integer.valueOf(sdeParameter.NumberOfDaysInAdvance));
-                sqlRequest += " and " + TableDashBoard.COMPLETE_SCHEDULED_ONLINE_DATE + " - ? > ?";
+                sqlRequest += " and " + TableDashBoard.getCompleteAttribut(TableDashBoard.SCHEDULED_ONLINE_DATE) + " - ? > ?";
 
             }
             if (sdeParameter.filterOnStatus2)
@@ -327,7 +329,7 @@ public class SdeBusinessAccess {
             }
             if (!sdeParameter.allDashboardRecords)
             {
-                sqlRequest += " and " + TableDashBoard.COMPLETE_WELL_CODE + " in (";
+                sqlRequest += " and " + TableDashBoard.getCompleteAttribut(TableDashBoard.WELL_CODE) + " in (";
 
                 int count = 0;
                 for (final SdeNumberStatus sdeNumberStatus : listSdeNumber)
@@ -1276,7 +1278,7 @@ public class SdeBusinessAccess {
             // set the initial pointer to the father
             sdeData.setPointerData(sdeData.data);
             stmt = con.createStatement();
-            final String filterSql = TableDashBoard.COMPLETE_SDE_NUMBER + " = " + sdeNumber
+            final String filterSql = TableDashBoard.getCompleteAttribut(TableDashBoard.SDE_NUMBER) + " = " + sdeNumber
                     + " and " + TableDashBoard.SDE_STATUS + " = " + sdeStatus;
             query(sdeData, getDataModel(),
                     null,
@@ -1355,8 +1357,8 @@ public class SdeBusinessAccess {
                 // ok, we have the ID, so it's clearly a modification. Delete is based on this ID
                 whereCondition = TableDashBoard.COMPLETE_DB_ID + " = " + dashboard.get(TableDashBoard.DB_ID);
             } else {
-                whereCondition = TableDashBoard.COMPLETE_SDE_NUMBER + " = " + dashboard.get(TableDashBoard.SDE_NUMBER)
-                        + " and " + TableDashBoard.COMPLETE_SDE_STATUS + " = " + dashboard.get(TableDashBoard.SDE_STATUS);
+                whereCondition = TableDashBoard.getCompleteAttribut(TableDashBoard.SDE_NUMBER) + " = " + dashboard.get(TableDashBoard.SDE_NUMBER)
+                        + " and " + TableDashBoard.getCompleteAttribut(TableDashBoard.SDE_STATUS) + " = " + dashboard.get(TableDashBoard.SDE_STATUS);
             }
 
             delete(sdeData, getDataModel(), null, whereCondition, con, sdeParameter);
@@ -1394,9 +1396,26 @@ public class SdeBusinessAccess {
      * @param sdeParameter
      * @return
      */
-    public SdeData updateSubmitStatus(final Long sdeNumber, final Long sdeStatus, final String submit, final SdeParameter sdeParameter)
+    public SdeData updateSubmitStatus(final Long sdeNumber, final Long sdeStatus, final String submitValue, final SdeParameter sdeParameter)
     {
-        logger.info("SdeBusinessAccess : updateSdeSantos --------------------------");
+        return updateAttribut(sdeNumber, sdeStatus, TableDashBoard.SUBMITTED, submitValue, sdeParameter);
+    }
+
+    public SdeData updateInitiatedStatus(final Long sdeNumber, final Long sdeStatus, final String initatedValue, final SdeParameter sdeParameter)
+    {
+        return updateAttribut(sdeNumber, sdeStatus, TableDashBoard.INITIATED, initatedValue, sdeParameter);
+    }
+
+    /**
+     * @param sdeNumber
+     * @param sdeStatus
+     * @param submit
+     * @param sdeParameter
+     * @return
+     */
+    public SdeData updateAttribut(final Long sdeNumber, final Long sdeStatus, final String colName, final String colValue, final SdeParameter sdeParameter)
+    {
+        // logger.info("SdeBusinessAccess : updateSdeSantos --------------------------");
         final SdeData sdeData = new SdeData();
         final Connection con = getConnection(sdeParameter.allowDirectConnection);
         if (con == null)
@@ -1412,9 +1431,11 @@ public class SdeBusinessAccess {
 
 
             final String sqlRequest = "update "+dashBoard.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName)
-                    +" set "+TableDashBoard.SUBMITTED+"='"+submit+"'"
+                    + " set " + colName + "='" + colValue + "'"
                     +" where "+TableDashBoard.SDE_NUMBER+" = '"+sdeNumber+"' and "+TableDashBoard.SDE_STATUS+"='"+sdeStatus+"'";
             final Statement stmt = con.createStatement();
+            logger.info("updateAttribut.updateSubmitStatus:SqlRequest [" + sqlRequest + "]");
+
             final int numberOfRow = stmt.executeUpdate(sqlRequest);
             con.commit();
             sdeData.status = numberOfRow==1 ? SdeDataStatus.OK : SdeDataStatus.NOTFOUND;
@@ -1435,11 +1456,10 @@ public class SdeBusinessAccess {
             e.printStackTrace(new PrintWriter(sw));
             final String exceptionDetails = sw.toString();
 
-            logger.severe("SdeBusinessAccess : writeSdeData End FAIL --------------------------" + e.toString() + " at " + exceptionDetails);
+            logger.severe("SdeBusinessAccess.updateAttribut End FAIL --------------------------" + e.toString() + " at " + exceptionDetails);
             return sdeData;
         }
     }
-
     /* ******************************************************************************** */
     /*                                                                                  */
     /* private operation On Database */
