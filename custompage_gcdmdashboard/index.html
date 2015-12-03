@@ -203,13 +203,13 @@
 			<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
 				<tr>
 					<th></th> <!-- check box -->
-					<th>
+					<th class="santosheadertable">					
 						<a href="#" ng-click="gcdmctrl.setorder( 'EFFECTIVEDATETIME_ST', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Effective Date/Time
 								<span ng-show="gcdmctrl.orderByField === 'EFFECTIVEDATETIME_ST' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
 								<span ng-show="gcdmctrl.orderByField === 'EFFECTIVEDATETIME_ST' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
 							</a>
-						<br>
+						<br>					
 					<!-- <input type="text" ng-model="gcdmctrl.filtercase.caseId" ></th> -->
 					</th>
 
@@ -333,27 +333,50 @@
 
 					<!-- style="border-width:3px; border-style:solid; border-color:black;"-->
 					<table class="table table-striped table-hover table-condensed table-bordered"  >
-						<tr ><td >Supply chain Point</td>
-							<td style="background-color: #ADADF5;text-align: center;">Mandatory</td>
-							<td style="background-color: #ADADF5;text-align: center;">Data</td>
-							<td style="background-color: #ADADF5;text-align: center;" ng-show="dashctrl.isshowdetailcontributor">Data Contributor<br>(for follow up)</td>
+						<tr>
+							<td>Supply chain Point</td>
+							<td><select type="text" ng-model="gcdmctrl.newGasComposition.SUPPLYCHAINPOINT"></td>
+						</tr>
+						<tr>
+							<td>Effective Data/Time</td>
+							<td><input type="date" ng-model="gcdmctrl.newGasComposition.EFFECTIVEDATETIME"></td>
+						</tr>
+						<tr>
+							<td colspan="2">
+							<button class="btn btn-info" ng-click="gcdmctrl.newGasCompositionSearch()">Search</button>
+							<button class="btn btn-success" ng-click="gcdmctrl.newGasCompositionSave()">Save</button>
+							<button class="btn btn-danger" ng-click="gcdmctrl.newGasCompositionDelete()">Delete</button>
+							</td>
 						</tr>
 					
-						<tr><td style="background-color: #ADADF5">Component</td>
-							<td>Update Values</td>
+						<tr>
+							<td>C1 (mole %)</td>
+							<td><input type="text" ng-model="gcdmctrl.newGasComposition.C1"></td>
 						</tr>
-						
-						<tr><td style="background-color: #ADADF5">C1 (mole %)</td>
-							<td><input type="number" ng-model="gcdmctrl.newGasComposition.C1"></td>
+						<tr>
+							<td>C2 (mole %)</td>
+							<td><input type="text" ng-model="gcdmctrl.newGasComposition.C2"></td>
 						</tr>
-							
-						
-						
-						<tr><td colspan="4" style="height:30px">
-							<div style="text-align: center;">
-							<button class="btn btn-sm btn-primary " ng-click="gcdmctrl.gasCompositionDialogShown = false" style="height:40px">Close</button> 
-							</div>
-						</td></tr>
+						<tr><td>C3 (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C3"></td></tr>
+						<tr><td>C4 (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C4"></td></tr>
+						<tr><td>C4i (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C4I"></td></tr>
+						<tr><td>C5 (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C5"></td></tr>
+						<tr><td>C5i (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C5i"></td></tr>
+						<tr><td>C5n (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C5n"></td></tr>
+						<tr><td>C6+ (ppm)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C6PLUS"></td></tr>
+						<tr><td>C8 (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.C8"></td></tr>
+						<tr><td>C9 (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.C9"></td></tr>
+						<tr><td>CO2 (model %)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.CO2"></td></tr>
+						<tr><td>H2S(ppm)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.H2S"></td></tr>
+						<tr><td>N2 (mole %)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.N2"></td></tr>
+						<tr><td>H2O (mg/Sm3)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.H20"></td></tr>
+						<tr><td>TSU (ppm)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.TSU"></td></tr>
+						<tr><td>BEN (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.BEN"></td></tr>
+						<tr><td>CYC (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.CYC"></td></tr>
+						<tr><td>Specific Gravity</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.SPECIFICGRAVITY"></td></tr>
+						<tr><td>Heating Value (MJ/Sm3)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.HEATINGVALUE"></td></tr>
+
+
 					</table>
 
 			
