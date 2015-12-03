@@ -82,17 +82,17 @@
                             <table class="table table-bordered">
                                 <tbody><tr>
                                     <td>
-                                        <span class="glyphicon glyphicon-pencil text-primary"></span><a href="" ng-click="gcdmctrl.showGasCompositionDefaults()">Defaults</a>
+                                        <span class="glyphicon glyphicon-pencil text-primary"></span><a href="" ng-click="gcdmctrl.showGasComposition( 'Default' )">Defaults</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="glyphicon glyphicon-flash text-success"></span><a href="" ng-click="gcdmctrl.showGasCompositionMinimum()">Minimum</a>
+                                        <span class="glyphicon glyphicon-flash text-success"></span><a href="" ng-click="gcdmctrl.showGasComposition( 'Minimum' )">Minimum</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="glyphicon glyphicon-file text-info"></span><a href="" ng-click="gcdmctrl.showGasCompositionBlendsAlarm()">Blends Alarm</a>
+                                        <span class="glyphicon glyphicon-file text-info"></span><a href="" ng-click="gcdmctrl.showGasComposition( 'BlendAlarm')">Blends Alarm</a>
                                     </td>
                                 </tr>                                
                             </tbody></table>
@@ -111,17 +111,17 @@
                             <table class="table">
                                 <tbody><tr>
                                     <td>
-                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionDefaults()">Defaults</a>
+                                        <a href="" ng-click="gcdmctrl.showGasComposition( 'Default' )">Defaults</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionMinimum()">Minimum</a>
+                                        <a href="" ng-click="gcdmctrl.showGasComposition( 'Minimum' )">Minimum</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <a href="" ng-click="gcdmctrl.showReportGasCompositionBlendsAlarm()">Blends Alarm</a>
+                                        <a href="" ng-click="gcdmctrl.showGasComposition( 'BlendAlarm')">Blends Alarm</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -186,7 +186,7 @@
 		<!--                                                                                  -->
 		<!-- ******************************************************************************** -->
 		<div class="col-lg-9" ng-show="gcdmctrl.isshowGasCompositionDefault" ng-disabled="gcdmctrl.isinprogress">
-			<legend class="text-primary"><span class="glyphicon glyphicon-th"></span>Gas Composition Defaults</legend>
+			<legend class="text-primary"><span class="glyphicon glyphicon-th"></span>{{gcdmctrl.gasCompositionLegend}}</legend>
 
 			<span class="label label-success">{{gcdmctrl.message}}</span><br>
 			<span class="label label-danger">{{gcdmctrl.errormessage}}</span><br>
@@ -203,7 +203,7 @@
 			<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
 				<tr>
 					<th></th> <!-- check box -->
-					<th class="santosheadertable">					
+					<th id="santosheadertable">					
 						<a href="#" ng-click="gcdmctrl.setorder( 'EFFECTIVEDATETIME_ST', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Effective Date/Time
 								<span ng-show="gcdmctrl.orderByField === 'EFFECTIVEDATETIME_ST' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -213,7 +213,7 @@
 					<!-- <input type="text" ng-model="gcdmctrl.filtercase.caseId" ></th> -->
 					</th>
 
-					<th>						
+					<th id="santosheadertable">						
 						<a href="#" ng-click="gcdmctrl.setorder( 'SUPPLYCHAINEPOINT', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Supply Chain point
 								<span ng-show="gcdmctrl.orderByField === 'SUPPLYCHAINEPOINT' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -221,7 +221,7 @@
 							</a>
 						<br>
 					</th>
-					<th>						
+					<th id="santosheadertable">						
 						<a href="#" ng-click="gcdmctrl.setorder( 'SPECIFICGRAVITY', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Specific Gravity
 								<span ng-show="gcdmctrl.orderByField === 'SPECIFICGRAVITY' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -230,7 +230,7 @@
 						<br>
 					</th>
 
-					<th>						
+					<th id="santosheadertable">						
 						<a href="#" ng-click="gcdmctrl.setorder( 'HEATINGVALUE', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Heating Value
 								<span ng-show="gcdmctrl.orderByField === 'HEATINGVALUE' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -240,7 +240,7 @@
 					</th>
 
 					
-					<th>						
+					<th id="santosheadertable">						
 						<a href="#" ng-click="gcdmctrl.setorder( 'METHANEC1', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Methane C1
 								<span ng-show="gcdmctrl.orderByField === 'METHANEC1' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -249,7 +249,7 @@
 						<br>
 					</th>
 	
-					<th>
+					<th id="santosheadertable">
 						<a href="#" ng-click="gcdmctrl.setorder( 'ETHANEC2', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Ethane C2
 								<span ng-show="gcdmctrl.orderByField === 'ETHANEC2' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -257,7 +257,7 @@
 							</a>
 						<br>
 					</th>
-					<th>
+					<th id="santosheadertable">
 						<a href="#" ng-click="gcdmctrl.setorder( 'PROPANEC3', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Propane C3
 								<span ng-show="gcdmctrl.orderByField === 'PROPANEC3' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -266,7 +266,7 @@
 						<br>
 					</th>
 				
-					<th>						
+					<th id="santosheadertable">						
 						<a href="#" ng-click="gcdmctrl.setorder( 'IBUTANEC4I', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							I-Butane C4i
 								<span ng-show="gcdmctrl.orderByField === 'IBUTANEC4I' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -274,7 +274,7 @@
 							</a>
 						<br>
 					</th>
-					<th>						
+					<th id="santosheadertable">						
 						<a href="#" ng-click="gcdmctrl.setorder( 'NBUTANEC4N', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							N-Butane C4n
 								<span ng-show="gcdmctrl.orderByField === 'NBUTANEC4N' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -282,7 +282,7 @@
 							</a>
 						<br>
 					</th>
-					<th>						
+					<th id="santosheadertable">						
 						<a href="#" ng-click="gcdmctrl.setorder( 'BUTANEC4', ! gcdmctrl.reverseSort)" style="text-decoration:none">
 							Butane C4
 								<span ng-show="gcdmctrl.orderByField === 'BUTANEC4' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
@@ -335,7 +335,10 @@
 					<table class="table table-striped table-hover table-condensed table-bordered"  >
 						<tr>
 							<td>Supply chain Point</td>
-							<td><select type="text" ng-model="gcdmctrl.newGasComposition.SUPPLYCHAINPOINT"></td>
+							<td><select ng-model="gcdmctrl.newGasComposition.SUPPLYCHAINPOINT" >
+									<option ng-repeat="option in gcdmctrl.getGasCompositionListSuplychain()" value="{{option.id}}">{{option.name}}</option>
+								</select>
+							</td>
 						</tr>
 						<tr>
 							<td>Effective Data/Time</td>

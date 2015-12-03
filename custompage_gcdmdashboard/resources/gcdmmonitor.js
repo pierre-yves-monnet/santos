@@ -43,17 +43,22 @@ appCommand.controller('GcdmControler',
 	
 	this.gasCompositionDialogShown=false;
 	this.listgascomposition=[];
-	this.showGasCompositionDefaults = function( )
+	this.gasCompositionListSuplychain=[];
+	this.showGasComposition = function( typeOfGasComposition )
 	{
+		this.gasCompositionLegend = "Gas Composition "+typeOfGasComposition;
 		this.resetview();
 		this.isshowGasCompositionDefault=true;
 		var self=this;
-		$http.get( '?page=custompage_gcdmdashboard&action=showgascomposition' )
+		var param = { "type" : typeOfGasComposition};
+		var json = angular.toJson(param, false);
+		$http.get( '?page=custompage_gcdmdashboard&action=showgascomposition&json='+json )
 				.then( function ( jsonResult ) {
 
-					self.listgascomposition 				= jsonResult.data.LISTGASCOMPOSITION;
+					self.listgascomposition 			= jsonResult.data.LISTGASCOMPOSITION;
 					self.message						= jsonResult.data.MESSAGE;
 					self.errormessage					= jsonResult.data.ERRORMESSAGE;
+					self.gasCompositionListSuplychain   = jsonResult.data.LISTSUPPLYCHAIN;
 					self.setorder( 'SUPPLYCHAINEPOINT', false);
 					console.log('get all default '+angular.toJson(self.listshowdefault ));
 				},
@@ -62,21 +67,15 @@ appCommand.controller('GcdmControler',
 				});
 	}
 	
-	this.showGasCompositionDefaults();
+	this.showGasComposition( "Defaults" );
 	
 	this.gasCompositionAdd = function () {
 		this.gasCompositionDialogShown = true;
 		}
 	
-	this.showGasCompositionMinimum = function() {
-		resetview();
-		alert("Not yet implemented");
-	}
-		
-	this.showGasCompositionBlendsAlarm= function() {
-		resetview();
-		alert("Not yet implemented");
-	}
+	this.getGasCompositionListSuplychain = function() {
+		return this.gasCompositionListSuplychain;
+		}
 
 
 	this.casepagenumber=1;
