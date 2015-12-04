@@ -164,6 +164,7 @@ appCommand.controller('DashboardControler',
 			var post = { "processvariables" : {"ctrSdeNumber_integer" : oneTask.sdenumber, "ctrSdeStatus_integer":oneTask.sdestatus},
 							"processname":"SDEdemo", 
 							"waitfirsttask":true, 
+							"assigntasktouser": true,
 							"timetowaitinms":"2000" };
 			var json= angular.toJson(post, false);
 			this.errormessage="";
@@ -182,20 +183,9 @@ appCommand.controller('DashboardControler',
 						var taskId				= jsonResult.taskid;
 						self.message			= jsonResult.message;
 						if (caseId!=null) {
-							self.message= self.message+"; Access the task...";
-							// assign the taskId
-							var assigndata = {"assigned_id" : self.userid  };
-							$http.put( '../API/bpm/humanTask/'+taskId )
-								.success( function ( jsonResult ) {		
-									self.message= "Display the task...";
-																		// alert("Case "+caseId+" is started - taskId="+taskId)
-									self.showtaskform( processName, processVersion, taskName, caseId, taskId);
-								})
-								.error( function ( data ) {
-									self.errormessage	= "The task can't be assign to you:" +angular.toJson(data);
-									self.message= "";
-									alert("the task can't be assign to you "+angular.toJson(data));
-								});
+							self.message= "Display the task...";
+								// alert("Case "+caseId+" is started - taskId="+taskId)
+							self.showtaskform( processName, processVersion, taskName, caseId, taskId);
 						}
 						// self.isshowcases=false;
 					})
