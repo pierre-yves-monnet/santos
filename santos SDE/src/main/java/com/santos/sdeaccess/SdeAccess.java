@@ -194,9 +194,10 @@ public class SdeAccess {
                 setResultFromDatabase(caseMap, sdeInfo);
                 //  final Integer sdeStatus = Toolbox.getInteger(sdeInfo.get(TableDashBoard.SDE_STATUS), null);
                 final String submited = (String) sdeInfo.get(TableDashBoard.SUBMITTED);
+                final String initiated = (String) sdeInfo.get(TableDashBoard.INITIATED);
 
                 // before : sdeStatus != null && (sdeStatus.intValue() == 0 || sdeStatus.intValue() == 9)) {
-                if (!"Y".equals(submited)) {
+                if (!"Y".equals(initiated)) {
                     // #41 : we can initiate ONLY
                     // Initiate SDE Request is possible only if Schedule_online_Date – SYSDATE < 2 months
                     // (in the future OK, in the past 2 month not. Example : we are the 10 November, only November and October is OK)
@@ -787,6 +788,7 @@ public class SdeAccess {
             }
 
             startprocessParameter.waitFirstTask = Toolbox.getBoolean(jsonHash.get("waitfirsttask"), false);
+            startprocessParameter.waitFirstTask = Toolbox.getBoolean(jsonHash.get("assigntasktouser"), false);
             startprocessParameter.timeToWaitInMs = Toolbox.getInteger(jsonHash.get("timetowaitinms"), 2000);
 
             return startprocessParameter;
