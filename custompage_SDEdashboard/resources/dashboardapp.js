@@ -35,15 +35,15 @@ appCommand.controller('DashboardControler',
 						{"title":"", "id":"buttons", "size":"0","ctrl":"button" },
 						];
 
-	this.scheduledOnlineDateInFutur=true;
+	this.scheduledOnlineDateInFutur=false;
 	this.casemaxresult = 100;
 	this.listcases=[ ];
 	this.filtercase={};
 	this.sourceformurl="";
 	this.detailHistoryDataContributorEABU = { "sdenumber": "EABU",
 												"ScheduledOnlineDate": "",
-												"WellCode" : "Operations Geology Technical Assistant" ,
-												"WellFullName" : "Operations Geology Technical Assistant",
+												"WellCode" : "" ,
+												"WellFullName" : "",
 												"FieldName" : "Operations Geology Technical Assistant",
 												"PermitSurface" : "GIS Officer",
 												"PermitBottomHole" : "GIS Officer",
@@ -58,8 +58,8 @@ appCommand.controller('DashboardControler',
 	this.detailHistoryDataContributorGLNG = { 
 		"sdenumber": "GLNG",
 		"ScheduledOnlineDate": "",
-		"WellCode" : "TA subsurface gp - potentionally - tanya - Marivic will email",
-			"WellFullName" : "TA subsurface gp - potentionally - tanya - Marivic will email - see dbMap",
+		"WellCode" : "",
+			"WellFullName" : "",
 			"WellAlias": "Field Development Planning Team Leader (for the relevant field)",
 			"FieldName" : "Production Data team",
 			"AreaNumber" : "Production Data team",
@@ -77,7 +77,7 @@ appCommand.controller('DashboardControler',
 
 								};
 	this.detailHistoryDataContributor={};
-	this.isshowdetailcontributor=false;
+	this.isshowdetailcontributor=true;
 	
 	this.init = function() {
 		var self=this;
@@ -394,6 +394,7 @@ appCommand.controller('DashboardControler',
 		var self=this;
 		var json= angular.toJson(this.systemSummary.search, false);
 		console.log("Call Server to get list of cases");
+		
 		$http.get( '?page=custompage_SDEdashboard&action=getListSystemSummary&json='+json )
 				.then( function ( jsonResult ) {
 					// console.log('searchSystemSummary: Sucess is '+angular.toJson(jsonResult.data ));
@@ -445,14 +446,15 @@ appCommand.controller('DashboardControler',
 	this.padashboard.listdata = [];
 	
 	this.searchPADashboard = function() {
-		var self=this;
-		var json= angular.toJson(this.padashboard.search, false);
-		console.log("Call URL PADashboard : "+url);
+		var self=this;		 
+		var json= angular.toJson(this.padashboard.search, false);		 
+		console.log("Call URL PADashboard : "+json);
+				 
 		$http.get( '?page=custompage_SDEdashboard&action=getPADashboard&json='+json )
-			.then( function ( jsonResult ) {
+			.then( function ( jsonResult ) {			
 						self.padashboard.listdata = jsonResult.data.LISTPADASHBOARD	
 						self.padashboard.message= jsonResult.data.MESSAGE;
-						self.padashboard.errormessage= jsonResult.data.ERRORMESSAGE;
+						self.padashboard.errormessage= jsonResult.data.ERRORMESSAGE;	
 					},
 					function ( jsonResult ) {
 						self.padashboard.errormessage	= "Error during get"+jsonResult.status;
@@ -463,16 +465,18 @@ appCommand.controller('DashboardControler',
 	
 	
 	this.getPADashboardPage = function() {
+	
+	
 	// console.log("---- getSystemSummaryPage : start list["+angular.toJson(this.systemSummary.listsde )+"]");
 		if (this.padashboard.listdata==null)
-		{
+		{		
 			this.padashboard.listdata=[];
 			return this.padashboard.listdata;
 		}
 		if (this.padashboard.listdata.length ==0)
 		{
 			return this.padashboard.listdata;
-		}		
+		}				
 		var begin = ((this.padashboard.pagenumber - 1) * this.padashboard.sdeperpage);
 		var end = begin + this.padashboard.sdeperpage;
 		this.padashboard.listdata = $filter('orderBy')(this.padashboard.listdata, this.padashboard.orderByField, this.padashboard.reversesort);
@@ -487,7 +491,7 @@ appCommand.controller('DashboardControler',
 	this.checkPALine = function( oneSynthesis, checkBoxName) {
 		if (oneSynthesis[ checkBoxName ]==true) {
 			// uncheck the another checkbox
-			oneSynthesis["HOLD_CLARIFICATION"] = false;
+			oneSynthesis["ON_HOLD"] = false;
 			oneSynthesis["DO_NOT_LOAD"] = false;
 			oneSynthesis["UPDATE_EC"] = false;
 			oneSynthesis[ checkBoxName ] = true;
@@ -496,7 +500,23 @@ appCommand.controller('DashboardControler',
 		
 	}
 	this.submitPADashboard = function() {
+	
+	var self=this;		 
+		var json= angular.toJson(this.padashboard.listdata, false);	
+	
+	$http.get( '?page=custompage_SDEdashboard&action=setPADashboard&json='+json )
+			.then( function ( jsonResult ) {			
+						self.padashboard.listdata = jsonResult.data.LISTPADASHBOARD	
+						self.padashboard.message= jsonResult.data.MESSAGE;
+						self.padashboard.errormessage= jsonResult.data.ERRORMESSAGE;							
+					},
+					function ( jsonResult ) {
+						self.padashboard.errormessage	= "Error during get"+jsonResult.status;
+						self.padashboard.message= "";
+						alert("Error during the request "+angular.toJson(jsonResult));
+					});
 	};
+	
 	
 	// --------------------------------------------------------------------------
 	//
@@ -505,6 +525,7 @@ appCommand.controller('DashboardControler',
 	// --------------------------------------------------------------------------
 	this.properties ={};
 	this.properties.updatesdeurl="";
+	this.properties.debug=false;
 	this.setproperties = function() 
 	{
 		this.propertiesmessage="Processing...";

@@ -122,13 +122,13 @@
 		<div class="row voffset2">
 			<div class="col-md-6">
 				<form class="form-inline">
-					<div class="form-group">
+					<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
 						<!-- @Lionel the label is not visible ??-->
 						<label class="sr-only" for="maximumCaseRetrieve">Maximum cases retrieved</label>
 						<input type="text" class="form-control form-control-sm" id="maximumCaseRetrieve" placeholder="maximumCaseRetrieve"
 							ng-model="dashctrl.casemaxresult">
 					</div>
-					<div class="checkbox">
+					<div class="checkbox" ng-show="dashctrl.properties.debug=='true'">
 						<label>
 							<input type="checkbox" ng-model="dashctrl.scheduledOnlineDateInFutur"> Only new Well
 						</label>
@@ -189,7 +189,7 @@
 										</div>
 								</div>
 								<div ng-show="headerlabel.ctrl == 'date'">
-									{{onetask[headerlabel.id] | date:'yyyy-MM-dd' }}
+									{{onetask[headerlabel.id] | date:'dd-MM-yyyy' }}
 								</div>
 								<div ng-show="headerlabel.ctrl == 'semaphore'">
 									<button ng-click="dashctrl.showDetails( onetask )" title="Click here to see the details of the line" data-toggle="modal" data-target="#myModalDetails">
@@ -232,7 +232,7 @@
 		<modal-dialog show='dashctrl.dialogShown' dialog-title='Details' width='75%' height='80%'>
 			<div class="modal-content" width='100%' height='100%'> 
 
-					<input type="checkbox" ng-model="dashctrl.isshowdetailcontributor"/>&nbsp;Show Contributor<br>
+					<!--input type="checkbox" ng-model="dashctrl.isshowdetailcontributor"/>&nbsp;Show Contributor<br-->
 					<!-- style="border-width:3px; border-style:solid; border-color:black;"-->
 					<table class="table table-striped table-hover table-condensed table-bordered"  >
 						<tr ><td >Basic Well Information</td>
@@ -241,20 +241,20 @@
 							<td style="background-color: #ADADF5;text-align: center;" ng-show="dashctrl.isshowdetailcontributor">Data Contributor<br>(for follow up)</td>
 						</tr>
 					
-						<tr><td style="background-color: #ADADF5">Sde Number</td>
+						<tr ng-show="dashctrl.properties.debug=='true'"><td style="background-color: #ADADF5">Sde Number</td>
 							<td></td>
 							<td>{{dashctrl.detailHistory.sdenumber}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor"{{dashctrl.detailHistoryDataContributor.sdenumber}}</td>
 						</tr>
 						
-						<tr><td style="background-color: #ADADF5">Request Status</td>
+						<tr ng-show="dashctrl.properties.debug=='true'"><td style="background-color: #ADADF5">Request Status</td>
 							<td></td>
 							<td>{{dashctrl.detailHistory.sdestatus}}</td>
 						</tr>
 							
 						<tr><td style="background-color: #ADADF5">Scheduled Online Date</td>
 							<td style="text-align: center;">Y</td>
-							<td>{{dashctrl.detailHistory.ScheduledOnlineDate  | date:'yyyy-MM-dd'}}</td>
+							<td>{{dashctrl.detailHistory.ScheduledOnlineDate  | date:'dd-MM-yyyy'}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.ScheduledOnlineDate}}</td>
 						</tr>
 						
@@ -281,13 +281,13 @@
 
 						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
 							<td style="background-color: #ADADF5">Area Number:</td>
-							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.AreaNumber}}</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.AreaNumber}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.AreaNumber}}</td>
 						</tr>
 						
 						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
 							<td style="background-color: #ADADF5">Well Category (Primary):</td>
-							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.WellCategoryPrimary}}</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.WellCategoryPrimary}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCategoryPrimary}}</td>
 						</tr>
 						
@@ -647,15 +647,15 @@
 		</tr>
 		</table>
 		
-			
-		
+		<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
 		<span class="label label-success" >{{dashctrl.padashboard.message}}</span><br>
+		</div>
 		<span class="label label-danger" >{{dashctrl.padashboard.errormessage}}</span><br>
 			
 		<h2>Result</h2>
 		<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
 		<tr>
-			<th><span class="table-header">Date Receive</span>
+			<th><span class="table-header">Date Received</span>
 				<input type="text" ng-model="dashctrl.padashboard.filter.DATE_RECEIVE" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
@@ -677,6 +677,11 @@
 			</th>
 			<th><span class="table-header">Request Type</span>
 				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_TYPE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Business Unit</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.BUSINESS_UNIT" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
@@ -702,27 +707,29 @@
 			</th>
 			<th><span class="table-header">Hold Clarification</span></th>
 			<th><span class="table-header">Do not Load</span></th>
-			<th><span class="table-header">Update EC</span></th>			
+			<th><span class="table-header">Update EC</span><blockquote/></th>			
 			</tr>
 			<tbody  ng-repeat="onesynthesis in dashctrl.getPADashboardPage() track by $index">
-			<tr >
-			
-				<td>{{onesynthesis.DATE_RECEIVE_ST}}</td>			
-				<td>{{onesynthesis.SDE_NUMBER}}</td>
-				<td>{{onesynthesis.UWI}}</td>
+				<tr>			
+					<td>{{onesynthesis.DATE_WELL_IDENTIFIED | date:'dd-MM-yyyy'}}</td>				
+					<td><a ng-href="#" ng-click="dashctrl.accessTaskButton( null, onesynthesis)">{{onesynthesis.SDE_NUMBER}}</a></td>
+					<td>{{onesynthesis.WELL_CODE}}</td>
 				<td>{{onesynthesis.WELL_FULL_NAME}}</td>
 				<td>{{onesynthesis.REQUEST_TYPE}}</td>
-				<td>{{onesynthesis.SCHEDULED_ONLINE_DATE_ST}}</td>
-				<td>{{onesynthesis.UPDATE_EFFECTIVE_DATE_ST}}</td>
-				<td>{{onesynthesis.ACTUAL_ONLINE_DATE_ST}}</td>
+					<td>{{onesynthesis.BUSINESS_UNIT}}</td>					
+					<td>{{onesynthesis.SCHEDULED_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
+					<td>{{onesynthesis.MODIFIED_DATE | date:'dd-MM-yyyy'}}</td>
+					<td>{{onesynthesis.ACTUAL_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
 				<td>{{onesynthesis.REQUEST_STATUS}}</td>
 				
-				<td><input type="checkbox" ng-model="onesynthesis.HOLD_CLARIFICATION" ng-change="dashctrl.checkPALine( onesynthesis, 'HOLD_CLARIFICATION')"</td>
+					<td><input type="checkbox" ng-model="onesynthesis.ON_HOLD" ng-change="dashctrl.checkPALine( onesynthesis, 'ON_HOLD')"</td>
 				<td><input type="checkbox" ng-model="onesynthesis.DO_NOT_LOAD" ng-change="dashctrl.checkPALine( onesynthesis, 'DO_NOT_LOAD')"></td>
 				<td><input type="checkbox" ng-model="onesynthesis.UPDATE_EC" ng-change="dashctrl.checkPALine( onesynthesis, 'UPDATE_EC') "></td>
 				</tr>
 			</table>
+			<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
 			{{dashctrl.getPADashboardPage()}}
+			</div>
 			<button ng-click="dashctrl.submitPADashboard()" 
 			class = "btn btn-success">Submit</button>
 	</div>
@@ -740,6 +747,9 @@
 		
 		Update Sde URL : <input ng-model="dashctrl.properties.updatesdeurl" size="60"><p>
 			You can use the place holder { {UWI}}, { {WELL_FULL_NAME}}, { {BUSINESS_UNIT}}, { {FIELD_NAME}}<p>
+	
+	
+		Debug : <input ng-model="dashctrl.properties.debug" size="60"><p>
 	
 	
 	

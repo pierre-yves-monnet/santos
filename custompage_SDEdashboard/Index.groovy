@@ -61,10 +61,11 @@ import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
 import com.santos.sdeaccess.SdeAccess;
 import com.santos.sdeaccess.SdeAccess.ListCasesParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SystemSummaryParameter;
+import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
+import com.santos.sdeaccess.SdeBusinessAccess.PADashboardResult;
 import com.santos.sdeaccess.SdeBusinessAccess.WellListParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
-import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
- 
+
 import com.santos.sdeaccess.SdeAccess.StartprocessParameter;
   
 public class Index implements PageController {
@@ -150,14 +151,20 @@ public class Index implements PageController {
 				result = SdeAccess.getListSystemSummary(systemSummaryParameter, session, processAPI );
 				logger.info("getListCasesForSdeDashboard:Result="+result.toString());
 			}	
+			else if ("setPADashboard".equals(action))
+			{
+				String json= request.getParameter("json");
+				logger.info("setPADashboard.groovy: ParamJson ="+json);				
+				result = PADashboardResult.setPADashboard(json);				 
+				logger.info("setPADashboard:Result="+result.toString());	
+			}
 			else if ("getPADashboard".equals(action))
 			{
 				String json= request.getParameter("json");
-				logger.info("getPADashboard.groovy: ParamJson ="+json);
+				logger.info("getPADashboard.groovy: ParamJson ="+json);				
 				PADashboardParameter paDashboardParameter = PADashboardParameter.getFromJson(json);
 				result = SdeAccess.getListPADAshboard(paDashboardParameter, session, processAPI );
-				logger.info("PADashboardParameter:Result="+result.toString());
-		
+				logger.info("paDashboardParameter:Result="+result.toString());		
 			}
 			else if ("getproperties".equals(action))
 			{
