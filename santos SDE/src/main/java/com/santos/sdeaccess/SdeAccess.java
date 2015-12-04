@@ -45,12 +45,17 @@ import com.santos.sdeaccess.SdeBusinessAccess.SdeResult;
 import com.santos.sdeaccess.SdeBusinessAccess.SystemSummaryParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.TableDashBoard;
 import com.santos.sdeaccess.SdeBusinessAccess.WellListParameter;
+
 import com.santos.toolbox.Toolbox;
 
 public class SdeAccess {
 
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
+    
+    static{
+        logger.info("SDE Access Java version 0.0.6");    
+    } 
 
     /* ******************************************************************************** */
     /*                                                                                  */
@@ -198,7 +203,7 @@ public class SdeAccess {
                 // before : sdeStatus != null && (sdeStatus.intValue() == 0 || sdeStatus.intValue() == 9)) {
                 if (!"Y".equals(submited)) {
                     // #41 : we can initiate ONLY
-                    // Initiate SDE Request is possible only if Schedule_online_Date – SYSDATE < 2 months
+                    // Initiate SDE Request is possible only if Schedule_online_Date ? SYSDATE < 2 months
                     // (in the future OK, in the past 2 month not. Example : we are the 10 November, only November and October is OK)
                     final Date scheduledOnlineDate = Toolbox.getDate(sdeInfo.get(TableDashBoard.SCHEDULED_ONLINE_DATE), null);
 
@@ -208,6 +213,9 @@ public class SdeAccess {
                     } else {
                         caseMap.put("initiateSdeRequest", false);
                     }
+                    // TODO 
+                    // overwrite logic of hiding initateButton
+                    // this is not needed for WellTrackerDashboard 
                     // rule #51 : if the status is RED, the initiateSdeRequest is not available
                     final String status = Toolbox.getString(sdeInfo.get(SdeBusinessAccess.TableDashBoard.BWD_STATUS), null);
                     if ("RED".equals(status)) {
@@ -256,6 +264,7 @@ public class SdeAccess {
                     }
                 }
                 // search if a caseId exist for this one
+                
 
                 caseMap.put("sdenumber", sdeInfo.get(TableDashBoard.SDE_NUMBER));
                 caseMap.put("sdestatus", sdeInfo.get(TableDashBoard.SDE_STATUS));
@@ -910,6 +919,7 @@ public class SdeAccess {
     /*                                                                                  */
     /* ******************************************************************************** */
 
+
     public static Map<String, Object> getListPADAshboard(final PADashboardParameter paDashboardParameter, final APISession session, final ProcessAPI processAPI)
     {
         final Map<String, Object> result = new HashMap<String, Object>();
@@ -917,7 +927,7 @@ public class SdeAccess {
         // calculate the list
         final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
 
-        final SdeResult sdeResult = sdeBusinessAccess.getListPaDashboard(paDashboardParameter);
+        final SdeResult sdeResult = sdeBusinessAccess.getListPaDashboard(paDashboardParameter,  session,   processAPI);
 
         result.put("LISTPADASHBOARD", sdeResult.listRecords);
         result.put("MESSAGE", sdeResult.status);
@@ -1091,6 +1101,12 @@ public class SdeAccess {
         caseMap.put("DateWellIdentified", sdeInfo.get(SdeBusinessAccess.TableDashBoard.DATE_WELL_IDENTIFIED));
 
         caseMap.put("FieldName", sdeInfo.get(SdeBusinessAccess.TableWellInfo.FIELD_NAME));
+        
+        caseMap.put("WellCategoryPrimary", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_PRIMARY));
+        caseMap.put("WellCategorySecondary1", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_SECONDARY_1));
+        caseMap.put("WellCategorySecondary2", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_SECONDARY_2));
+        caseMap.put("WellCategorySecondary3", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_SECONDARY_3));
+      
         caseMap.put("PermitSurface", sdeInfo.get(SdeBusinessAccess.TableWellInfo.PERMIT_SURFACE));
         caseMap.put("PermitBottomHole", sdeInfo.get(SdeBusinessAccess.TableWellInfo.PERMIT_BOTTOM_HOLE));
         caseMap.put("PadName", sdeInfo.get(SdeBusinessAccess.TableWellInfo.PAD_NAME));
@@ -1128,7 +1144,7 @@ public class SdeAccess {
      * @param processAPI
      * @return
      */
-    private static ProcessDefinition getProcessDefinition(final String processName, final String processVersion, final ProcessAPI processAPI)
+    public static ProcessDefinition getProcessDefinition(final String processName, final String processVersion, final ProcessAPI processAPI)
     {
         ProcessDefinition processDefinition = null;
         Long processDefinitionId = null;
@@ -1153,7 +1169,7 @@ public class SdeAccess {
     /**
      * @return
      */
-    private static Map<String, HumanTaskInstance> getAllTasksForUser(final Long processDefinitionId, final Long userId, final ProcessAPI processAPI)
+    public static Map<String, HumanTaskInstance> getAllTasksForUser(final Long processDefinitionId, final Long userId, final ProcessAPI processAPI)
     {
 
         final Map<String, HumanTaskInstance> mapSdeNumberToTask = new HashMap<String, HumanTaskInstance>();
@@ -1194,4 +1210,46 @@ public class SdeAccess {
         }
         return mapSdeNumberToTask;
     }
+    
+    public static Map<String, HumanTaskInstance> getAllTasksForAllUsers(final Long processDefinitionId, final Long userId, final ProcessAPI processAPI)
+    {
+
+        final Map<String, HumanTaskInstance> mapSdeNumberToTask = new HashMap<String, HumanTaskInstance>();
+
+        Long processInstanceId = null;
+        try
+        {
+
+            final SearchOptionsBuilder searchOptionBuilder = new SearchOptionsBuilder(0, 10000);
+            if (processDefinitionId != null) {
+                searchOptionBuilder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
+            }
+            
+            final SearchResult<HumanTaskInstance> searchResultPendingHumanTask = processAPI.searchHumanTaskInstances(searchOptionBuilder.done());
+            
+            final List<HumanTaskInstance> allTasks = new ArrayList<HumanTaskInstance>();
+            allTasks.addAll(searchResultPendingHumanTask.getResult());
+            
+            for (final HumanTaskInstance humanTask : allTasks)
+            {
+                processInstanceId = humanTask.getParentProcessInstanceId();
+                final ProcessInstance processInstance = processAPI.getProcessInstance(processInstanceId);
+                final Long sdeNumber = Toolbox.getLong(processInstance.getStringIndex1(), null);
+                final Long sdeStatus = Toolbox.getLong(processInstance.getStringIndex2(), null);
+                if (sdeNumber != null && sdeStatus != null)
+                {
+                    final SdeNumberStatus sdeNumberStatus = SdeNumberStatus.getInstance(sdeNumber.longValue(), sdeStatus.longValue());
+                    mapSdeNumberToTask.put(sdeNumberStatus.getKey(), humanTask);
+                }
+            }
+        } catch (final Exception e)
+        {
+            logger.severe("Can't access human task and string index processDefinitionId[" + processDefinitionId + "] processInstanceId[" + processInstanceId
+                    + "] : "
+                    + e.toString());
+
+        }
+        return mapSdeNumberToTask;
+    }
 }
+

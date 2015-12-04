@@ -18,11 +18,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import org.bonitasoft.engine.api.ProcessAPI;
+import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.session.APISession;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import org.json.simple.JSONValue;
 
@@ -99,6 +105,11 @@ public class SdeBusinessAccess {
         public static String COMPLETE_WELL_CODE = TABLE_NAME + "." + WELL_CODE;
 
         public static String AREA_NUMBER = "AREA_NUMBER";
+        
+        public static String WELL_CATEGORY_PRIMARY = "WELL_CATEGORY_PRIMARY";        
+        public static String WELL_CATEGORY_SECONDARY_1 = "WELL_CATEGORY_SECONDARY_1";
+        public static String WELL_CATEGORY_SECONDARY_2 = "WELL_CATEGORY_SECONDARY_2";
+        public static String WELL_CATEGORY_SECONDARY_3 = "WELL_CATEGORY_SECONDARY_3";
 
         public static String FIELD_NAME = "FIELD_NAME";
         public static String PERMIT_SURFACE = "PERMIT_SURFACE";
@@ -247,7 +258,7 @@ public class SdeBusinessAccess {
         public boolean manageTableWellDashBoard = true;
         public boolean manageTableWellinfo = true;
 
-        public boolean tableNameUpperCase = true;
+        public boolean tableNameUpperCase = false;
         public boolean enquoteTableName = false;
         public boolean colNameUpperCase = false;
 
@@ -689,18 +700,19 @@ public class SdeBusinessAccess {
     /* ******************************************************************************** */
     public static class PADashboardParameter {
 
-        public String filterUWI = null;
-        public String filterWellFullName;
-        public String filterSDENumber;
-        public String filterBusinessUnit;
-        public String filterSdeOriginator;
-        public String filterDateRangeFrom;
-        public String filterDateRangeTo;
+        public String filteruwi = null;
+        public String filterwellfullname = null;
+        public String filtersdenumber = null;
+        public String filterbusinessunit = null;
+        public String filteroriginator = null;
+        public String filterrequesttype = null;
+        public String filteronlinedatefrom = null;
+        public String filteronlinedateto = null;
 
         public boolean allowDirectConnection = false;
 
         public int maxRecord = 100;
-        public String orderByField = TableRWellList.UWI;
+        public String orderByField = TableDashBoard.SDE_NUMBER;
         public boolean formatDateJson = true;
 
         public boolean tableNameUpperCase = false;
@@ -713,25 +725,180 @@ public class SdeBusinessAccess {
             if (jsonSt == null) {
                 return paDashboardParameter;
             }
+            
             final Map<String, Object> jsonHash = (Map<String, Object>) JSONValue.parse(jsonSt);
             if (jsonHash == null) {
                 return paDashboardParameter;
             }
 
-            paDashboardParameter.filterUWI = (String) jsonHash.get("filteruwi");
-            paDashboardParameter.filterWellFullName = (String) jsonHash.get("filterwellfullname");
-            paDashboardParameter.filterSDENumber = (String) jsonHash.get("filtersdenumber");
-            paDashboardParameter.filterBusinessUnit = (String) jsonHash.get("filterbusinessunit");
-            paDashboardParameter.filterSdeOriginator = (String) jsonHash.get("filteroriginator");
-            paDashboardParameter.filterDateRangeFrom = (String) jsonHash.get("filteronlinedatefrom");
-            paDashboardParameter.filterDateRangeTo = (String) jsonHash.get("filteronlinedateto");
+            paDashboardParameter.filteruwi = (String) jsonHash.get("filteruwi");
+            paDashboardParameter.filterwellfullname = (String) jsonHash.get("filterwellfullname");
+            paDashboardParameter.filtersdenumber = (String) jsonHash.get("filtersdenumber");
+            paDashboardParameter.filterbusinessunit = (String) jsonHash.get("filterbusinessunit");
+            paDashboardParameter.filteroriginator = (String) jsonHash.get("filteroriginator");
+            paDashboardParameter.filterrequesttype = (String) jsonHash.get("filterrequesttype");
+            paDashboardParameter.filteronlinedatefrom = (String) jsonHash.get("filteronlinedatefrom");
+            paDashboardParameter.filteronlinedateto = (String) jsonHash.get("filteronlinedateto"); 
+            
             return paDashboardParameter;
         }
 
     };
+    
+    public static class PADashboardResult{
+        
+       
+        
+        public boolean allowDirectConnection = false;
 
+        public boolean formatDateJson = true;
+
+        public boolean tableNameUpperCase = false;
+        public boolean enquoteTableName = false;
+        public boolean colNameUpperCase = false;
+
+        public static Map<String, Object> setPADashboard(final String jsonSt) {
+
+            String SDE_NUMBER = null;
+            String ON_HOLD = null;
+            String DO_NOT_LOAD = null;
+            String UPDATE_EC = null;
+            
+            final SdeResult sdeResult = new SdeResult();
+            final HashMap<String, Object> result = new HashMap<String, Object>();
+            
+            sdeResult.listRecords = null;
+            String sqlRequest = "";
+            Connection con = null;
+            
+            try {
+                
+                sdeResult.status = "OK";
+                if (jsonSt == null) {
+                    sdeResult.errorstatus = "No input parameter has been received.";
+                    sdeResult.status = "Fail";
+                    return result;
+                }
+
+                JSONArray jsonNArray = (JSONArray) JSONValue.parse(jsonSt);
+                if (jsonNArray == null) {
+                    sdeResult.errorstatus = "Could not parse JSON parameter: "  + jsonSt;
+                    sdeResult.status = "Fail";
+                    return result;
+                }
+
+                con = new SdeBusinessAccess().getConnection(false);
+//                con = main.Main.sdeConnection();
+                
+                if (con == null) {
+                    sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
+                    sdeResult.errorstatus = "Can't access the datasource [" + DATASOURCE_NAME + "]";
+                    
+                    return result;
+                }
+
+                for (int idx = 0; idx < jsonNArray.size(); idx++) {
+                    
+                    JSONObject o = (JSONObject) jsonNArray.get(idx);
+
+                    SDE_NUMBER = o.get("SDE_NUMBER") != null ? o.get("SDE_NUMBER").toString() : null;
+
+                    ON_HOLD = convertBooleanToBit((Boolean) o.get("ON_HOLD"));
+                    DO_NOT_LOAD = convertBooleanToBit((Boolean) o.get("DO_NOT_LOAD"));
+                    UPDATE_EC = convertBooleanToBit((Boolean) o.get("UPDATE_EC"));
+
+                    String sqlON_HOLD = "";
+                    if (ON_HOLD != null) {
+                        if (ON_HOLD.equalsIgnoreCase("Y")) {
+                            sqlON_HOLD = " ON_HOLD='" + ON_HOLD + "', EC_STATUS='R' , EC_DATE=SYSDATE, ";
+                        } else {
+                            sqlON_HOLD = " ON_HOLD='" + ON_HOLD + "', ";
+                        }
+                    } else {
+                        sqlON_HOLD = " ON_HOLD=null,";
+                    }
+                    String sqlDO_NOT_LOAD = "";
+                    if (DO_NOT_LOAD != null) {
+                        if (DO_NOT_LOAD.equalsIgnoreCase("Y")) {
+                            sqlDO_NOT_LOAD = " DO_NOT_LOAD='" + DO_NOT_LOAD + "', EC_STATUS='M' , EC_DATE=SYSDATE, ";
+                        } else {
+                            sqlDO_NOT_LOAD = " DO_NOT_LOAD='" + DO_NOT_LOAD + "', ";
+                        }
+                    } else {
+                        sqlDO_NOT_LOAD = " DO_NOT_LOAD=null,";
+                    }
+                    String sqlUPDATE_EC = "";
+                    if (UPDATE_EC != null) {
+                        sqlUPDATE_EC = " UPDATE_EC='" + UPDATE_EC + "'";
+                    } else {
+                        sqlUPDATE_EC = " UPDATE_EC=null";
+                    }
+
+                    sqlRequest = "update SDE.DASHBOARD set "                           
+                            + sqlON_HOLD + ""
+                            + sqlDO_NOT_LOAD + ""
+                            + sqlUPDATE_EC + ""
+                            + " where SDE_STATUS=9 and " + TableDashBoard.SDE_NUMBER + " = '" + SDE_NUMBER + "'";
+                    
+                    final Statement stmt = con.prepareStatement(jsonSt);
+                    stmt.executeUpdate(sqlRequest);
+                    stmt.close();
+                    }                   
+                   
+                con.commit();
+                con.close();
+                
+                
+            } catch (Exception e) {
+                final StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                logger.severe("Error during the sql request [" + sqlRequest + "] call " + e.toString() + " at " + sw.toString());
+                sdeResult.status = "Fail";
+                sdeResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";     
+                 
+            } finally {
+                if (con != null) {
+                    con = null; // finish to use the connection
+                }
+            }
+            result.put("STATUS", sdeResult.status);
+            result.put("ERRORSTATUS", sdeResult.errorstatus);
+            return result;
+        }
+
+    };
+    
+    private static String convertBooleanToBit(Boolean input) {
+
+        if (input == null) {
+            return null;
+        }
+        if (input) {
+            return "Y";
+        }
+        if (input == false) {
+            return "N";
+        }
+        return null;
+    }
+    
+    private Boolean convertBitToBoolean(String input) {
+
+        if (input == null) {
+            return null;
+        }
+        if (input.equalsIgnoreCase("Y")) {
+            return true;
+        }
+        if (input.equalsIgnoreCase("N")) {
+            return false;
+        }
+        return null;
+
+    }
+    
     /** get the list of the PADashboard */
-    public SdeResult getListPaDashboard(final PADashboardParameter paDashboardParameter)
+    public SdeResult getListPaDashboard(final PADashboardParameter paDashboardParameter, final APISession session, final ProcessAPI processAPI)
     {
         final SdeResult sdeResult = new SdeResult();
         Connection con = getConnection(paDashboardParameter.allowDirectConnection);
@@ -742,13 +909,112 @@ public class SdeBusinessAccess {
 
             return sdeResult;
         }
-        final String sqlRequest = "";
+        String sqlRequest = "";
         try
         {
 
             // SANTOS : list to get all informations
+            
+            final DataModel dataModel = new DataModel(TableDashBoard.TABLE_NAME, null, null, null, false, null);
 
-            sdeResult.listRecords.add(new HashMap<String, Object>());
+            // old version
+            sqlRequest = "select * from "
+                    + dataModel.getTableName(paDashboardParameter.tableNameUpperCase, paDashboardParameter.enquoteTableName)
+                    + " where  1=1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and (SDE_STATUS in (1) and SDE_NUMBER not in (select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8)) ";
+            
+            // new version to pickup status = 9
+            sqlRequest =    "select * from DASHBOARD where  SDE_STATUS <> 0 and SDE_STATUS <> 1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and " +
+                                "SDE_NUMBER in (" +
+                                    "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
+                                        "minus " +
+                                    "select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8) ";
+                            
+            
+            if (paDashboardParameter.filtersdenumber != null && paDashboardParameter.filtersdenumber.trim().length() > 0) {
+                sqlRequest += " and " + "SDE_NUMBER" + " = '" + paDashboardParameter.filtersdenumber + "'";
+            }
+            if (paDashboardParameter.filteruwi != null && paDashboardParameter.filteruwi.trim().length() > 0) {
+                sqlRequest += " and " + "WELL_CODE" + " = '" + paDashboardParameter.filteruwi + "'";
+            }
+            if (paDashboardParameter.filterbusinessunit != null && paDashboardParameter.filterbusinessunit.trim().length() > 0) {
+                sqlRequest += " and " + "BUSINESS_UNIT" + " = '" + paDashboardParameter.filterbusinessunit + "'";
+            }
+            if (paDashboardParameter.filterwellfullname != null && paDashboardParameter.filterwellfullname.trim().length() > 0) {
+                sqlRequest += " and " + "WELL_FULL_NAME" + " = '" + paDashboardParameter.filterwellfullname + "'";
+            }
+            if (paDashboardParameter.filterrequesttype != null && paDashboardParameter.filterrequesttype.trim().length() > 0) {
+                sqlRequest += " and " + "REQUEST_TYPE" + " = '" + paDashboardParameter.filterrequesttype + "'";
+            }
+            if (paDashboardParameter.filteroriginator != null && paDashboardParameter.filteroriginator.trim().length() > 0) {
+                sqlRequest += " and " + "ASSIGNED_RO" + " = '" + paDashboardParameter.filteroriginator + "'";
+            }
+            if (paDashboardParameter.filteronlinedatefrom != null && paDashboardParameter.filteronlinedatefrom.trim().length() > 0){
+                sqlRequest += " and " + "(to_date(Scheduled_Online_Date,'DD-MM-YY') >= to_date('"+paDashboardParameter.filteronlinedatefrom+"','DD-MM-YY'))";
+            }
+            if (paDashboardParameter.filteronlinedateto != null && paDashboardParameter.filteronlinedateto.trim().length() > 0){
+                sqlRequest += " and " + "(to_date(Scheduled_Online_Date,'DD-MM-YY') <= to_date('"+paDashboardParameter.filteronlinedateto+"','DD-MM-YY'))";
+            } 
+			
+            sqlRequest += " order by " + paDashboardParameter.orderByField + " desc ";
+            
+            logger.info("Execute the request [" + sqlRequest + "] parameters");
+            final Statement stmt = con.createStatement();
+            int numberOfRecords = 0;
+            final ResultSet rs = stmt.executeQuery(sqlRequest);
+            final ResultSetMetaData rsmd = rs.getMetaData();
+
+            while (rs.next() && numberOfRecords < paDashboardParameter.maxRecord)
+            {
+                numberOfRecords++;
+                final HashMap<String, Object> record = new HashMap<String, Object>();
+
+                final int count = rsmd.getColumnCount();
+                for (int i = 1; i <= count; i++)
+                {
+                    String key = rsmd.getColumnName(i);
+                    key = key.toUpperCase();
+                    
+                    
+                    if (rs.getObject(i) instanceof Date && paDashboardParameter.formatDateJson) {
+                        final Date date = rs.getDate(i);
+                        record.put(key, date.getTime());
+                        continue;
+                    }
+                    if (key.equalsIgnoreCase("ON_HOLD")) {
+                        System.out.println(key);
+                        record.put(key, convertBitToBoolean(rs.getString(i)));
+                        continue;
+                    }                    
+                    if (key.equalsIgnoreCase("DO_NOT_LOAD")) {
+                        System.out.println(key);
+                        record.put(key, convertBitToBoolean(rs.getString(i)));
+                        continue;
+                    }
+                    if (key.equalsIgnoreCase("UPDATE_EC")) {
+                        System.out.println(key);
+                        record.put(key, convertBitToBoolean(rs.getString(i)));
+                        continue;
+                    }
+
+                    record.put(key, rs.getObject(i));
+                }
+                
+                SdePAProcessInfo.getHumanTasksForSDENumber(record, new SdeAccess.ListCasesParameter(), session, TenantAPIAccessor.getProcessAPI(session), TenantAPIAccessor.getIdentityAPI(session));
+                
+                if((boolean)record.get("KEEP_RECORD")==true){
+                    logger.info("SdeBusinessAccess.getListPaDashboard :: Read  [" + record + "]");                
+                    sdeResult.listRecords.add( record );
+                }
+                else{
+                    logger.info("SdeBusinessAccess.getListPaDashboard :: Skipping record [" + record + "]");                
+                }                		
+
+            }
+            sdeResult.status = "OK";
+
+            stmt.close();
+
+           // sdeResult.listRecords.add(new HashMap<String, Object>());
 
             sdeResult.status = "OK";
 
@@ -1450,6 +1716,11 @@ public class SdeBusinessAccess {
             final int numberOfRow = stmt.executeUpdate(sqlRequest);
             con.commit();
             sdeData.status = numberOfRow==1 ? SdeDataStatus.OK : SdeDataStatus.NOTFOUND;
+            
+            // TODO
+            // Replicate trigger logic here
+            // Clone final Long sdeNumber and set sde_status to 
+           
             return sdeData;
 
         }
@@ -1515,13 +1786,16 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("r_area_numbers_by_field", "area_number", "area_name", "r_area_numbers_by_field", null));
         lists.add(new ListDefinition("r_genset_make_models", "energy_input_gj_hr", "engine_make_and_model", "r_genset_make_models", null));
         lists.add(new ListDefinition("ov_well_hole", "distinct op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null));
-
+		lists.add(new ListDefinition("r_prod_alloc_tag_glng", "rpa_id", "ec_template_code", "r_prod_alloc_tag", "well_template = 'GLNG'"));        
         lists.add(new ListDefinition("r_well_group", "distinct value", "value", "r_form_data", "type = 'well_group'"));
         lists.add(new ListDefinition("r_well_category", "value", "value", "r_form_data", "type='well_cat'"));
         lists.add(new ListDefinition("r_gas_inlet", "value", "value", "r_form_data", "type='gas_inlet'"));
         lists.add(new ListDefinition("r_wtr_dis", "value", "value", "r_form_data", "type='wtr_dis'"));
         lists.add(new ListDefinition("r_well_lcyc", "value", "value", "r_form_data", "type='well_lcyc'"));
         lists.add(new ListDefinition("r_well_opst", "value", "value", "r_form_data", "type='well_opst'"));
+		// --------- artificial_lift_glng
+        lists.add(new ListDefinition("artificial_lift_glng", "value", "value", "r_form_data", "type='artsys_code' and business_unit='GLNG'"));
+
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list
@@ -1567,14 +1841,20 @@ public class SdeBusinessAccess {
         final String requestType = sdeData.getAttributRequestType();
         if ("GLNG".equals(businessUnit) && "NEW".equals(requestType))
         {
-            logDetails += "Well_type: businessUnit=GLNG & requestType=NEW : select type='wtype' and business_unit='GLNG' and value!= 'Other';";
-            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit='GLNG' and value!= 'Other'"));
+            logDetails += "Well_type: businessUnit=GLNG & requestType=NEW : select type='wtype' and business_unit='GLNG';";
+            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit='GLNG'"));
 
         }
         else if ("GLNG".equals(businessUnit) && "UPDATE".equals(requestType))
         {
-            logDetails += "Well_type: businessUnit=GLNG & requestType=UPDATE : select type='wtype' and business_unit='GLNG';";
-            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit='GLNG' "));
+            logDetails += "Well_type: businessUnit=GLNG & requestType=UPDATE : select type='wtype' and business_unit like 'GLNG%';";
+            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit like 'GLNG%'"));
+
+        }
+        else if ("EABU".equals(businessUnit))
+        {
+            logDetails += "Well_type: businessUnit=EABU : select value from SDE.r_form_data where type='ec_wtype' and business_unit='EABU'";
+            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='ec_wtype' and business_unit='EABU'"));
 
         }
         else
