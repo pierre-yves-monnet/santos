@@ -247,7 +247,7 @@ public class SdeBusinessAccess {
         public boolean manageTableWellDashBoard = true;
         public boolean manageTableWellinfo = true;
 
-        public boolean tableNameUpperCase = false;
+        public boolean tableNameUpperCase = true;
         public boolean enquoteTableName = false;
         public boolean colNameUpperCase = false;
 
@@ -1249,7 +1249,7 @@ public class SdeBusinessAccess {
      */
     public SdeData readSdeData(final Long sdeNumber, final Long sdeStatus, final SdeParameter sdeParameter)
     {
-        logger.info("SdeBusinessAccess : readSdeData--------------------------");
+        logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.readSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]");
         final SdeData sdeData = new SdeData();
         Connection con = getConnection(sdeParameter.allowDirectConnection);
         if (con == null)
@@ -1267,7 +1267,7 @@ public class SdeBusinessAccess {
                 };
             }
 
-            logger.severe("SdeBusinessAccess : readSdeData END No access to datasource--------------------------");
+            logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.readSdeData : END No access to datasource--------------------------");
 
             return sdeData;
         }
@@ -1308,7 +1308,8 @@ public class SdeBusinessAccess {
             final StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
 
-            logger.severe("Error during the sql request call " + e.toString() + " at " + sw.toString());
+            logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.readSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "] Error Sqlrequest call "
+                    + e.toString() + " at " + sw.toString());
             sdeData.status = SdeDataStatus.SQLERROR;
             sdeData.statusdetails = "Error " + e.toString() + " at " + sw.toString();
 
@@ -1317,7 +1318,8 @@ public class SdeBusinessAccess {
             final StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
 
-            logger.severe("Error during Read " + e.toString() + " at " + sw.toString());
+            logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.readSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "] Error during Read "
+                    + e.toString() + " at " + sw.toString());
             sdeData.status = SdeDataStatus.ERROR;
             sdeData.statusdetails = "Error " + e.toString() + " at " + sw.toString();
         }
@@ -1326,7 +1328,8 @@ public class SdeBusinessAccess {
             con = null; // finish to use the connection
         }
 
-        logger.info("SdeBusinessAccess : readSdeData END -------------------------- status:[" + sdeData.status + "] details[" + sdeData.statusdetails + "]");
+        logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.readSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "] END  status:[" + sdeData.status
+                + "] details[" + sdeData.statusdetails + "]");
         return sdeData;
     }
 
@@ -1337,17 +1340,24 @@ public class SdeBusinessAccess {
      */
     public SdeData writeSdeData(final SdeData sdeData, final SdeParameter sdeParameter)
     {
-        logger.info("SdeBusinessAccess : writeSdeData--------------------------");
         final Connection con = getConnection(sdeParameter.allowDirectConnection);
         if (con == null)
         {
             sdeData.status = SdeDataStatus.NODATABASECONNECTION;
             sdeData.statusdetails = "Can't access the datasource [" + DATASOURCE_NAME + "]";
-            logger.severe("SdeBusinessAccess : writeSdeData END No access to datasource--------------------------");
+            logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData : No Datasource [" + DATASOURCE_NAME + "]");
         }
+        Object sdeNumber = null;
+        Object sdeStatus = null;
+
         try
         {
+
             final HashMap<String, Object> dashboard = (HashMap<String, Object>) sdeData.data.get("dashboard");
+
+            sdeNumber = dashboard.get(TableDashBoard.SDE_NUMBER);
+            sdeStatus = dashboard.get(TableDashBoard.SDE_STATUS);
+            logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]");
 
             sdeData.setPointerData(dashboard);
 
@@ -1367,7 +1377,7 @@ public class SdeBusinessAccess {
             sdeData.setPointerData(dashboard);
             insert(sdeData, getDataModel(), con, sdeParameter);
             con.commit();
-            logger.info("SdeBusinessAccess : writeSdeData End OK--------------------------");
+            logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData : OK SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]");
             sdeData.status = SdeDataStatus.OK;
             return sdeData;
         } catch (final Exception e)
@@ -1384,7 +1394,8 @@ public class SdeBusinessAccess {
             e.printStackTrace(new PrintWriter(sw));
             final String exceptionDetails = sw.toString();
 
-            logger.severe("SdeBusinessAccess : writeSdeData End FAIL --------------------------" + e.toString() + " at " + exceptionDetails);
+            logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]" + e.toString() + " at "
+                    + exceptionDetails);
             return sdeData;
         }
     }
@@ -1874,11 +1885,15 @@ public class SdeBusinessAccess {
         {
             listColumns.add(columns.getString("COLUMN_NAME").toUpperCase());
             final int dataType = columns.getInt("DATA_TYPE");
-            traceParameters.append("COL[" + columns.getString("COLUMN_NAME").toUpperCase() + "] Datatype[" + dataType + "]");
+            traceParameters.append("COL[" + columns.getString("COLUMN_NAME").toUpperCase() + "]datatype[" + dataType + "], ");
 
             if (dataType == java.sql.Types.DATE) {
                 listColumnsDate.add(columns.getString("COLUMN_NAME").toUpperCase());
             }
+            if (dataType == java.sql.Types.TIMESTAMP) {
+                listColumnsDate.add(columns.getString("COLUMN_NAME").toUpperCase());
+            }
+
             if (dataType == java.sql.Types.LONGVARBINARY || dataType == java.sql.Types.LONGNVARCHAR || dataType == java.sql.Types.INTEGER
                     || dataType == java.sql.Types.BIGINT) {
                 listColumnsLong.add(columns.getString("COLUMN_NAME").toUpperCase());
@@ -1963,7 +1978,8 @@ public class SdeBusinessAccess {
         {
             // no field to save here ??
 
-            logger.severe("No field to save on model [" + dataModel.getSdeDataName() + "] parmeters[" + traceParameters + "]");
+            logger.severe("INSERT : NO FIELD on model [" + dataModel.getSdeDataName() + "] TableName["
+                    + dataModel.getTableName(sdeParameter.tableNameUpperCase, false) + "] parameters[" + traceParameters + "]");
             // don't try to save childs : if there are no data at this level.
             return;
 
