@@ -83,7 +83,7 @@ public class JUnitSdeAccess {
             final APISession apiSession = getLogin();
             final PADashboardParameter paDashboardParameter = new PADashboardParameter();
             paDashboardParameter.allowDirectConnection = true;
-            paDashboardParameter.filterUWI = "A";
+
 
             final Map<String, Object> result = SdeAccess.getListPADAshboard(paDashboardParameter, apiSession,
                     TenantAPIAccessor.getProcessAPI(apiSession));

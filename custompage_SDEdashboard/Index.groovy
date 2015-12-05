@@ -65,7 +65,7 @@ import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.PADashboardResult;
 import com.santos.sdeaccess.SdeBusinessAccess.WellListParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
-
+ 
 import com.santos.sdeaccess.SdeAccess.StartprocessParameter;
   
 public class Index implements PageController {
@@ -91,7 +91,7 @@ public class Index implements PageController {
 			logger.info("###################################### action is["+action+"] V4!");
 			if (action==null || action.length()==0 )
 			{
-				logger.severe("RUN Default !");
+				logger.info("RUN Default");
 				
 				runTheBonitaIndexDoGet( request, response,pageResourceProvider,pageContext);
 				return;
@@ -161,10 +161,11 @@ public class Index implements PageController {
 			else if ("getPADashboard".equals(action))
 			{
 				String json= request.getParameter("json");
-				logger.info("getPADashboard.groovy: ParamJson ="+json);				
+				logger.info("getPADashboard.groovy: ParamJson ="+json);
 				PADashboardParameter paDashboardParameter = PADashboardParameter.getFromJson(json);
 				result = SdeAccess.getListPADAshboard(paDashboardParameter, session, processAPI );
-				logger.info("paDashboardParameter:Result="+result.toString());		
+				logger.info("PADashboardParameter:Result="+result.toString());
+		
 			}
 			else if ("getproperties".equals(action))
 			{

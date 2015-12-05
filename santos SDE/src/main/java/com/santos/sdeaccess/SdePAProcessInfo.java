@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceSearchDescriptor;
@@ -32,12 +33,12 @@ public class SdePAProcessInfo {
 
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdePAProcessInfo");
 
-    public static Map<String, Object> getHumanTasksForSDENumber(HashMap<String, Object> record, final SdeAccess.ListCasesParameter listCasesParameter, final APISession apiSession,
+    public static Map<String, Object> getHumanTasksForSDENumber(final HashMap<String, Object> record, final SdeAccess.ListCasesParameter listCasesParameter, final APISession apiSession,
             final ProcessAPI processAPI,
             final IdentityAPI identityAPI) {
 
-        final Long SDE_NUMBER = (Long.valueOf(record.get("SDE_NUMBER").toString()));
-        final Long SDE_STATUS = Long.valueOf("1");
+        final Long SDE_NUMBER = Long.valueOf(record.get("SDE_NUMBER").toString());
+        final Long SDE_STATUS = Long.valueOf("9");
 
         record.put("KEEP_RECORD", false);
 
@@ -47,15 +48,18 @@ public class SdePAProcessInfo {
         final SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
 
         // Search the SDE Demo process
+        logger.info("SdePAProcessInfo.getHumanTasksForSDENumber : search [" + listCasesParameter.processName + "] version[" + listCasesParameter.processVersion
+                + "]");
         final ProcessDefinition processDefinition = SdeAccess.getProcessDefinition(listCasesParameter.processName, listCasesParameter.processVersion, processAPI);
+
         // to give access to the TASKID, then search all task available for the user. Then create a map of SDENUMBER/SDESTATUS -> TaskInstance
-        Map<String, HumanTaskInstance> mapSdeNumberToTask = SdeAccess.getAllTasksForAllUsers(processDefinition == null ? null : processDefinition.getId(),
+        final Map<String, HumanTaskInstance> mapSdeNumberToTask = SdeAccess.getAllTasksForAllUsers(processDefinition == null ? null : processDefinition.getId(),
                 apiSession.getUserId(), processAPI);
 
         // -------------- search in the database now
         final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
 
-        SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, listCasesParameter.maxResult);
+        final SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, listCasesParameter.maxResult);
         String traceinfo = "SdeAccess.getWellTrackerDashboardList:";
 
         final List<SdeBusinessAccess.SdeNumberStatus> listSdeNumber = new ArrayList<SdeBusinessAccess.SdeNumberStatus>();
@@ -129,7 +133,7 @@ public class SdePAProcessInfo {
                         final Long sdeStatus = Long.valueOf(processInstance.getStringIndex2() == null ? "1" : processInstance.getStringIndex2());
 
                         if (SDE_NUMBER.equals(sdeNumber)) {
-                            HumanTaskInstance humanTask = mapSdeNumberToTask.get(KEY.toString());
+                            final HumanTaskInstance humanTask = mapSdeNumberToTask.get(KEY.toString());
                             if (humanTask != null) {
                                 record.put("caseid", humanTask.getParentProcessInstanceId());
                                 record.put("taskid", humanTask.getId());
@@ -215,16 +219,16 @@ public class SdePAProcessInfo {
             }
 
             /*
-            
-            
-            
+
+
+
              var processName			= oneTask.processname;
              var processVersion		= oneTask.processversion;
              var taskName			= oneTask.taskName;
              var caseId				= oneTask.caseid;
              var taskId				= oneTask.taskid;
-            
-            
+
+
              */
             // call to complete by the business information
 //            if (listCasesParameter.completeWithBusinessData && listSdeNumber.size() > 0) {
@@ -239,20 +243,20 @@ public class SdePAProcessInfo {
 ////                traceinfo += "ListSource[" + listSdeNumber.size() + "] NumberResult[" + sdeResult.listSdeInformation.size() + "]";
 ////                for (final SdeBusinessAccess.SdeNumberStatus keySdeNumberStatus : sdeResult.listSdeInformation.keySet()) {
 ////                    final Map<String, Object> sdeInfo = sdeResult.listSdeInformation.get(keySdeNumberStatus);
-////                    
-////                    
+////
+////
 ////                    System.out.println("mapCasesBySdeNumberStatus.keySet()  "+mapCasesBySdeNumberStatus.keySet());
-////                    
+////
 ////                    System.out.println("keySdeNumberStatus " + keySdeNumberStatus);
-////                    
-////                    
+////
+////
 ////                    final HashMap<String, Object> caseMap = mapCasesBySdeNumberStatus.get(keySdeNumberStatus);
-////                    
-////                    
-////                    
+////
+////
+////
 ////                    if (caseMap == null) {
 ////                        // not normal !
-////                       
+////
 ////                        System.out.println("getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
 ////                        logger.severe("getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
 ////                        continue;
@@ -262,11 +266,11 @@ public class SdePAProcessInfo {
 ////                }
 //
 //            }
-            Boolean KEEP_RECORD = (Boolean) record.get("KEEP_RECORD");
+            final Boolean KEEP_RECORD = (Boolean) record.get("KEEP_RECORD");
 
             if (KEEP_RECORD) {
-                
-                String line
+
+                final String line
                         = "SDE_NUMBER = " + SDE_NUMBER + ""
                         + " [processname=" + record.get("processname") + "]"
                         + " [processversion=" + record.get("processversion") + "]"

@@ -28,10 +28,12 @@ public class GcdmAccess {
 
         final GcdmResult gcdmResult = gcdmBusinessAccess.getListGasComposition(gasCompositionParameter);
 
-        result.put("LISTGASCOMPOSITION", gcdmResult.listRecords);
+        result.put("LISTVALUES", gcdmResult.listValues);
+        result.put("LISTHEADERS", gcdmResult.listHeader);
         result.put("MESSAGE", gcdmResult.status);
         result.put("ERRORMESSAGE", gcdmResult.errorstatus);
         result.put("LISTSUPPLYCHAIN", gcdmResult.listsSelect.get("LISTSUPPLYCHAIN"));
+        result.put("LISTADDFIELDS", gcdmResult.listAddFields);
         return result;
     }
 }

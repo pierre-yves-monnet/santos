@@ -15,7 +15,7 @@ var appCommand = angular.module('gcdmmonitor', ['googlechart', 'ui.bootstrap','n
 
 // --------------------------------------------------------------------------
 //
-// Controler Ping
+// Controler GCDM
 //
 // --------------------------------------------------------------------------
 
@@ -41,9 +41,16 @@ appCommand.controller('GcdmControler',
 		this.isshowGasCompositionDefault=false;
 	};
 	
-	this.gasCompositionDialogShown=false;
-	this.listgascomposition=[];
-	this.gasCompositionListSuplychain=[];
+	this.gasComposition ={};
+	
+	this.gasComposition.AddMessageDate="";
+	this.gasComposition.DialogShown=false;
+	this.gasComposition.ListValues=[];
+	this.gasComposition.listHeaders=[];
+	this.gasComposition.ListSuplychain=[];
+	this.gasComposition.NewValueGasComposition={};
+	this.gasComposition.listAddFields=[];
+	
 	this.showGasComposition = function( typeOfGasComposition )
 	{
 		this.gasCompositionLegend = "Gas Composition "+typeOfGasComposition;
@@ -55,10 +62,12 @@ appCommand.controller('GcdmControler',
 		$http.get( '?page=custompage_gcdmdashboard&action=showgascomposition&json='+json )
 				.then( function ( jsonResult ) {
 
-					self.listgascomposition 			= jsonResult.data.LISTGASCOMPOSITION;
-					self.message						= jsonResult.data.MESSAGE;
-					self.errormessage					= jsonResult.data.ERRORMESSAGE;
-					self.gasCompositionListSuplychain   = jsonResult.data.LISTSUPPLYCHAIN;
+					self.gasComposition.ListValues 			= jsonResult.data.LISTVALUES;
+					self.gasComposition.Message				= jsonResult.data.MESSAGE;
+					self.gasComposition.ErrorMessage		= jsonResult.data.ERRORMESSAGE;
+					self.gasComposition.ListSuplychain   	= jsonResult.data.LISTSUPPLYCHAIN;
+					self.gasComposition.listHeaders			= jsonResult.data.LISTHEADERS;
+					self.gasComposition.listAddFields		= jsonResult.data.LISTADDFIELDS;
 					self.setorder( 'SUPPLYCHAINEPOINT', false);
 					console.log('get all default '+angular.toJson(self.listshowdefault ));
 				},
@@ -74,22 +83,43 @@ appCommand.controller('GcdmControler',
 		}
 	
 	this.getGasCompositionListSuplychain = function() {
-		return this.gasCompositionListSuplychain;
+		return this.gasComposition.ListSuplychain;
 		}
 
+	this.gasCompositionHeader=[];
+	this.getGasCompositionHeader = function () {
+		return this.gasComposition.listHeaders;
+	}
+	this.getGasCompositionAddFields = function() {
+		return this.gasComposition.listAddFields;
+	};
+	
+	this.checkRangeGasComposition = function ( header ) {
+		var message="";
+		if (header.minrange != null && this.gasComposition.NewValueGasComposition[ header.id ] < header.minrange) {
+			message="Out of range : must be more than "+header.minrange+";";
+		}
+		if (header.maxrange != null && this.gasComposition.NewValueGasComposition[ header.id ] > header.maxrange) {
+			message="Out of range : must be less than "+header.maxrange+";";
+		}
+		console.log("CheckRange : "+message+" range"+header.minrange+" < "+header.maxrange+" : "+this.gasComposition.NewValueGasComposition[ header.id ] );
 
+		this.gasComposition.NewValueGasComposition[ header.id +"_ERROR" ] = message;
+
+	}
+		
 	this.casepagenumber=1;
 	this.filtercase = { };
 	this.caseitemsperpage=10;
 	// this function is call at each display : on a filter, or on a order for example
-	this.getGasCompositionDefault = function()
+	this.getGasCompositionValue = function()
 	{
 		var begin = ((this.casepagenumber - 1) * this.caseitemsperpage);
 		var end = begin + this.caseitemsperpage;
 		
-		this.listgascomposition = $filter('orderBy')(this.listgascomposition, this.orderByField, this.reverseSort);
-		console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(this.listgascomposition));
-		var listgascompositionfiltered = $filter('filter') (this.listgascomposition, this.filtercase );
+		this.gasComposition.ListValues = $filter('orderBy')(this.gasComposition.ListValues, this.orderByField, this.reverseSort);
+		console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(this.gasComposition.ListValues));
+		var listgascompositionfiltered = $filter('filter') (this.gasComposition.ListValues, this.filtercase );
 		// console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(listcasesfiltered));
 		return listgascompositionfiltered.slice(begin, end);
 	}
@@ -115,6 +145,13 @@ appCommand.controller('GcdmControler',
 	};
 
 
+
+// --------------------------------------------------------------------------
+//
+// Task form
+//
+// --------------------------------------------------------------------------
+
 	this.showtaskform = function( processName, processVersion, taskName, caseId, taskId) {
 		this.formtitle = "Tasks "+caseId;
 		this.sourceformurl= '/bonita/portal/homepage?ui=form&locale=en&tenant=1#form=' + processName + '--' + processVersion + '--' + taskName +'$entry&task=' + taskId + '&mode=form&assignTask=true'
@@ -122,6 +159,13 @@ appCommand.controller('GcdmControler',
 		this.isshowcases=false;
 		this.isshowform=true;
 	};
+
+
+// --------------------------------------------------------------------------
+//
+// Order by
+//
+// --------------------------------------------------------------------------
 
 	this.orderByField='';
 	this.reverseSort=true;
@@ -132,6 +176,13 @@ appCommand.controller('GcdmControler',
 		console.log("Order : ["+this.orderByField+"] order="+this.reverseSort);
 	}
 
+
+
+// --------------------------------------------------------------------------
+//
+// Controler GCDM
+//
+// --------------------------------------------------------------------------
 
 	this.assignToUser = function()
 	{
@@ -184,6 +235,20 @@ appCommand.controller('GcdmControler',
 	}
 	
 
+	this.checkDateByTheDay = function ( dateUser ) {
+		// console.log("checkDateByTheDay "+dateUser);
+		this.errorMessage="";
+		var now = new Date();
+		if (dateUser !== null && dateUser < now) {
+			console.log("checkDateByTheDay ERROR "+dateUser);	
+			this.errorMessage="Date must be in the future";
+			
+		}
+		
+	}
+
+	
+	
 
 });
 

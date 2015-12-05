@@ -710,7 +710,7 @@
 			<th><span class="table-header">Update EC</span><blockquote/></th>			
 			</tr>
 			<tbody  ng-repeat="onesynthesis in dashctrl.getPADashboardPage() track by $index">
-				<tr>			
+			<tr >
 					<td>{{onesynthesis.DATE_WELL_IDENTIFIED | date:'dd-MM-yyyy'}}</td>				
 					<td><a ng-href="#" ng-click="dashctrl.accessTaskButton( null, onesynthesis)">{{onesynthesis.SDE_NUMBER}}</a></td>
 					<td>{{onesynthesis.WELL_CODE}}</td>

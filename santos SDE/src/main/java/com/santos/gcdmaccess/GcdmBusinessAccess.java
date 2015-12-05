@@ -34,10 +34,32 @@ public class GcdmBusinessAccess {
 
         public String status;
         public String errorstatus;
-        public List<Map<String, Object>> listRecords = new ArrayList<Map<String, Object>>();
+        public List<Map<String, Object>> listValues = new ArrayList<Map<String, Object>>();
         public Map<String, List<Map<String, Object>>> listsSelect = new HashMap<String, List<Map<String, Object>>>();
+        public List<Map<String, Object>> listHeader = new ArrayList<Map<String, Object>>();
+        public List<Map<String, Object>> listAddFields = new ArrayList<Map<String, Object>>();
 
+        public void addHeader(final String id, final String display) {
+            final HashMap<String, Object> oneheader = new HashMap<String, Object>();
+            oneheader.put("id", id);
+            oneheader.put("display", display);
+            listHeader.add(oneheader);
+        }
 
+        public void addAddField(final String id, final String display, final String typeofField, final Object minrange, final Object maxrange) {
+            final HashMap<String, Object> oneField = new HashMap<String, Object>();
+            oneField.put("id", id);
+            oneField.put("display", display);
+            oneField.put("typeoffield", typeofField);
+            if (minrange != null) {
+                oneField.put("minrange", minrange);
+            }
+            if (maxrange != null) {
+                oneField.put("maxrange", maxrange);
+            }
+
+            listAddFields.add(oneField);
+        }
 
 
     }
@@ -102,7 +124,7 @@ public class GcdmBusinessAccess {
 
             sqlRequest += " order by " + gasComposition.orderByField + " desc ";
 
-            gcdmResult.listRecords = executeRequest(con, sqlRequest, listRequestObject, gasComposition.maxRecord, gasComposition.formatDateJson);
+            gcdmResult.listValues = executeRequest(con, sqlRequest, listRequestObject, gasComposition.maxRecord, gasComposition.formatDateJson);
 
             // list Select
             final List<Map<String, Object>> listRecords = new ArrayList<Map<String, Object>>();
@@ -112,7 +134,40 @@ public class GcdmBusinessAccess {
             listRecords.add(option);
             gcdmResult.listsSelect.put("LISTSUPPLYCHAIN", listRecords);
 
-            gcdmResult.status = gcdmResult.listRecords.size() + " items found";
+            // create the header
+            gcdmResult.addHeader("EFFECTIVEDATETIME_ST", "Effective Date/Time");
+            gcdmResult.addHeader("SUPPLYCHAINEPOINT", "Supply Chain point");
+            gcdmResult.addHeader("SPECIFICGRAVITY", "Specific Gravity");
+            gcdmResult.addHeader("HEATINGVALUE", "Heating Value");
+            gcdmResult.addHeader("METHANEC1", "Methane C1");
+            gcdmResult.addHeader("ETHANEC2", "Ethane C2");
+            gcdmResult.addHeader("PROPANEC3", "Propane C3");
+            gcdmResult.addHeader("IBUTANEC4I", "I-Butane C4i");
+            gcdmResult.addHeader("NBUTANEC4N", "N-Butane C4n");
+            gcdmResult.addHeader("BUTANEC4", "Butane C4");
+
+            gcdmResult.addAddField("C1", "C1 (mole %)", "number", 70, 100);
+            gcdmResult.addAddField("C2", "C2 (mole %)", "number", 0, 20);
+            gcdmResult.addAddField("C3", "C3 (mole %)", "number", 0, 6);
+            gcdmResult.addAddField("C4", "C4 (mole %)", "number", 0, 3);
+            gcdmResult.addAddField("C4I", "C4i (mole %)", "number", 0, 1.5);
+            gcdmResult.addAddField("C5", "C5 (mole %)", "number", 0, 0.6);
+            gcdmResult.addAddField("C5I", "C5i (mole %)", "number", 0, 0.3);
+            gcdmResult.addAddField("C5N", "C5n (mole %)", "number", 0, 0.3);
+            gcdmResult.addAddField("C6PLUS", "C6+ (ppm)", "number", 0, 3000);
+            gcdmResult.addAddField("C8", "C8 (ppb)", "number", 0, 2000);
+            gcdmResult.addAddField("C9", "C9 (ppb)", "number", 0, 2000);
+            gcdmResult.addAddField("CO2", "CO2 (model %)", "number", 0, 30);
+            gcdmResult.addAddField("H2S", "H2S(ppm)", "number", 0, 10);
+            gcdmResult.addAddField("N2", "N2 (mole %)", "number", 0, 50);
+            gcdmResult.addAddField("H2O", "H2O (mg/Sm3)", "number", 0, 650);
+            gcdmResult.addAddField("TSU", "TSU (ppm)", "number", 0, 20);
+            gcdmResult.addAddField("BEN", "BEN (ppb)", "number", 0, 5000);
+            gcdmResult.addAddField("CYC", "CYC (ppb)", "number", 0, 5000);
+            gcdmResult.addAddField("SPEGRA", "Specific Gravity", "text", null, null);
+            gcdmResult.addAddField("HEATING", "Heating Value (MJ/Sm3)", "text", null, null);
+
+            gcdmResult.status = gcdmResult.listValues.size() + " item+" + (gcdmResult.listValues.size() > 1 ? "s" : "") + " found";
 
 
 
@@ -124,7 +179,7 @@ public class GcdmBusinessAccess {
             logger.severe("Error during the sql request [" + sqlRequest + "] call " + e.toString() + " at " + sw.toString());
             gcdmResult.status = "Fail";
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
-            gcdmResult.listRecords = null;
+            gcdmResult.listValues = null;
         }
         if (con != null)
         {

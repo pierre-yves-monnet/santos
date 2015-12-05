@@ -45,17 +45,18 @@ import com.santos.sdeaccess.SdeBusinessAccess.SdeResult;
 import com.santos.sdeaccess.SdeBusinessAccess.SystemSummaryParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.TableDashBoard;
 import com.santos.sdeaccess.SdeBusinessAccess.WellListParameter;
-
 import com.santos.toolbox.Toolbox;
 
 public class SdeAccess {
 
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
-    
+
+    public static String version = "SDE Java version 0.0.4";
+
     static{
-        logger.info("SDE Access Java version 0.0.6");    
-    } 
+        logger.info(version);
+    }
 
     /* ******************************************************************************** */
     /*                                                                                  */
@@ -102,7 +103,7 @@ public class SdeAccess {
         /**
          * in order to search if an existing case Id + TaskId exist for this user, give information to search the processDefiniion
          */
-        public String processName = "SDEDEMO";
+        public String processName = "SDEdemo";
         public String processVersion = null;
         public SdeParameter sdeParameter = new SdeParameter();
 
@@ -214,9 +215,9 @@ public class SdeAccess {
                     } else {
                         caseMap.put("initiateSdeRequest", false);
                     }
-                    // TODO 
+                    // TODO
                     // overwrite logic of hiding initateButton
-                    // this is not needed for WellTrackerDashboard 
+                    // this is not needed for WellTrackerDashboard
                     // rule #51 : if the status is RED, the initiateSdeRequest is not available
                     final String status = Toolbox.getString(sdeInfo.get(SdeBusinessAccess.TableDashBoard.BWD_STATUS), null);
                     if ("RED".equals(status)) {
@@ -265,7 +266,6 @@ public class SdeAccess {
                     }
                 }
                 // search if a caseId exist for this one
-                
 
                 caseMap.put("sdenumber", sdeInfo.get(TableDashBoard.SDE_NUMBER));
                 caseMap.put("sdestatus", sdeInfo.get(TableDashBoard.SDE_STATUS));
@@ -853,6 +853,11 @@ public class SdeAccess {
             String message = "Case " + processInstance.getId() + " created";
             if (startprocessParameter.waitFirstTask)
             {
+
+           //     xxxxx
+
+
+
                 // ok, let's wait for the first task for this user
                 logger.info("StartprocessParameter - Wait first task ");
                 final boolean stillWait = true;
@@ -920,7 +925,6 @@ public class SdeAccess {
     /*                                                                                  */
     /*                                                                                  */
     /* ******************************************************************************** */
-
 
     public static Map<String, Object> getListPADAshboard(final PADashboardParameter paDashboardParameter, final APISession session, final ProcessAPI processAPI)
     {
@@ -1103,12 +1107,12 @@ public class SdeAccess {
         caseMap.put("DateWellIdentified", sdeInfo.get(SdeBusinessAccess.TableDashBoard.DATE_WELL_IDENTIFIED));
 
         caseMap.put("FieldName", sdeInfo.get(SdeBusinessAccess.TableWellInfo.FIELD_NAME));
-        
+
         caseMap.put("WellCategoryPrimary", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_PRIMARY));
         caseMap.put("WellCategorySecondary1", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_SECONDARY_1));
         caseMap.put("WellCategorySecondary2", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_SECONDARY_2));
         caseMap.put("WellCategorySecondary3", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_SECONDARY_3));
-      
+
         caseMap.put("PermitSurface", sdeInfo.get(SdeBusinessAccess.TableWellInfo.PERMIT_SURFACE));
         caseMap.put("PermitBottomHole", sdeInfo.get(SdeBusinessAccess.TableWellInfo.PERMIT_BOTTOM_HOLE));
         caseMap.put("PadName", sdeInfo.get(SdeBusinessAccess.TableWellInfo.PAD_NAME));
@@ -1148,6 +1152,7 @@ public class SdeAccess {
      */
     public static ProcessDefinition getProcessDefinition(final String processName, final String processVersion, final ProcessAPI processAPI)
     {
+        // logger.info("Search for ProcessDefinition ["+processName+"] ProcessVersion["+processVersion+"]");
         ProcessDefinition processDefinition = null;
         Long processDefinitionId = null;
         try
@@ -1161,6 +1166,7 @@ public class SdeAccess {
                 processDefinitionId = processAPI.getProcessDefinitionId(processName, processVersion);
             }
             processDefinition = processDefinitionId == null ? null : processAPI.getProcessDefinition(processDefinitionId);
+            logger.info("Search for ProcessDefinition [" + processName + "] ProcessVersion[" + processVersion + "] : found pid[" + processDefinitionId + "]");
         } catch (final Exception e) {
             logger.severe("Can't find process with processName[" + processName + "] version[" + processVersion + "] : "
                     + e.toString());
@@ -1212,7 +1218,7 @@ public class SdeAccess {
         }
         return mapSdeNumberToTask;
     }
-    
+
     public static Map<String, HumanTaskInstance> getAllTasksForAllUsers(final Long processDefinitionId, final Long userId, final ProcessAPI processAPI)
     {
 
@@ -1225,13 +1231,13 @@ public class SdeAccess {
             final SearchOptionsBuilder searchOptionBuilder = new SearchOptionsBuilder(0, 10000);
             if (processDefinitionId != null) {
                 searchOptionBuilder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
-            }
-            
+}
+
             final SearchResult<HumanTaskInstance> searchResultPendingHumanTask = processAPI.searchHumanTaskInstances(searchOptionBuilder.done());
-            
+
             final List<HumanTaskInstance> allTasks = new ArrayList<HumanTaskInstance>();
             allTasks.addAll(searchResultPendingHumanTask.getResult());
-            
+
             for (final HumanTaskInstance humanTask : allTasks)
             {
                 processInstanceId = humanTask.getParentProcessInstanceId();

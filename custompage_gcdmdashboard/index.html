@@ -188,8 +188,8 @@
 		<div class="col-lg-9" ng-show="gcdmctrl.isshowGasCompositionDefault" ng-disabled="gcdmctrl.isinprogress">
 			<legend class="text-primary"><span class="glyphicon glyphicon-th"></span>{{gcdmctrl.gasCompositionLegend}}</legend>
 
-			<span class="label label-success">{{gcdmctrl.message}}</span><br>
-			<span class="label label-danger">{{gcdmctrl.errormessage}}</span><br>
+			<span class="label label-success">{{gcdmctrl.gasComposition.Message}}</span><br>
+			<span class="label label-danger">{{gcdmctrl.gasComposition.ErrorMessage}}</span><br>
 			<div>
 				 <button id="refresh" ng-click="gcdmctrl.gasCompositionAdd()" class="btn btn-success">Add</button>
 				 &nbsp;
@@ -203,111 +203,27 @@
 			<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
 				<tr>
 					<th></th> <!-- check box -->
-					<th id="santosheadertable">					
-						<a href="#" ng-click="gcdmctrl.setorder( 'EFFECTIVEDATETIME_ST', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Effective Date/Time
-								<span ng-show="gcdmctrl.orderByField === 'EFFECTIVEDATETIME_ST' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'EFFECTIVEDATETIME_ST' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>					
-					<!-- <input type="text" ng-model="gcdmctrl.filtercase.caseId" ></th> -->
-					</th>
-
-					<th id="santosheadertable">						
-						<a href="#" ng-click="gcdmctrl.setorder( 'SUPPLYCHAINEPOINT', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Supply Chain point
-								<span ng-show="gcdmctrl.orderByField === 'SUPPLYCHAINEPOINT' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'SUPPLYCHAINEPOINT' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
-					<th id="santosheadertable">						
-						<a href="#" ng-click="gcdmctrl.setorder( 'SPECIFICGRAVITY', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Specific Gravity
-								<span ng-show="gcdmctrl.orderByField === 'SPECIFICGRAVITY' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'SPECIFICGRAVITY' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
-
-					<th id="santosheadertable">						
-						<a href="#" ng-click="gcdmctrl.setorder( 'HEATINGVALUE', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Heating Value
-								<span ng-show="gcdmctrl.orderByField === 'HEATINGVALUE' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'HEATINGVALUE' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
-
 					
-					<th id="santosheadertable">						
-						<a href="#" ng-click="gcdmctrl.setorder( 'METHANEC1', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Methane C1
-								<span ng-show="gcdmctrl.orderByField === 'METHANEC1' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'METHANEC1' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
+					<th ng-repeat="headerlabel in gcdmctrl.getGasCompositionHeader() track by $index" id="santosheadertable">
+						<a href="#" ng-click="gcdmctrl.setorder( headerlabel.id, ! gcdmctrl.reverseSort)" style="text-decoration:none">
+							{{headerlabel.display}}
+								<span ng-show="gcdmctrl.orderByField === headerlabel.id && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
+								<span ng-show="gcdmctrl.orderByField === headerlabel.id && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
+						</a>
 					</th>
-	
-					<th id="santosheadertable">
-						<a href="#" ng-click="gcdmctrl.setorder( 'ETHANEC2', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Ethane C2
-								<span ng-show="gcdmctrl.orderByField === 'ETHANEC2' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'ETHANEC2' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
-					<th id="santosheadertable">
-						<a href="#" ng-click="gcdmctrl.setorder( 'PROPANEC3', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Propane C3
-								<span ng-show="gcdmctrl.orderByField === 'PROPANEC3' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'PROPANEC3' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
+					
 				
-					<th id="santosheadertable">						
-						<a href="#" ng-click="gcdmctrl.setorder( 'IBUTANEC4I', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							I-Butane C4i
-								<span ng-show="gcdmctrl.orderByField === 'IBUTANEC4I' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'IBUTANEC4I' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
-					<th id="santosheadertable">						
-						<a href="#" ng-click="gcdmctrl.setorder( 'NBUTANEC4N', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							N-Butane C4n
-								<span ng-show="gcdmctrl.orderByField === 'NBUTANEC4N' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'NBUTANEC4N' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
-					<th id="santosheadertable">						
-						<a href="#" ng-click="gcdmctrl.setorder( 'BUTANEC4', ! gcdmctrl.reverseSort)" style="text-decoration:none">
-							Butane C4
-								<span ng-show="gcdmctrl.orderByField === 'BUTANEC4' && gcdmctrl.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
-								<span ng-show="gcdmctrl.orderByField === 'BUTANEC4' && ! gcdmctrl.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
-							</a>
-						<br>
-					</th>
-					
 					
 				</tr>
 				
-				<tbody  ng-repeat="onetask in gcdmctrl.getGasCompositionDefault()   track by $index">
+				<tbody  ng-repeat="onetask in gcdmctrl.getGasCompositionValue()   track by $index">
 				<tr>
 					<td><input type="checkbox" ng-model="onetask.linechecked">&nbsp;
 					</td>
-					<td>{{onetask.EFFECTIVEDATETIME_ST}}</td>
-					<td>{{onetask.SUPPLYCHAINEPOINT}}</td>
-					<td>{{onetask.SPECIFICGRAVITY}}</td>
-					<td>{{onetask.HEATINGVALUE}}</td>
-					<td>{{onetask.METHANEC1}}</td>
-					<td>{{onetask.ETHANEC2}}</td>
-					<td>{{onetask.PROPANEC3}}</td>
-					<td>{{onetask.IBUTANEC4I}}</td>
-					<td>{{onetask.NBUTANEC4N}}</td>
-					<td>{{onetask.BUTANEC4}}</td>
+					<td ng-repeat="headerlabel in gcdmctrl.getGasCompositionHeader() track by $index" >
+						{{onetask[headerlabel.id]}} 
+					</td>
+					
 				</tr>
 				</tbody>
 			</table>
@@ -330,7 +246,9 @@
 		
 		<modal-dialog show='gcdmctrl.gasCompositionDialogShown' dialog-title='Details' width='75%' height='80%'>
 			<div class="modal-content" width='100%' height='100%'> 
-
+				<span class="label label-success">{{gcdmctrl.gasCompositionAddMessage}}</span><br>
+				<span class="label label-danger">{{gcdmctrl.gasCompositionAddMErrormessage}}</span><br>
+	
 					<!-- style="border-width:3px; border-style:solid; border-color:black;"-->
 					<table class="table table-striped table-hover table-condensed table-bordered"  >
 						<tr>
@@ -342,7 +260,11 @@
 						</tr>
 						<tr>
 							<td>Effective Data/Time</td>
-							<td><input type="date" ng-model="gcdmctrl.newGasComposition.EFFECTIVEDATETIME"></td>
+							<td><input type="date" ng-model="gcdmctrl.gasComposition.NewValueGasComposition.EFFECTIVEDATETIME" 
+								ng-change="gcdmctrl.checkDateByTheDay(gcdmctrl.gasComposition.NewValueGasComposition.EFFECTIVEDATETIME) ">
+								<span class="label label-danger">{{gcdmctrl.errorMessage}}</span>
+			
+								</td>
 						</tr>
 						<tr>
 							<td colspan="2">
@@ -352,33 +274,16 @@
 							</td>
 						</tr>
 					
-						<tr>
-							<td>C1 (mole %)</td>
-							<td><input type="text" ng-model="gcdmctrl.newGasComposition.C1"></td>
+						<tr ng-repeat="headerlabel in gcdmctrl.getGasCompositionAddFields() track by $index" >
+							<td>{{headerlabel.display}}</td>
+							<td><input type="{{headerlabel.typeoffield}}" ng-model="gcdmctrl.gasComposition.NewValueGasComposition[ headerlabel.id]"
+								ng-change="gcdmctrl.checkRangeGasComposition(headerlabel)">
+								<span ng-show="headerlabel.minrange != null">Range : [{{headerlabel.minrange}},{{headerlabel.maxrange}}]</span>
+								<span class="label label-danger">{{gcdmctrl.gasComposition.NewValueGasComposition[ headerlabel.id + "_ERROR"]}}</span><br>
+			
+								</td>
 						</tr>
-						<tr>
-							<td>C2 (mole %)</td>
-							<td><input type="text" ng-model="gcdmctrl.newGasComposition.C2"></td>
-						</tr>
-						<tr><td>C3 (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C3"></td></tr>
-						<tr><td>C4 (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C4"></td></tr>
-						<tr><td>C4i (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C4I"></td></tr>
-						<tr><td>C5 (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C5"></td></tr>
-						<tr><td>C5i (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C5i"></td></tr>
-						<tr><td>C5n (mole %)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C5n"></td></tr>
-						<tr><td>C6+ (ppm)</td><td><input type="number" ng-model="gcdmctrl.newGasComposition.C6PLUS"></td></tr>
-						<tr><td>C8 (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.C8"></td></tr>
-						<tr><td>C9 (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.C9"></td></tr>
-						<tr><td>CO2 (model %)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.CO2"></td></tr>
-						<tr><td>H2S(ppm)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.H2S"></td></tr>
-						<tr><td>N2 (mole %)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.N2"></td></tr>
-						<tr><td>H2O (mg/Sm3)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.H20"></td></tr>
-						<tr><td>TSU (ppm)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.TSU"></td></tr>
-						<tr><td>BEN (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.BEN"></td></tr>
-						<tr><td>CYC (ppb)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.CYC"></td></tr>
-						<tr><td>Specific Gravity</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.SPECIFICGRAVITY"></td></tr>
-						<tr><td>Heating Value (MJ/Sm3)</td><td><input type="text" ng-model="gcdmctrl.newGasComposition.HEATINGVALUE"></td></tr>
-
+				
 
 					</table>
 
