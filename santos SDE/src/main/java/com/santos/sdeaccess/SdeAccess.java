@@ -853,11 +853,6 @@ public class SdeAccess {
             String message = "Case " + processInstance.getId() + " created";
             if (startprocessParameter.waitFirstTask)
             {
-
-           //     xxxxx
-
-
-
                 // ok, let's wait for the first task for this user
                 logger.info("StartprocessParameter - Wait first task ");
                 final boolean stillWait = true;
