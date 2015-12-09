@@ -183,9 +183,9 @@ appCommand.controller('DashboardControler',
 						var taskId				= jsonResult.taskid;
 						self.message			= jsonResult.message;
 						if (caseId!=null) {
-							self.message= "Display the task...";
-								// alert("Case "+caseId+" is started - taskId="+taskId)
-							self.showtaskform( processName, processVersion, taskName, caseId, taskId);
+									self.message= "Display the task...";
+																		// alert("Case "+caseId+" is started - taskId="+taskId)
+									self.showtaskform( processName, processVersion, taskName, caseId, taskId);
 						}
 						// self.isshowcases=false;
 					})
@@ -237,7 +237,7 @@ appCommand.controller('DashboardControler',
 		this.isshowform=true;
 	};
 
-		
+	
 	// --------------------------------------------------------------------------
 	//
 	//   Modal page management
@@ -432,16 +432,16 @@ appCommand.controller('DashboardControler',
 	this.padashboard.listdata = [];
 	
 	this.searchPADashboard = function() {
-		var self=this;
+		var self=this;		 
 		this.padashboard.processName="SDEdemo";
-		var json= angular.toJson(this.padashboard.search, false);
+		var json= angular.toJson(this.padashboard.search, false);		 
 		console.log("Call URL PADashboard : "+json);
 				 
 		$http.get( '?page=custompage_SDEdashboard&action=getPADashboard&json='+json )
-			.then( function ( jsonResult ) {
+			.then( function ( jsonResult ) {			
 						self.padashboard.listdata = jsonResult.data.LISTPADASHBOARD	
 						self.padashboard.message= jsonResult.data.MESSAGE;
-						self.padashboard.errormessage= jsonResult.data.ERRORMESSAGE;
+						self.padashboard.errormessage= jsonResult.data.ERRORMESSAGE;	
 					},
 					function ( jsonResult ) {
 						self.padashboard.errormessage	= "Error during get"+jsonResult.status;
@@ -456,14 +456,14 @@ appCommand.controller('DashboardControler',
 	
 	// console.log("---- getSystemSummaryPage : start list["+angular.toJson(this.systemSummary.listsde )+"]");
 		if (this.padashboard.listdata==null)
-		{
+		{		
 			this.padashboard.listdata=[];
 			return this.padashboard.listdata;
 		}
 		if (this.padashboard.listdata.length ==0)
 		{
 			return this.padashboard.listdata;
-		}		
+		}				
 		var begin = ((this.padashboard.pagenumber - 1) * this.padashboard.sdeperpage);
 		var end = begin + this.padashboard.sdeperpage;
 		this.padashboard.listdata = $filter('orderBy')(this.padashboard.listdata, this.padashboard.orderByField, this.padashboard.reversesort);
@@ -551,7 +551,7 @@ appCommand.controller('DashboardControler',
 		this.isshowform=false;
 		this.isshowSystemSummary=false;
 		this.isshowUpdateSdeDetails=false;
-		this.isshowdetailcontributor=false;
+		this.isshowdetailcontributor=true;
 		this.isshowProperties=false;
 		this.isshowPADashboard=false;
 	}

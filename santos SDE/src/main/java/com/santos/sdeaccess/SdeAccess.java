@@ -52,7 +52,7 @@ public class SdeAccess {
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    public static String version = "SDE Java version 0.0.4";
+    public static String version = "SDE Java version 0.0.5";
 
     static{
         logger.info(version);
@@ -1070,7 +1070,8 @@ public class SdeAccess {
 
                     ProcessDefinition processDefinition = mapProcessDefinition.get(processInstance.getProcessDefinitionId());
                     if (processDefinition == null)
-                    {
+
+                       {
                         processDefinition = processAPI.getProcessDefinition(processInstance.getProcessDefinitionId());
                         mapProcessDefinition.put(processInstance.getProcessDefinitionId(), processDefinition);
                     }

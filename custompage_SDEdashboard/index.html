@@ -79,7 +79,7 @@
 				<button ng-click="dashctrl.showViewForm();" ng-class="dashctrl.getButtonClass( dashctrl.isshowcases)">Well Tracker Dashboard</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-click="dashctrl.showViewUpdateSde();" ng-class="dashctrl.getButtonClass( dashctrl.isshowUpdateSdeDetails)">Update Sde Details</button>
+				<button ng-click="dashctrl.showViewUpdateSde();" ng-class="dashctrl.getButtonClass( dashctrl.isshowUpdateSdeDetails)">Update SDE Details</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
 				<button ng-click="dashctrl.showViewSystemSummary();" ng-class="dashctrl.getButtonClass( dashctrl.isshowSystemSummary)">System Summary</button>
@@ -109,8 +109,7 @@
 	<!-- ******************************************************************************** -->
 
 	<div class="col-lg-11"  style="margin-left:35px" ng-show="dashctrl.isshowcases">
-		<h1>Well Tracker Dashboard</h1>
-		
+		<h1>Well Tracker Dashboard</h1>		
 		<div class="row voffset2">			
 			<div class="col-md-2">
 				<span class="label label-success" >{{dashctrl.message}}</span><br>
@@ -279,11 +278,12 @@
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.FieldName}}</td>
 						</tr>
 
-						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
-							<td style="background-color: #ADADF5">Area Number:</td>
+						<!-- Removed as per SDE-53, keeping it here for a while, safe to remove in future. -->
+						<!--tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
+							<td style="background-color: #ADADF5">Area Number:xxxxxxxxxx</td>
 							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.AreaNumber}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.AreaNumber}}</td>
-						</tr>
+						</tr-->
 						
 						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
 							<td style="background-color: #ADADF5">Well Category (Primary):</td>
@@ -545,12 +545,12 @@
 
 	<!-- ******************************************************************************** -->
 	<!--                                                                                  -->
-	<!--                Update Sde Details                                                -->
+	<!--                Update SDE Details                                                -->
 	<!--                                                                                  -->
 	<!--                                                                                  -->
 	<!-- ******************************************************************************** -->
 	<div class="col-lg-11" ng-show="dashctrl.isshowUpdateSdeDetails">
-		<h1>Update Sde Details</h1>
+		<h1>Update SDE Details</h1>
 			
 		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
 		<tr><td colspan="4"><h2>Search</h2></td></tr>
@@ -710,7 +710,7 @@
 			<th><span class="table-header">Update EC</span><blockquote/></th>			
 			</tr>
 			<tbody  ng-repeat="onesynthesis in dashctrl.getPADashboardPage() track by $index">
-			<tr >
+				<tr>			
 					<td>{{onesynthesis.DATE_WELL_IDENTIFIED | date:'dd-MM-yyyy'}}</td>				
 					<td><a ng-href="#" ng-click="dashctrl.accessTaskButton( null, onesynthesis)">{{onesynthesis.SDE_NUMBER}}</a></td>
 					<td>{{onesynthesis.WELL_CODE}}</td>
@@ -748,10 +748,9 @@
 		Update Sde URL : <input ng-model="dashctrl.properties.updatesdeurl" size="60"><p>
 			You can use the place holder { {UWI}}, { {WELL_FULL_NAME}}, { {BUSINESS_UNIT}}, { {FIELD_NAME}}<p>
 	
-	
 		Debug : <input ng-model="dashctrl.properties.debug" size="60"><p>
-	
-	
+		
+		Version : 0.0.5<p>
 	
 		<button ng-click="dashctrl.setproperties();" class="btn btn-lg btn-primary" 
 			style="font-size:15px;background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Update properties</button><p>

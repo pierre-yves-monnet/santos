@@ -333,7 +333,8 @@ public class SdeBusinessAccess {
                         +" not in (select d9."+ TableDashBoard.DB_ID
                         + " from "+TableDashBoard.TABLE_NAME+" d2, "+TableDashBoard.TABLE_NAME+" d9 "
                         + " where d9."+TableDashBoard.SDE_STATUS+"=9 "
-                        + " and d2."+TableDashBoard.SDE_STATUS+"=2 "
+                        + " and (d2."+TableDashBoard.SDE_STATUS+"=2 "
+                        + " or d2."+TableDashBoard.SDE_STATUS+"=1) "
                         + " and d2."+TableDashBoard.SDE_NUMBER+" = d9."+TableDashBoard.SDE_NUMBER+")";
 
             }
@@ -960,6 +961,7 @@ public class SdeBusinessAccess {
             sqlRequest += " order by " + paDashboardParameter.orderByField + " desc ";
 
             logger.info("Execute the request [" + sqlRequest + "] parameters");
+            
             final Statement stmt = con.createStatement();
             int numberOfRecords = 0;
             final ResultSet rs = stmt.executeQuery(sqlRequest);
@@ -1797,7 +1799,9 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("r_well_opst", "value", "value", "r_form_data", "type='well_opst'"));
 		// --------- artificial_lift_glng
         lists.add(new ListDefinition("artificial_lift_glng", "value", "value", "r_form_data", "type='artsys_code' and business_unit='GLNG'"));
-
+        // operator area
+        lists.add(new ListDefinition("operator_area_glng", "value", "value", "r_form_data", "type='operator_area' and business_unit='GLNG'"));
+        
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list
