@@ -182,12 +182,21 @@ appCommand.controller('DashboardControler',
 						var caseId				= jsonResult.caseid;
 						var taskId				= jsonResult.taskid;
 						self.message			= jsonResult.message;
-						if (caseId!=null) {
-									self.message= "Display the task...";
-																		// alert("Case "+caseId+" is started - taskId="+taskId)
-									self.showtaskform( processName, processVersion, taskName, caseId, taskId);
+						if (caseId!=null && taskId !=null) {
+							self.message= "Display the task...";
+								// alert("Case "+caseId+" is started - taskId="+taskId)
+							self.showtaskform( processName, processVersion, taskName, caseId, taskId);
 						}
-						// self.isshowcases=false;
+						else if (caseId !=null)
+						{
+							// message is enought
+							self.refreshcases();
+						}
+						else {
+							// message is enougth
+							self.refreshcases();
+						}
+						
 					})
 					.error( function(e) {
 						self.errormessage	= "An error occured during create SDE Request";
