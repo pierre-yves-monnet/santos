@@ -37,7 +37,6 @@ import org.bonitasoft.engine.session.APISession;
 import org.json.simple.JSONValue;
 
 import com.bonitasoft.engine.bpm.process.impl.ProcessInstanceSearchDescriptor;
-import com.santos.sdeaccess.SdeBusinessAccess.AssignROParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SdeNumberStatus;
@@ -53,7 +52,7 @@ public class SdeAccess {
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    public static String version = "SDE Java version 0.0.5";
+    public static String version = "SDE Java version 0.0.6";
 
     static{
         logger.info(version);
@@ -210,15 +209,17 @@ public class SdeAccess {
                     // (in the future OK, in the past 2 month not. Example : we are the 10 November, only November and October is OK)
                     final Date scheduledOnlineDate = Toolbox.getDate(sdeInfo.get(TableDashBoard.SCHEDULED_ONLINE_DATE), null);
 
+                    // SDE-75 :: No need to compare scheduledOnlineData logic for Dashboard page
+                    caseMap.put("initiateSdeRequest", true);
+                    /*
                     if (scheduledOnlineDate != null &&
                             (scheduledOnlineDate.after(limitToInitiateSde.getTime()) || scheduledOnlineDate.equals(limitToInitiateSde.getTime()))) {
                         caseMap.put("initiateSdeRequest", true);
                     } else {
                         caseMap.put("initiateSdeRequest", false);
                     }
-                    // TODO
-                    // overwrite logic of hiding initateButton
-                    // this is not needed for WellTrackerDashboard
+                    */
+                    
                     // rule #51 : if the status is RED, the initiateSdeRequest is not available
                     final String status = Toolbox.getString(sdeInfo.get(SdeBusinessAccess.TableDashBoard.BWD_STATUS), null);
                     if ("RED".equals(status)) {
@@ -236,7 +237,13 @@ public class SdeAccess {
                         caseMap.put("processversion", processDefinition.getVersion());
                         caseMap.put("processid", processDefinition.getId());
                     }
-                } else {
+                } 
+                else{
+                    caseMap.put("initiateSdeRequest", false);
+                }
+                // SDE-75 :: Do not return SDE that are Initiated= Y on dashboard list.
+                /*
+                else {
                     caseMap.put("initiateSdeRequest", false);
                     caseMap.put("accesstask", false);
                     // then a task should exist for this SDE Request
@@ -266,13 +273,16 @@ public class SdeAccess {
                         }
                     }
                 }
+                */
                 // search if a caseId exist for this one
 
                 caseMap.put("sdenumber", sdeInfo.get(TableDashBoard.SDE_NUMBER));
                 caseMap.put("sdestatus", sdeInfo.get(TableDashBoard.SDE_STATUS));
                 // caseMap.put("glng", "GLNG");
                 // caseMap.put("caseid", processInstance.getId());
-                listCases.add(caseMap);
+                if(((Boolean)caseMap.get("initiateSdeRequest")) == true){
+                    listCases.add(caseMap);
+                }
             }
 
             // sort now
@@ -571,31 +581,6 @@ public class SdeAccess {
         final HashMap<String, Object> result = new HashMap<String, Object>();
 
         final SdeResult sdeResult = sdeBusinessAccess.createWellList(createWellParameter);
-
-        result.put("STATUS", sdeResult.status);
-        result.put("ERRORSTATUS", sdeResult.errorstatus);
-        return result;
-    }
-
-    /* ******************************************************************************** */
-    /*                                                                                  */
-    /* AssignRO */
-    /*                                                                                  */
-    /*                                                                                  */
-    /* ******************************************************************************** */
-
-    /**
-     * @param parameter
-     * @param session
-     * @param processAPI
-     * @return
-     */
-    public static Map<String, Object> updateAssignRo(final AssignROParameter parameter, final APISession session, final ProcessAPI processAPI)
-    {
-        final HashMap<String, Object> result = new HashMap<String, Object>();
-
-        final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
-        final SdeResult sdeResult = sdeBusinessAccess.updateAssignRo(parameter);
 
         result.put("STATUS", sdeResult.status);
         result.put("ERRORSTATUS", sdeResult.errorstatus);
@@ -1063,7 +1048,6 @@ public class SdeAccess {
         }
     }
 
-
     /* ******************************************************************************** */
     /*                                                                                  */
     /* Private */
@@ -1097,7 +1081,6 @@ public class SdeAccess {
 
                     ProcessDefinition processDefinition = mapProcessDefinition.get(processInstance.getProcessDefinitionId());
                     if (processDefinition == null)
-
                        {
                         processDefinition = processAPI.getProcessDefinition(processInstance.getProcessDefinitionId());
                         mapProcessDefinition.put(processInstance.getProcessDefinitionId(), processDefinition);
@@ -1161,7 +1144,7 @@ public class SdeAccess {
         logger.info("Special Management for status=[" + status + "] : caseMap=[" + caseMap.get("Status"));
 
         caseMap.put("WellDataStatus", sdeInfo.get(SdeBusinessAccess.TableDashBoard.WELL_DATA_STATUS));
-        caseMap.put("Assigned_RO", sdeInfo.get(SdeBusinessAccess.TableDashBoard.ASSIGNED_RO));
+        caseMap.put("AssignedRO", sdeInfo.get(SdeBusinessAccess.TableDashBoard.ASSIGN_RO));
 
     }
 
