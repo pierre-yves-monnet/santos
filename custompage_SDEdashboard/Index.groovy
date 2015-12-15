@@ -64,6 +64,7 @@ import com.santos.sdeaccess.SdeBusinessAccess.SystemSummaryParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.PADashboardResult;
 import com.santos.sdeaccess.SdeBusinessAccess.WellListParameter;
+import com.santos.sdeaccess.SdeBusinessAccess.AssignROParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
 
 import com.santos.sdeaccess.SdeAccess.StartprocessParameter;
@@ -177,6 +178,12 @@ public class Index implements PageController {
 			  result = new HashMap<String,Object>();
 			  result.put("status",SdeAccess.setProperties(fileExternalProperties,json));
             }
+			else if ("updateRo".equals(action))
+			{
+			  String json = request.getParameter("json");
+			  AssignROParameter assignROParameter = AssignROParameter.getFromJson(json);
+			  result = SdeAccess.updateAssignRo(assignROParameter, session, processAPI );
+			}
 				 
 			if (result!=null)
 			{

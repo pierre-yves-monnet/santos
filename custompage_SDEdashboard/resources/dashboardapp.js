@@ -31,7 +31,7 @@ appCommand.controller('DashboardControler',
 						{"title":"Schd online Date", "id":"ScheduledOnlineDate","size":"20", "ctrl":"date" }, 
 						{"title":"Basic Well Data", "id":"BasicWellData", "size":"10", "ctrl":"semaphore" },
 						{"title":"Status", "id":"Status", "size":"20" }, 
-						{"title":"Assigned RO", "id":"AssignedRO", "size":"20" },
+						{"title":"Assigned RO", "id":"Assigned_RO", "size":"20", "ctrl":"input"  },
 						{"title":"", "id":"buttons", "size":"0","ctrl":"button" },
 						];
 
@@ -189,7 +189,7 @@ appCommand.controller('DashboardControler',
 						}
 						else if (caseId !=null)
 						{
-							// message is enought
+							// message is enougth
 							self.refreshcases();
 						}
 						else {
@@ -230,6 +230,29 @@ appCommand.controller('DashboardControler',
 		this.isshowcases=false;
 		this.isshowform=true;
 	}
+	
+	this.saveAssignedRO = function () {
+		var sendvalue={};
+		sendvalue.list=[];
+		for(var i=0;i<this.listcases.length;i++) {
+			var oneline = {};
+			oneline.SDENUMBER  = this.listcases[ i ].sdenumber;
+			oneline.ASSIGNED_RO = this.listcases[ i ].Assigned_RO;
+			sendvalue.list.push( oneline );
+		}
+		var json=angular.toJson(sendvalue,true );
+		var self = this;
+		$http.get( '?page=custompage_SDEdashboard&action=updateRo&json='+json )
+					.then( function ( jsonResult ) {
+						self.errormessage	= jsonResult.data.ERRORSTATUS;
+						self.message	= jsonResult.data.STATUS;
+						},
+						function( jsonResult ) {
+							alert('error on server '+jsonResult.status);
+							self.errormessage	= 'Error during call server '+jsonResult.status;
+						} );
+		
+	}
 	// --------------------------------------------------------------------------
 	//
 	//   manage task force
@@ -267,6 +290,7 @@ appCommand.controller('DashboardControler',
 	this.casepagenumber=1;
 	this.filtercase = { };
 	this.caseitemsperpage=10;
+	this.casenbitems=0;
 	// this function is call at each display : on a filter, or on a order for example
 	this.getCasesPage = function()
 	{
@@ -277,7 +301,11 @@ appCommand.controller('DashboardControler',
 
 		var listcasesfiltered = $filter('filter') (this.listcases, this.filtercase );
 		// console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(listcasesfiltered));
-		return listcasesfiltered.slice(begin, end);
+		this.casenbitems = listcasesfiltered.length;
+		listcasesfiltered=  listcasesfiltered.slice(begin, end);
+		if (begin > listcasesfiltered.length)
+			this.casepagenumber = 1;
+		return listcasesfiltered;
 	}
 
 

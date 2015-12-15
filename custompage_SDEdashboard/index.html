@@ -190,6 +190,9 @@
 								<div ng-show="headerlabel.ctrl == 'date'">
 									{{onetask[headerlabel.id] | date:'dd-MM-yyyy' }}
 								</div>
+								<div ng-show="headerlabel.ctrl == 'input'">
+									<input ng-model="onetask[headerlabel.id]"/>
+								</div>
 								<div ng-show="headerlabel.ctrl == 'semaphore'">
 									<button ng-click="dashctrl.showDetails( onetask )" title="Click here to see the details of the line" data-toggle="modal" data-target="#myModalDetails">
 										<span ng-show="onetask[headerlabel.id] == 'RED'"  style="color:red" class="glyphicon glyphicon-adjust" ></span>
@@ -201,15 +204,19 @@
 							</td>
 						</tr>
 					</tbody>
+					<tr><td colspan="8"></td><td><button ng-click="dashctrl.saveAssignedRO()" title="Click here to save all Assigned RO fields" 
+						 style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Update Assign RO</td></td>
+					</tr>
+									
 				</table>
 			</div>			
 		</div>
 			
-			
+	
 		<div class="row voffset2">
 			<div class="col-md-4">
 				Nb line per page:
-				<select ng-model="dashctrl.caseitemsperpage">
+				<select ng-model="dashctrl.caseitemsperpage">						
 						<option value="10">10</option>
 						<option value="50">50</option>
 						<option value="100">100</option>
@@ -219,7 +226,7 @@
 		
 		<div class="row voffset2">
 				<div class="col-md-4">
-				<pagination ng-model="dashctrl.casepagenumber" total-items="dashctrl.listcases.length" items-per-page="dashctrl.caseitemsperpage">
+				<pagination ng-model="dashctrl.casepagenumber" total-items="dashctrl.casenbitems" items-per-page="dashctrl.caseitemsperpage">
 				</pagination>
 			</div>
 		</div>

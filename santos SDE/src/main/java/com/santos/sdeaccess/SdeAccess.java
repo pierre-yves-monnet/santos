@@ -37,6 +37,7 @@ import org.bonitasoft.engine.session.APISession;
 import org.json.simple.JSONValue;
 
 import com.bonitasoft.engine.bpm.process.impl.ProcessInstanceSearchDescriptor;
+import com.santos.sdeaccess.SdeBusinessAccess.AssignROParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SdeNumberStatus;
@@ -578,6 +579,31 @@ public class SdeAccess {
 
     /* ******************************************************************************** */
     /*                                                                                  */
+    /* AssignRO */
+    /*                                                                                  */
+    /*                                                                                  */
+    /* ******************************************************************************** */
+
+    /**
+     * @param parameter
+     * @param session
+     * @param processAPI
+     * @return
+     */
+    public static Map<String, Object> updateAssignRo(final AssignROParameter parameter, final APISession session, final ProcessAPI processAPI)
+    {
+        final HashMap<String, Object> result = new HashMap<String, Object>();
+
+        final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
+        final SdeResult sdeResult = sdeBusinessAccess.updateAssignRo(parameter);
+
+        result.put("STATUS", sdeResult.status);
+        result.put("ERRORSTATUS", sdeResult.errorstatus);
+        return result;
+    }
+
+    /* ******************************************************************************** */
+    /*                                                                                  */
     /* getListSystemSummary */
     /*                                                                                  */
     /*                                                                                  */
@@ -1037,6 +1063,7 @@ public class SdeAccess {
         }
     }
 
+
     /* ******************************************************************************** */
     /*                                                                                  */
     /* Private */
@@ -1134,7 +1161,7 @@ public class SdeAccess {
         logger.info("Special Management for status=[" + status + "] : caseMap=[" + caseMap.get("Status"));
 
         caseMap.put("WellDataStatus", sdeInfo.get(SdeBusinessAccess.TableDashBoard.WELL_DATA_STATUS));
-        caseMap.put("AssignedRO", sdeInfo.get(SdeBusinessAccess.TableDashBoard.ASSIGN_RO));
+        caseMap.put("Assigned_RO", sdeInfo.get(SdeBusinessAccess.TableDashBoard.ASSIGNED_RO));
 
     }
 

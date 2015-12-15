@@ -72,7 +72,7 @@ public class SdeBusinessAccess {
         public static String REQUEST_TYPE = "REQUEST_TYPE";
         public static String BWD_STATUS = "BWD_STATUS";
         public static String WELL_DATA_STATUS = "WELL_DATA_STATUS";
-        public static String ASSIGN_RO = "ASSIGN_RO";
+        public static String ASSIGNED_RO = "ASSIGNED_RO";
         public static String DATE_WELL_IDENTIFIED = "DATE_WELL_IDENTIFIED";
         public static String ACTUAL_ONLINE_DATE = "ACTUAL_ONLINE_DATE";
         public static String ON_HOLD = "ON_HOLD";
@@ -181,6 +181,7 @@ public class SdeBusinessAccess {
         public static String PAT_BWI_ID = "PAT_BWI_ID";
         public static String PAT_ID = "PAT_ID";
     }
+
     public final static class TableRWellList {
 
         public static String TABLE_NAME = "R_WELL_LIST";
@@ -330,12 +331,12 @@ public class SdeBusinessAccess {
             {
                 // DASHBOARD.DB_ID not in (select d9.DB_ID from dashboard d2, dashboard d9 where d9.sde_status=9 and d2.sde_status=2 and d2.sde_number=d9.sde_number )
                 sqlRequest += " and " + TableDashBoard.COMPLETE_DB_ID
-                        +" not in (select d9."+ TableDashBoard.DB_ID
-                        + " from "+TableDashBoard.TABLE_NAME+" d2, "+TableDashBoard.TABLE_NAME+" d9 "
-                        + " where d9."+TableDashBoard.SDE_STATUS+"=9 "
-                        + " and (d2."+TableDashBoard.SDE_STATUS+"=2 "
-                        + " or d2."+TableDashBoard.SDE_STATUS+"=1) "
-                        + " and d2."+TableDashBoard.SDE_NUMBER+" = d9."+TableDashBoard.SDE_NUMBER+")";
+                        + " not in (select d9." + TableDashBoard.DB_ID
+                        + " from " + TableDashBoard.TABLE_NAME + " d2, " + TableDashBoard.TABLE_NAME + " d9 "
+                        + " where d9." + TableDashBoard.SDE_STATUS + "=9 "
+                        + " and (d2." + TableDashBoard.SDE_STATUS + "=2 "
+                        + " or d2." + TableDashBoard.SDE_STATUS + "=1) "
+                        + " and d2." + TableDashBoard.SDE_NUMBER + " = d9." + TableDashBoard.SDE_NUMBER + ")";
 
             }
             if (!sdeParameter.allDashboardRecords)
@@ -439,8 +440,7 @@ public class SdeBusinessAccess {
                 record.put(TableDashBoard.BWD_STATUS, "ORANGE");
             }
 
-
-            record.put(TableDashBoard.ASSIGN_RO, "Walter.Bates");
+            record.put(TableDashBoard.ASSIGNED_RO, "Walter.Bates");
             record.put(TableWellInfo.BUSINESS_UNIT, "EABU");
 
             sdeResult.add(sdeNumberStatus, record);
@@ -449,11 +449,9 @@ public class SdeBusinessAccess {
 
     }
 
-
-
     /* ******************************************************************************** */
     /*                                                                                  */
-    /* WellList                                                                         */
+    /* WellList */
     /*                                                                                  */
     /*                                                                                  */
     /* ******************************************************************************** */
@@ -465,7 +463,7 @@ public class SdeBusinessAccess {
         public String filterWellFullName;
         public String filterBusinessUnit;
         public String filterFieldName;
-        public boolean allowDirectConnection=false;
+        public boolean allowDirectConnection = false;
 
         public boolean resultAList = false;
         public int maxRecord = 100;
@@ -565,7 +563,7 @@ public class SdeBusinessAccess {
                     record.put(key, rs.getObject(i));
                 }
                 logger.info("Read  [" + record + "]");
-                sdeResult.listRecords.add( record );
+                sdeResult.listRecords.add(record);
 
             }
             sdeResult.status = "OK";
@@ -588,41 +586,42 @@ public class SdeBusinessAccess {
         return sdeResult;
     }
 
-
     /**
      * create the Well data
      */
     public static class CreateWellParameter
-{
-    public String uwi;
-    public String wellFullName;
-    public String businessUnit;
-    public String fieldName;
-    public boolean allowDirectConnection = true;
+    {
+
+        public String uwi;
+        public String wellFullName;
+        public String businessUnit;
+        public String fieldName;
+        public boolean allowDirectConnection = true;
 
         public boolean tableNameUpperCase = false;
         public boolean enquoteTableName = false;
         public boolean colNameUpperCase = false;
 
-    public static CreateWellParameter getFromJson(final String jsonSt)
-    {
-        final CreateWellParameter createWellParameter = new CreateWellParameter();
-        if (jsonSt == null) {
-            return createWellParameter;
-        }
-        final Map<String, Object> jsonHash = (Map<String, Object>) JSONValue.parse(jsonSt);
-        if (jsonHash == null) {
-            return createWellParameter;
-        }
+        public static CreateWellParameter getFromJson(final String jsonSt)
+        {
+            final CreateWellParameter createWellParameter = new CreateWellParameter();
+            if (jsonSt == null) {
+                return createWellParameter;
+            }
+            final Map<String, Object> jsonHash = (Map<String, Object>) JSONValue.parse(jsonSt);
+            if (jsonHash == null) {
+                return createWellParameter;
+            }
 
-        createWellParameter.uwi = (String) jsonHash.get("UWI");
+            createWellParameter.uwi = (String) jsonHash.get("UWI");
             createWellParameter.wellFullName = (String) jsonHash.get("WELLFULLNAME");
             createWellParameter.businessUnit = (String) jsonHash.get("BUSINESSUNIT");
             createWellParameter.fieldName = (String) jsonHash.get("FIELDNAME");
 
-        return createWellParameter;
+            return createWellParameter;
+        }
     }
-}
+
     public SdeResult createWellList(final CreateWellParameter createWellParameter)
     {
         final SdeResult sdeResult = new SdeResult();
@@ -639,7 +638,7 @@ public class SdeBusinessAccess {
             final DataModel dashBoard = new DataModel(TableDashBoard.TABLE_NAME, null, null, null, false, TableDashBoard.DB_ID);
             final DataModel wellInfo = new DataModel(TableWellInfo.TABLE_NAME, TableDashBoard.TABLE_NAME, TableDashBoard.DB_ID, TableWellInfo.BWI_DB_ID, false,
                     TableWellInfo.BWI_ID);
-            for (int i=0;i<2;i++)
+            for (int i = 0; i < 2; i++)
             {
                 final Integer sdeStatus = Integer.valueOf(i == 0 ? 0 : 9);
 
@@ -679,7 +678,7 @@ public class SdeBusinessAccess {
 
             } // end if
             con.commit();
-        } catch( final Exception e)
+        } catch (final Exception e)
         {
             logger.severe("Error during create " + e.toString());
             sdeResult.status = "FAIL";
@@ -690,8 +689,88 @@ public class SdeBusinessAccess {
             };
         }
         if (con != null) {
-            con=null;
+            con = null;
         }
+        return sdeResult;
+    }
+
+    /* ******************************************************************************** */
+    /*                                                                                  */
+    /* AssignRO */
+    /*                                                                                  */
+    /*                                                                                  */
+    /* ******************************************************************************** */
+
+    public static class AssignROParameter
+    {
+
+        public boolean tableNameUpperCase = false;
+        public boolean enquoteTableName = false;
+        public boolean allowDirectConnection = false;
+
+        public List<Map<String, Object>> listUpdate;
+
+        public static AssignROParameter getFromJson(final String jsonSt) {
+            final AssignROParameter assignRO = new AssignROParameter();
+            if (jsonSt == null) {
+                return assignRO;
+            }
+            final Map<String, Object> jsonHash = (Map<String, Object>) JSONValue.parse(jsonSt);
+            if (jsonHash == null) {
+                return assignRO;
+            }
+
+            assignRO.listUpdate = (List) jsonHash.get("list");
+            return assignRO;
+        }
+    }
+
+    public SdeResult updateAssignRo(final SdeBusinessAccess.AssignROParameter parameter)
+    {
+        final SdeResult sdeResult = new SdeResult();
+        final DataModel dataModel = new DataModel(TableDashBoard.TABLE_NAME, null, null, null, false, null);
+
+        final Connection con = getConnection(parameter.allowDirectConnection);
+        if (con == null)
+        {
+            sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
+            sdeResult.errorstatus = "Can't access the datasource [" + DATASOURCE_NAME + "]";
+            return sdeResult;
+        }
+        String sqlRequest = "";
+        try
+        {
+
+            for (final Map<String, Object> oneRecord : parameter.listUpdate)
+            {
+                sqlRequest = "update " +
+                        dataModel.getTableName(parameter.tableNameUpperCase, parameter.enquoteTableName)
+                        + " set " + TableDashBoard.ASSIGNED_RO + " = ?"
+                        + " where " + TableDashBoard.SDE_NUMBER + " = ? "
+                        + " and " + TableDashBoard.SDE_STATUS + "= 9";
+                logger.info("Update AssignRO [" + sqlRequest + "]");
+
+                final PreparedStatement pstmt = con.prepareStatement(sqlRequest);
+                pstmt.setObject(1, oneRecord.get("ASSIGNED_RO"));
+                pstmt.setObject(2, oneRecord.get("SDENUMBER"));
+                pstmt.executeUpdate();
+                pstmt.close();
+            }
+            con.commit();
+
+            sdeResult.status = "update " + parameter.listUpdate.size() + " records";
+            sdeResult.errorstatus = "";
+
+        } catch (final Exception e) {
+            final StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            logger.severe("Error during the sql request [" + sqlRequest + "] call " + e.toString() + " at " + sw.toString());
+
+            sdeResult.status = "";
+            sdeResult.errorstatus = "Error during create " + e.toString();
+
+        }
+
         return sdeResult;
     }
 
@@ -748,9 +827,7 @@ public class SdeBusinessAccess {
 
     };
 
-    public static class PADashboardResult{
-
-
+    public static class PADashboardResult {
 
         public boolean allowDirectConnection = false;
 
@@ -785,13 +862,13 @@ public class SdeBusinessAccess {
 
                 final JSONArray jsonNArray = (JSONArray) JSONValue.parse(jsonSt);
                 if (jsonNArray == null) {
-                    sdeResult.errorstatus = "Could not parse JSON parameter: "  + jsonSt;
+                    sdeResult.errorstatus = "Could not parse JSON parameter: " + jsonSt;
                     sdeResult.status = "Fail";
                     return result;
                 }
 
                 con = new SdeBusinessAccess().getConnection(false);
-//                con = main.Main.sdeConnection();
+                //                con = main.Main.sdeConnection();
 
                 if (con == null) {
                     sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
@@ -846,11 +923,10 @@ public class SdeBusinessAccess {
                     final Statement stmt = con.prepareStatement(jsonSt);
                     stmt.executeUpdate(sqlRequest);
                     stmt.close();
-                    }
+                }
 
                 con.commit();
                 con.close();
-
 
             } catch (final Exception e) {
                 final StringWriter sw = new StringWriter();
@@ -926,12 +1002,11 @@ public class SdeBusinessAccess {
                     + " where  1=1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and (SDE_STATUS in (1) and SDE_NUMBER not in (select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8)) ";
 
             // new version to pickup status = 9
-            sqlRequest =    "select * from DASHBOARD where  SDE_STATUS <> 0 and SDE_STATUS <> 1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and " +
-                                "SDE_NUMBER in (" +
-                                    "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
-                                        "minus " +
-                                    "select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8) ";
-
+            sqlRequest = "select * from DASHBOARD where  SDE_STATUS <> 0 and SDE_STATUS <> 1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and " +
+                    "SDE_NUMBER in (" +
+                    "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
+                    "minus " +
+                    "select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8) ";
 
             if (paDashboardParameter.filtersdenumber != null && paDashboardParameter.filtersdenumber.trim().length() > 0) {
                 sqlRequest += " and " + "SDE_NUMBER" + " = '" + paDashboardParameter.filtersdenumber + "'";
@@ -951,17 +1026,18 @@ public class SdeBusinessAccess {
             if (paDashboardParameter.filteroriginator != null && paDashboardParameter.filteroriginator.trim().length() > 0) {
                 sqlRequest += " and " + "ASSIGNED_RO" + " = '" + paDashboardParameter.filteroriginator + "'";
             }
-            if (paDashboardParameter.filteronlinedatefrom != null && paDashboardParameter.filteronlinedatefrom.trim().length() > 0){
-                sqlRequest += " and " + "(to_date(Scheduled_Online_Date,'DD-MM-YY') >= to_date('"+paDashboardParameter.filteronlinedatefrom+"','DD-MM-YY'))";
+            if (paDashboardParameter.filteronlinedatefrom != null && paDashboardParameter.filteronlinedatefrom.trim().length() > 0) {
+                sqlRequest += " and " + "(to_date(Scheduled_Online_Date,'DD-MM-YY') >= to_date('" + paDashboardParameter.filteronlinedatefrom
+                        + "','DD-MM-YY'))";
             }
-            if (paDashboardParameter.filteronlinedateto != null && paDashboardParameter.filteronlinedateto.trim().length() > 0){
-                sqlRequest += " and " + "(to_date(Scheduled_Online_Date,'DD-MM-YY') <= to_date('"+paDashboardParameter.filteronlinedateto+"','DD-MM-YY'))";
+            if (paDashboardParameter.filteronlinedateto != null && paDashboardParameter.filteronlinedateto.trim().length() > 0) {
+                sqlRequest += " and " + "(to_date(Scheduled_Online_Date,'DD-MM-YY') <= to_date('" + paDashboardParameter.filteronlinedateto + "','DD-MM-YY'))";
             }
 
             sqlRequest += " order by " + paDashboardParameter.orderByField + " desc ";
 
             logger.info("Execute the request [" + sqlRequest + "] parameters");
-            
+
             final Statement stmt = con.createStatement();
             int numberOfRecords = 0;
             final ResultSet rs = stmt.executeQuery(sqlRequest);
@@ -977,7 +1053,6 @@ public class SdeBusinessAccess {
                 {
                     String key = rsmd.getColumnName(i);
                     key = key.toUpperCase();
-
 
                     if (rs.getObject(i) instanceof Date && paDashboardParameter.formatDateJson) {
                         final Date date = rs.getDate(i);
@@ -1003,13 +1078,14 @@ public class SdeBusinessAccess {
                     record.put(key, rs.getObject(i));
                 }
 
-                SdePAProcessInfo.getHumanTasksForSDENumber(record, new SdeAccess.ListCasesParameter(), session, TenantAPIAccessor.getProcessAPI(session), TenantAPIAccessor.getIdentityAPI(session));
+                SdePAProcessInfo.getHumanTasksForSDENumber(record, new SdeAccess.ListCasesParameter(), session, TenantAPIAccessor.getProcessAPI(session),
+                        TenantAPIAccessor.getIdentityAPI(session));
 
-                if((boolean)record.get("KEEP_RECORD")==true){
+                if ((boolean) record.get("KEEP_RECORD") == true) {
                     logger.info("SdeBusinessAccess.getListPaDashboard :: Read  [" + record + "]");
-                    sdeResult.listRecords.add( record );
+                    sdeResult.listRecords.add(record);
                 }
-                else{
+                else {
                     logger.info("SdeBusinessAccess.getListPaDashboard :: Skipping record [" + record + "]");
                 }
 
@@ -1018,7 +1094,7 @@ public class SdeBusinessAccess {
 
             stmt.close();
 
-           // sdeResult.listRecords.add(new HashMap<String, Object>());
+            // sdeResult.listRecords.add(new HashMap<String, Object>());
 
             sdeResult.status = "OK";
 
@@ -1140,39 +1216,37 @@ public class SdeBusinessAccess {
                     + wellInfo.getTableName(systemSummaryParameter.tableNameUpperCase, systemSummaryParameter.enquoteTableName)
                     + " where  " + wellInfo.getLinkToFather();
 
-
             final List<Object> listRequestObject = new ArrayList<Object>();
             sqlRequest += addFilter(systemSummaryParameter.filterUWI, TableDashBoard.WELL_CODE);
             sqlRequest += addFilter(systemSummaryParameter.filterSdeNumber, TableDashBoard.SDE_NUMBER);
-            sqlRequest += addFilter(systemSummaryParameter.filterSdeStatus, TableDashBoard.SDE_STATUS );
+            sqlRequest += addFilter(systemSummaryParameter.filterSdeStatus, TableDashBoard.SDE_STATUS);
             sqlRequest += addFilter(systemSummaryParameter.filterWellTemplate, TableDashBoard.WELL_TEMPLATE);
             sqlRequest += addFilter(systemSummaryParameter.filterWellCategory, TableDashBoard.WELL_CATEGORY_PRIMARY);
 
-            sqlRequest += addFilter(systemSummaryParameter.filterWellFullName, TableDashBoard.WELL_FULL_NAME );
-            sqlRequest += addFilter(systemSummaryParameter.filterBusinessUnit, TableDashBoard.BUSINESS_UNIT );
-            sqlRequest += addFilter(systemSummaryParameter.filterRequestType, TableDashBoard.REQUEST_TYPE );
+            sqlRequest += addFilter(systemSummaryParameter.filterWellFullName, TableDashBoard.WELL_FULL_NAME);
+            sqlRequest += addFilter(systemSummaryParameter.filterBusinessUnit, TableDashBoard.BUSINESS_UNIT);
+            sqlRequest += addFilter(systemSummaryParameter.filterRequestType, TableDashBoard.REQUEST_TYPE);
 
-            if (systemSummaryParameter.filterOnlineDateFrom!=null)
+            if (systemSummaryParameter.filterOnlineDateFrom != null)
             {
-                sqlRequest += " and "+TableDashBoard.SCHEDULED_ONLINE_DATE+" > ? ";
-                listRequestObject.add( systemSummaryParameter.filterOnlineDateFrom );
+                sqlRequest += " and " + TableDashBoard.SCHEDULED_ONLINE_DATE + " > ? ";
+                listRequestObject.add(systemSummaryParameter.filterOnlineDateFrom);
             }
-            if (systemSummaryParameter.filterOnlineDateTo!=null)
+            if (systemSummaryParameter.filterOnlineDateTo != null)
             {
-                sqlRequest += " and "+TableDashBoard.SCHEDULED_ONLINE_DATE+" < ? ";
-                listRequestObject.add( systemSummaryParameter.filterOnlineDateTo );
+                sqlRequest += " and " + TableDashBoard.SCHEDULED_ONLINE_DATE + " < ? ";
+                listRequestObject.add(systemSummaryParameter.filterOnlineDateTo);
             }
-
 
             sqlRequest += " order by " + systemSummaryParameter.orderByField + " desc ";
 
             logger.info("Execute the request [" + sqlRequest + "] parameters");
             final PreparedStatement pstmt = con.prepareStatement(sqlRequest);
             for (int i = 0; i < listRequestObject.size(); i++)
-                {
-                final Object o = listRequestObject.get( i );
-                 pstmt.setObject( i+1, o );
-                }
+            {
+                final Object o = listRequestObject.get(i);
+                pstmt.setObject(i + 1, o);
+            }
 
             int numberOfRecords = 0;
             final ResultSet rs = pstmt.executeQuery();
@@ -1260,6 +1334,7 @@ public class SdeBusinessAccess {
         preparedStatement.executeUpdate();
 
     }
+
     public enum SdeDataStatus {
         OK, NOTFOUND, ERROR, NODATABASECONNECTION, SQLERROR
     };
@@ -1531,7 +1606,7 @@ public class SdeBusinessAccess {
             if (sdeParameter.completeWithLists) {
                 try
                 {
-                loadLists(sdeData, null);
+                    loadLists(sdeData, null);
                 } catch (final Exception e)
                 {
                 };
@@ -1710,16 +1785,15 @@ public class SdeBusinessAccess {
         {
             final DataModel dashBoard = new DataModel(TableDashBoard.TABLE_NAME, null, null, null, false, TableDashBoard.DB_ID);
 
-
-            final String sqlRequest = "update "+dashBoard.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName)
+            final String sqlRequest = "update " + dashBoard.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName)
                     + " set " + colName + "='" + colValue + "'"
-                    +" where "+TableDashBoard.SDE_NUMBER+" = '"+sdeNumber+"' and "+TableDashBoard.SDE_STATUS+"='"+sdeStatus+"'";
+                    + " where " + TableDashBoard.SDE_NUMBER + " = '" + sdeNumber + "' and " + TableDashBoard.SDE_STATUS + "='" + sdeStatus + "'";
             final Statement stmt = con.createStatement();
             logger.info("updateAttribut.updateSubmitStatus:SqlRequest [" + sqlRequest + "]");
 
             final int numberOfRow = stmt.executeUpdate(sqlRequest);
             con.commit();
-            sdeData.status = numberOfRow==1 ? SdeDataStatus.OK : SdeDataStatus.NOTFOUND;
+            sdeData.status = numberOfRow == 1 ? SdeDataStatus.OK : SdeDataStatus.NOTFOUND;
 
             // TODO
             // Replicate trigger logic here
@@ -1727,8 +1801,7 @@ public class SdeBusinessAccess {
 
             return sdeData;
 
-        }
-        catch (final Exception e)
+        } catch (final Exception e)
         {
             // logger.severe("Error " + e.toString());
             try {
@@ -1746,6 +1819,7 @@ public class SdeBusinessAccess {
             return sdeData;
         }
     }
+
     /* ******************************************************************************** */
     /*                                                                                  */
     /* private operation On Database */
@@ -1773,6 +1847,7 @@ public class SdeBusinessAccess {
 
     }
 
+
     /**
      * load all lists
      *
@@ -1790,18 +1865,18 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("r_area_numbers_by_field", "area_number", "area_name", "r_area_numbers_by_field", null));
         lists.add(new ListDefinition("r_genset_make_models", "energy_input_gj_hr", "engine_make_and_model", "r_genset_make_models", null));
         lists.add(new ListDefinition("ov_well_hole", "distinct op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null));
-		lists.add(new ListDefinition("r_prod_alloc_tag_glng", "rpa_id", "ec_template_code", "r_prod_alloc_tag", "well_template = 'GLNG'"));
+        lists.add(new ListDefinition("r_prod_alloc_tag_glng", "rpa_id", "ec_template_code", "r_prod_alloc_tag", "well_template = 'GLNG'"));
         lists.add(new ListDefinition("r_well_group", "distinct value", "value", "r_form_data", "type = 'well_group'"));
         lists.add(new ListDefinition("r_well_category", "value", "value", "r_form_data", "type='well_cat'"));
         lists.add(new ListDefinition("r_gas_inlet", "value", "value", "r_form_data", "type='gas_inlet'"));
         lists.add(new ListDefinition("r_wtr_dis", "value", "value", "r_form_data", "type='wtr_dis'"));
         lists.add(new ListDefinition("r_well_lcyc", "value", "value", "r_form_data", "type='well_lcyc'"));
         lists.add(new ListDefinition("r_well_opst", "value", "value", "r_form_data", "type='well_opst'"));
-		// --------- artificial_lift_glng
+        // --------- artificial_lift_glng
         lists.add(new ListDefinition("artificial_lift_glng", "value", "value", "r_form_data", "type='artsys_code' and business_unit='GLNG'"));
         // operator area
         lists.add(new ListDefinition("operator_area_glng", "value", "value", "r_form_data", "type='operator_area' and business_unit='GLNG'"));
-        
+
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list
