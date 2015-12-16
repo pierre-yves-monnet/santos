@@ -89,6 +89,7 @@ appCommand.controller('DashboardControler',
 			.then( function ( jsonResult ) {	
 						self.isAllowPropertiesView = jsonResult.data.isAllowPropertiesView;
 						self.properties.updatesdeurl= jsonResult.data.updatesdeurl;
+						self.properties.version=jsonResult.data.version;
 					},
 					function ( jsonResult ) {
 							});
@@ -554,7 +555,8 @@ appCommand.controller('DashboardControler',
 	// --------------------------------------------------------------------------
 	this.properties ={};
 	this.properties.updatesdeurl="";
-	this.properties.debug=false;
+	this.properties.debug=false;	
+	this.properties.version=0;
 	this.setproperties = function() 
 	{
 		this.propertiesmessage="Processing...";

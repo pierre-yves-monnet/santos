@@ -71,7 +71,8 @@
 	<div class="container-fluid" >
 		<div class="santosHeader voffset2">
 			<!--<img src="pageResource?page=custompage_SDEdashboard&location=img/santos-energy-logo.jpg"/> -->
-			<h3 class="vcenter">Dashboard</h3>
+			<h3 class="vcenter">Dashboard</h3><p/>
+			<h5 class="vcenter">version: {{dashctrl.properties.version}}</h5>			
 		</div>
 		<div style="background-color: #237CCB;">
 			<table><tr>
@@ -294,7 +295,7 @@
 						
 						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
 							<td style="background-color: #ADADF5">Well Category (Primary):</td>
-							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.WellCategoryPrimary}}</td>
+							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.WellCategoryPrimary}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCategoryPrimary}}</td>
 						</tr>
 						
@@ -629,35 +630,6 @@
 	<!-- ******************************************************************************** -->
 	<div class="col-lg-11" ng-show="dashctrl.isshowPADashboard" style="margin-left:35px">
 		<h1>PA Dashboard</h1>
-		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
-		<tr><td colspan="4"><h2>Search</h2></td></tr>
-		<tr>
-			<td>UWI:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteruwi"></td>
-			<td>Well Full Name:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterwellfullname"></td>
-		</tr>
-		<tr>
-			<td>SDE Number:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filtersdenumber"></td>
-			<td>Business Unit:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterbusinessunit"></td>
-		</tr>
-		<tr>
-			<td>SDE Originator:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteroriginator"></td>
-			<td>Request type:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterrequesttype"></td>			
-		</tr>
-		<tr>
-			<td>Well Online Date Range</td></tr>
-		<tr>
-			<td>From date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedatefrom"></td>
-			<td>To date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedateto"></td>
-		</tr>
-
-		<td colspan="4"><center><button ng-click="dashctrl.searchPADashboard()" class="btn btn-primary">Search</button></center></td>
-		</tr>
-		</table>
-		
-		<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
-		<span class="label label-success" >{{dashctrl.padashboard.message}}</span><br>
-		</div>
-		<span class="label label-danger" >{{dashctrl.padashboard.errormessage}}</span><br>
 			
 		<h2>Result</h2>
 		<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
@@ -721,15 +693,15 @@
 					<td>{{onesynthesis.DATE_WELL_IDENTIFIED | date:'dd-MM-yyyy'}}</td>				
 					<td><a ng-href="#" ng-click="dashctrl.accessTaskButton( null, onesynthesis)">{{onesynthesis.SDE_NUMBER}}</a></td>
 					<td>{{onesynthesis.WELL_CODE}}</td>
-				<td>{{onesynthesis.WELL_FULL_NAME}}</td>
-				<td>{{onesynthesis.REQUEST_TYPE}}</td>
+					<td>{{onesynthesis.WELL_FULL_NAME}}</td>
+					<td>{{onesynthesis.REQUEST_TYPE}}</td>
 					<td>{{onesynthesis.BUSINESS_UNIT}}</td>					
 					<td>{{onesynthesis.SCHEDULED_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
 					<td>{{onesynthesis.MODIFIED_DATE | date:'dd-MM-yyyy'}}</td>
 					<td>{{onesynthesis.ACTUAL_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
 				<td>{{onesynthesis.REQUEST_STATUS}}</td>
 				
-					<td><input type="checkbox" ng-model="onesynthesis.ON_HOLD" ng-change="dashctrl.checkPALine( onesynthesis, 'ON_HOLD')"</td>
+				<td><input type="checkbox" ng-model="onesynthesis.ON_HOLD" ng-change="dashctrl.checkPALine( onesynthesis, 'ON_HOLD')"</td>
 				<td><input type="checkbox" ng-model="onesynthesis.DO_NOT_LOAD" ng-change="dashctrl.checkPALine( onesynthesis, 'DO_NOT_LOAD')"></td>
 				<td><input type="checkbox" ng-model="onesynthesis.UPDATE_EC" ng-change="dashctrl.checkPALine( onesynthesis, 'UPDATE_EC') "></td>
 				</tr>
@@ -737,8 +709,39 @@
 			<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
 			{{dashctrl.getPADashboardPage()}}
 			</div>
-			<button ng-click="dashctrl.submitPADashboard()" 
-			class = "btn btn-success">Submit</button>
+			<button ng-click="dashctrl.submitPADashboard()" class = "btn btn-success">Submit</button>
+
+		</p>			
+		
+		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
+		<tr><td colspan="4"><h2>Search</h2></td></tr>
+		<tr>
+			<td>UWI:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteruwi"></td>
+			<td>Well Full Name:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterwellfullname"></td>
+		</tr>
+		<tr>
+			<td>SDE Number:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filtersdenumber"></td>
+			<td>Business Unit:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterbusinessunit"></td>
+		</tr>
+		<tr>
+			<td>SDE Originator:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteroriginator"></td>
+			<td>Request Type:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterrequesttype"></td>			
+		</tr>
+		<tr>
+			<td>Well Online Date Range</td></tr>
+		<tr>
+			<td>From Date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedatefrom"></td>
+			<td>To Date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedateto"></td>
+		</tr>
+
+		<td colspan="4"><center><button ng-click="dashctrl.searchPADashboard()" class="btn btn-primary">Search</button></center></td>
+		</tr>
+		</table>
+		
+		<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
+		<span class="label label-success" >{{dashctrl.padashboard.message}}</span><br>
+		</div>
+		<span class="label label-danger" >{{dashctrl.padashboard.errormessage}}</span><br>
 	</div>
 
 	
@@ -757,7 +760,7 @@
 	
 		Debug : <input ng-model="dashctrl.properties.debug" size="60"><p>
 		
-		Version : 0.0.6<p>
+		Version : <input ng-model="dashctrl.properties.version" disabled="true" readonly="true" size="60"><p>
 	
 		<button ng-click="dashctrl.setproperties();" class="btn btn-lg btn-primary" 
 			style="font-size:15px;background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Update properties</button><p>
