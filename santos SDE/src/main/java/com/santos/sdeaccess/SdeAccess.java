@@ -1144,7 +1144,7 @@ public class SdeAccess {
         logger.info("Special Management for status=[" + status + "] : caseMap=[" + caseMap.get("Status"));
 
         caseMap.put("WellDataStatus", sdeInfo.get(SdeBusinessAccess.TableDashBoard.WELL_DATA_STATUS));
-        caseMap.put("AssignedRO", sdeInfo.get(SdeBusinessAccess.TableDashBoard.ASSIGN_RO));
+        caseMap.put("AssignedRO", sdeInfo.get(SdeBusinessAccess.TableDashBoard.ASSIGNED_RO));
 
     }
 
