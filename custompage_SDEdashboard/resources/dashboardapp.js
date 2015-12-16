@@ -302,10 +302,15 @@ appCommand.controller('DashboardControler',
 		var listcasesfiltered = $filter('filter') (this.listcases, this.filtercase );
 		// console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(listcasesfiltered));
 		this.casenbitems = listcasesfiltered.length;
-		listcasesfiltered=  listcasesfiltered.slice(begin, end);
-		if (begin > listcasesfiltered.length)
+		console.log("listcase.length="+this.listcases.length+", listcasefiltered.length="+listcasesfiltered.length+" begin="+begin+" casepagenumber="+this.casepagenumber+" itemperpage="+this.caseitemsperpage);
+		if (begin > listcasesfiltered.length) {
+			console.log("RESET CASE PAGENUMBER to 1");
 			this.casepagenumber = 1;
-		return listcasesfiltered;
+			begin=0;
+			end = begin + this.caseitemsperpage;
+			}
+		var listcasesfilteredslice =  listcasesfiltered.slice(begin, end);
+		return listcasesfilteredslice;
 	}
 
 
