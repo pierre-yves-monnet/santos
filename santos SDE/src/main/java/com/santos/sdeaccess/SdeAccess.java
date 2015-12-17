@@ -52,7 +52,7 @@ public class SdeAccess {
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    public static String version = "SDE Java version 0.0.6";
+    public static String version = "SDE Java version 0.0.7";
 
     static{
         logger.info(version);
