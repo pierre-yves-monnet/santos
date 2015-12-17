@@ -1951,7 +1951,7 @@ public class SdeBusinessAccess {
         // --------- artificial_lift
         lists.add(new ListDefinition("artificial_lift", "value", "value", "r_form_data", "type='artsys_code' and business_unit='EABU'"));
 
-        // --------- rmu_interval_name
+        // --------- rmu_interval_name         
         // Changing reference table from 'r_form_data' to 'r_pool'
         //lists.add(new ListDefinition("rmu_interval_name", "value", "value", "r_form_data", "type='rmu' and business_unit='BOTH'"));
         lists.add(new ListDefinition("rmu_interval_name", "RMU", "RMU", "r_pool", null));
@@ -2283,6 +2283,47 @@ public class SdeBusinessAccess {
         String listFieldKey = "";
         String listFieldValue = "";
 
+        
+        // RMU field is custom widget in UI.
+        // This field is created on the fly by the user, hence has no sequence generated for its primary key
+        // The following if statement is a special handling for RMU data
+        if(dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName).equalsIgnoreCase("RMU")){
+            
+            logger.info("SdeBusinessAccess.insert :: Found RMU.");
+            
+            // get sequence
+            // TODO :: May need to externalise to a method if needed for other tables.
+            Statement sequenceStatement = con.createStatement();
+            ResultSet sequenceResultSet = sequenceStatement.executeQuery("select sde.rmu_seq.nextval from dual");            
+            sequenceResultSet.next();
+            int sequence = sequenceResultSet.getInt(1);            
+            sequenceResultSet.close();
+            sequenceStatement.close();
+
+            logger.info("SdeBusinessAccess.insert :: Generated sequence for RMU: " + sequence);
+            
+            dataThisLevel.put("RMU_ID", sequence);            
+            dataThisLevel.put("MODIFIED_BY", "DASH_ADMN");
+            dataThisLevel.put("MODIFIED_DATE", new Date());
+            // get Basic Well Information key, needed as foreign key
+            Map<String, Object> dashboardMap = (Map<String, Object>) sdeData.data.get("dashboard");
+            if(dashboardMap == null){
+                System.out.println("ewfoefenfjenk");
+                logger.severe("SdeBusinessAccess.insert :: Could not obtain 'dashboard' map.");
+                return;
+            }
+            
+            Map<String, Object> basic_well_infoMap = (Map<String, Object>) dashboardMap.get("basic_well_info");
+            if(basic_well_infoMap == null){
+                logger.severe("SdeBusinessAccess.insert :: Could not obtain 'basic_well_info' map.");
+                return;
+            }
+            
+            dataThisLevel.put("RMU_BWI_ID", basic_well_infoMap.get("BWI_ID"));        
+        }
+            
+        
+        
         for (final String key : dataThisLevel.keySet())
         {
             if (listChildsName.contains(key)) {
@@ -2352,7 +2393,7 @@ public class SdeBusinessAccess {
         listFieldValue = listFieldValue.substring(0, listFieldValue.length() - 1);
 
         sqlRequest += "(" + listFieldKey + ") values (" + listFieldValue + ")";
-
+        
         logger.info(" data[" + dataModel.getSdeDataName() + "] data[" + sdeData.getPointerData() + "] InsertRequest [" + sqlRequest + "] ListData "
                 + listDataValue.toString() + "]");
 
