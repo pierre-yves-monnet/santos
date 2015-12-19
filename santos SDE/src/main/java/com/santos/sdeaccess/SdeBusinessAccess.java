@@ -1952,7 +1952,9 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("artificial_lift", "value", "value", "r_form_data", "type='artsys_code' and business_unit='EABU'"));
 
         // --------- rmu_interval_name
-        lists.add(new ListDefinition("rmu_interval_name", "value", "value", "r_form_data", "type='rmu' and business_unit='BOTH'"));
+        // Changing reference table from 'r_form_data' to 'r_pool'
+        //lists.add(new ListDefinition("rmu_interval_name", "value", "value", "r_form_data", "type='rmu' and business_unit='BOTH'"));
+        lists.add(new ListDefinition("rmu_interval_name", "RMU", "RMU", "r_pool", null));
 
         // String suffix
         listStaticValues = new ArrayList<Map<String, Object>>();
