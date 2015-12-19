@@ -6,7 +6,7 @@
 (function() {
 
 
-var appCommand = angular.module('gcdmmonitor', ['googlechart', 'ui.bootstrap','ngModal']);
+var appCommand = angular.module('gcdmmonitor', ['googlechart', 'ui.bootstrap','ngModal', 'ngSanitize']);
 
 
 
@@ -21,14 +21,13 @@ var appCommand = angular.module('gcdmmonitor', ['googlechart', 'ui.bootstrap','n
 
 // Ping the server
 appCommand.controller('GcdmControler',
-	function ( $http, $scope, $filter ) {
+	function ( $http, $scope, $filter,$sce ) {
 	
 	
 	this.ismanager=false;
 	
 	this.casemaxresult = 100;
 	
-
 	this.sourceformurl="";
 	self.message="";
 	self.errormessage="";
@@ -45,11 +44,21 @@ appCommand.controller('GcdmControler',
 	
 	this.gasComposition.AddMessageDate="";
 	this.gasComposition.DialogShown=false;
-	this.gasComposition.ListValues=[];
+	this.gasComposition.listValues =[];
 	this.gasComposition.listHeaders=[];
 	this.gasComposition.ListSuplychain=[];
-	this.gasComposition.NewValueGasComposition={};
-	this.gasComposition.listAddFields=[];
+	
+	this.getListEvents = function () {
+		return $sce.trustAsHtml( this.gasComposition.listeventst);
+	}
+	this.getListNewEvents = function () {
+		return $sce.trustAsHtml( this.newGasComposition.listeventst);
+	}
+	
+	this.newGasComposition ={};
+	this.newGasComposition.values={};
+	this.newGasComposition.search = {};
+	this.newGasComposition.listFields=[];
 	
 	this.showGasComposition = function( typeOfGasComposition )
 	{
@@ -62,52 +71,49 @@ appCommand.controller('GcdmControler',
 		$http.get( '?page=custompage_gcdmdashboard&action=showgascomposition&json='+json )
 				.then( function ( jsonResult ) {
 
-					self.gasComposition.ListValues 			= jsonResult.data.LISTVALUES;
-					self.gasComposition.Message				= jsonResult.data.MESSAGE;
-					self.gasComposition.ErrorMessage		= jsonResult.data.ERRORMESSAGE;
+					self.gasComposition.listValues  		= jsonResult.data.LISTVALUES;
+					self.gasComposition.message				= jsonResult.data.MESSAGE;
+					self.gasComposition.errorMessage		= jsonResult.data.ERRORMESSAGE;
 					self.gasComposition.ListSuplychain   	= jsonResult.data.LISTSUPPLYCHAIN;
 					self.gasComposition.listHeaders			= jsonResult.data.LISTHEADERS;
-					self.gasComposition.listAddFields		= jsonResult.data.LISTADDFIELDS;
+					self.newGasComposition.listFields		= jsonResult.data.NEWGASCOMPOSITIONFIELDS;
 					self.setorder( 'SUPPLYCHAINEPOINT', false);
 					console.log('get all default '+angular.toJson(self.listshowdefault ));
 				},
 				function(jsonResult) {
-					alert('an error occure during retrieve default '+jsonResult.status);
+					alert("Can't connect the server "+jsonResult.status);
 				});
 	}
 	
 	this.showGasComposition( "Defaults" );
 	
+	
+	
+	
+	this.gasCompositionCloseDialog = function () {
+		if (this.newGasComposition.isChange==true) {
+			alert("You made some change without save them");
+		}
+		else {
+			this.gasCompositionDialogShown = false;
+		}
+	}
 	this.gasCompositionAdd = function () {
 		this.gasCompositionDialogShown = true;
+		this.newGasComposition.isChange=false;
 		}
 	
-	this.getGasCompositionListSuplychain = function() {
+	
+	this.getGasCompositionListSupplychain = function() {
 		return this.gasComposition.ListSuplychain;
 		}
 
+	// get the list of Columns header
 	this.gasCompositionHeader=[];
-	this.getGasCompositionHeader = function () {
+	this.getGasCompositionColsHeader = function () {
 		return this.gasComposition.listHeaders;
 	}
-	this.getGasCompositionAddFields = function() {
-		return this.gasComposition.listAddFields;
-	};
 	
-	this.checkRangeGasComposition = function ( header ) {
-		var message="";
-		if (header.minrange != null && this.gasComposition.NewValueGasComposition[ header.id ] < header.minrange) {
-			message="Out of range : must be more than "+header.minrange+";";
-		}
-		if (header.maxrange != null && this.gasComposition.NewValueGasComposition[ header.id ] > header.maxrange) {
-			message="Out of range : must be less than "+header.maxrange+";";
-		}
-		console.log("CheckRange : "+message+" range"+header.minrange+" < "+header.maxrange+" : "+this.gasComposition.NewValueGasComposition[ header.id ] );
-
-		this.gasComposition.NewValueGasComposition[ header.id +"_ERROR" ] = message;
-
-	}
-		
 	this.casepagenumber=1;
 	this.filtercase = { };
 	this.caseitemsperpage=10;
@@ -117,13 +123,145 @@ appCommand.controller('GcdmControler',
 		var begin = ((this.casepagenumber - 1) * this.caseitemsperpage);
 		var end = begin + this.caseitemsperpage;
 		
-		this.gasComposition.ListValues = $filter('orderBy')(this.gasComposition.ListValues, this.orderByField, this.reverseSort);
-		console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(this.gasComposition.ListValues));
-		var listgascompositionfiltered = $filter('filter') (this.gasComposition.ListValues, this.filtercase );
+		this.gasComposition.listValues  = $filter('orderBy')(this.gasComposition.listValues , this.orderByField, this.reverseSort);
+		// console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(this.gasComposition.listValues ));
+		var listgascompositionfiltered = $filter('filter') (this.gasComposition.listValues , this.filtercase );
 		// console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(listcasesfiltered));
+		if (listgascompositionfiltered==null)
+			return null;
 		return listgascompositionfiltered.slice(begin, end);
 	}
 
+	
+	
+	// click on the delete button
+	this.gasCompositionDelete = function() {
+		console.log("gasCompositionDelete");
+		var listToDelete=[];
+		for (var i=0;i<this.gasComposition.listValues .length;i++) {
+			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" uid="+this.gasComposition.listValues [ i ].UID);
+			if (this.gasComposition.listValues [ i ].linechecked)
+				listToDelete.push( this.gasComposition.listValues [ i ].UID );
+		}
+		if (listToDelete.length==0) {
+			alert("No line to delete; check some lines");
+			return;
+		}
+		
+		console.log("listtodelete="+listToDelete);
+		if (confirm("Are you sure to delete ? ")) {
+	        // todo code for deletion
+	    }
+		var post = {};
+		post.listtodelete = listToDelete;
+		var json = angular.toJson(post, false);
+		var self=this;
+		$http.get( '?page=custompage_gcdmdashboard&action=deletegascomposition&json='+json )
+				.then( function ( jsonResult ) {
+
+					self.gasComposition.listValues  	= jsonResult.data.LISTVALUES;
+					self.gasComposition.message			= jsonResult.data.MESSAGE;
+					self.gasComposition.errorMessage	= jsonResult.data.ERRORMESSAGE;
+					self.gasComposition.listeventst		= jsonResult.data.LISTEVENTS;
+					
+				},
+				function(jsonResult) {
+					alert('an error occure during retrieve default '+jsonResult.status);
+				});
+	};
+	
+	// --------------------------------------------------------------------------
+	//
+	// Dialog modal GCDM
+	//
+	// --------------------------------------------------------------------------
+	this.getNewGasCompositionFields = function() {
+		
+		return this.newGasComposition.listFields;
+	};
+	
+	this.checkRangeGasComposition = function ( header ) {
+		this.newGasComposition.isChange=true;
+		var message="";
+		if (header.minrange != null && this.newGasComposition.values[ header.id ] < header.minrange) {
+			message="Out of range : must be more than "+header.minrange+";";
+		}
+		if (header.maxrange != null && this.newGasComposition.values[ header.id ] > header.maxrange) {
+			message="Out of range : must be less than "+header.maxrange+";";
+		}
+		console.log("CheckRange : "+message+" range"+header.minrange+" < "+header.maxrange+" : "+this.newGasComposition.values[ header.id ] );
+
+		this.newGasComposition.values[ header.id +"_ERROR" ] = message;
+
+	}
+	
+	this.searchNewGasComposition = function()	{
+		this.newGasComposition.isChange=false;
+		var dateSt=this.formatDate( this.newGasComposition.search.EFFECTIVEDATE, this.newGasComposition.search.EFFECTIVETIME);
+		this.newGasComposition.search.EFFECTIVEDATE_ST = dateSt;
+		var json = angular.toJson(this.newGasComposition.search, false);
+		var self=this;
+		$http.get( '?page=custompage_gcdmdashboard&action=searchnewgascomposition&json='+json )
+				.then( function ( jsonResult ) {
+
+					self.newGasComposition.values = jsonResult.data.NEWGASCOMPOSITIONVALUES;
+					self.newGasComposition.message = jsonResult.data.MESSAGE;
+					self.newGasComposition.errorMessage = jsonResult.data.ERRORMESSAGE;
+					self.newGasComposition.listeventst	= jsonResult.data.LISTEVENTS;
+				},
+				function(jsonResult) {
+					alert('an error occure during retrieve default '+jsonResult.status);
+				});
+		
+	}
+	
+	this.saveNewGasComposition = function()	{
+		this.newGasComposition.listeventst	= "";
+		
+		var dateSt=this.formatDate( this.newGasComposition.search.EFFECTIVEDATE, this.newGasComposition.search.EFFECTIVETIME);
+		// filter is part of the data to save !
+		this.newGasComposition.values.EFFECTIVEDATE_ST = dateSt;
+		this.newGasComposition.values.SUPPLYCHAINPOINT = this.newGasComposition.search.SUPPLYCHAINPOINT;
+		var json = angular.toJson(this.newGasComposition.values, false);
+		var self=this;
+		$http.get( '?page=custompage_gcdmdashboard&action=savenewgascomposition&json='+json )
+				.then( function ( jsonResult ) {
+
+					self.newGasComposition.values 		= jsonResult.data.NEWGASCOMPOSITIONVALUES;
+					self.newGasComposition.message 		= jsonResult.data.MESSAGE;
+					self.newGasComposition.errorMessage = jsonResult.data.ERRORMESSAGE;
+					self.newGasComposition.listeventst	= jsonResult.data.LISTEVENTS;
+					if (self.newGasComposition.errorMessage == null)
+						this.newGasComposition.isChange=false;
+				},
+				function(jsonResult) {
+					alert('an error occure during retrieve default '+jsonResult.status);
+				});
+		
+	}
+	// --------------------------------------------------------------------------
+	//
+	// GasCompositionSearch GCDM
+	//
+	// --------------------------------------------------------------------------
+		
+	
+		
+	this.newGasCompositionSave = function()	{
+		this.newGasComposition.isChange=false;
+	}
+
+	
+	this.newGasCompositionDelete = function()	{
+		// calculate the list of element to delete
+		
+		 if (confirm("Are you sure to delete ? ")) {
+		        // todo code for deletion
+		    }
+
+	}
+	
+	
 
 	this.showprocessform = function( processName, processVersion, processId) {
 		this.formtitle = "Create Case "+processName;
@@ -246,7 +384,15 @@ appCommand.controller('GcdmControler',
 		}
 		
 	}
-
+	this.formatDate = function(dateValue, timeValue){
+          // var dateOut = new Date(date);
+          var dateOut =  $filter('date')(new Date(dateValue),'dd-MM-yyyy');
+          if (timeValue!=null) {
+        	  var timeOut =  $filter('date')(new Date(timeValue),'HH:mm');
+              dateOut += " "+timeOut;
+        	  }
+          return dateOut;
+    };
 	
 	
 

@@ -2,6 +2,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
+import java.util.HashMap;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -62,7 +63,7 @@ import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
 import com.santos.gcdmaccess.GcdmAccess;
 
 import com.santos.gcdmaccess.GcdmBusinessAccess.GasCompositionParameter;
-
+import com.santos.gcdmaccess.GcdmBusinessAccess.NewGasCompositionParameter;
 
 public class Index implements PageController {
 
@@ -71,12 +72,14 @@ public class Index implements PageController {
 	
 		Logger logger= Logger.getLogger("org.bonitasoft");
 		
+		HashMap<String,Object> result=null;
+
+		def String indexContent;
+		pageResourceProvider.getResourceAsStream("Index.groovy").withStream { InputStream s-> indexContent = s.getText() };
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter out = response.getWriter()
 		
 		try {
-			def String indexContent;
-			pageResourceProvider.getResourceAsStream("Index.groovy").withStream { InputStream s-> indexContent = s.getText() };
-			response.setCharacterEncoding("UTF-8");
-			PrintWriter out = response.getWriter()
 
 			String action=request.getParameter("action");
 			logger.info("###################################### action is["+action+"] V2!");
@@ -94,20 +97,47 @@ public class Index implements PageController {
 			PlatformMonitoringAPI platformMonitoringAPI = TenantAPIAccessor.getPlatformMonitoringAPI(session);
 			IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
 			
-			HashMap<String,Object> result=null;
 			if ("showgascomposition".equals(action))
 			{
 				String jsonSt =request.getParameter("json");
 				GasCompositionParameter gasCompositionParameter = GasCompositionParameter.getFromJson( jsonSt );
 				result = GcdmAccess.getListGasComposition(gasCompositionParameter, session, processAPI );
 			}					
+			else if ("deletegascomposition".equals(action))
+			{
+				String jsonSt =request.getParameter("json");
+				GasCompositionParameter gasCompositionParameter = GasCompositionParameter.getFromJson( jsonSt );
+				result = GcdmAccess.deleteListGasComposition(gasCompositionParameter, session, processAPI );
+			}					
+			else if ("searchnewgascomposition".equals(action))
+			{
+				String jsonSt =request.getParameter("json");
+				NewGasCompositionParameter newGasCompositionParameter = NewGasCompositionParameter.getFromJson( jsonSt );
+				result = GcdmAccess.searchListGasComposition(newGasCompositionParameter, session, processAPI );
+			}		
+            
+            else if ("savenewgascomposition".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                NewGasCompositionParameter newGasCompositionParameter = NewGasCompositionParameter.getFromJson( jsonSt );
+                result = GcdmAccess.addNewGasComposition(newGasCompositionParameter, session, processAPI );
+            }
+            
 			
-			
-			
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			String exceptionDetails = sw.toString();
+			logger.severe("Exception ["+e.toString()+"] at "+exceptionDetails);
+			result = new HashMap<String,Object>();
+			result.put("ERRORMESSAGE", "Exception ["+e.toString()+"] at "+exceptionDetails);
+		}
+		try
+		{		
 			if (result!=null)
 			{
 				String jsonDetailsSt = JSONValue.toJSONString( result );
-	   
+                logger.info("Return "+jsonDetailsSt);
 				out.write( jsonDetailsSt );
 				out.flush();
 				out.close();				
@@ -123,6 +153,7 @@ public class Index implements PageController {
 			e.printStackTrace(new PrintWriter(sw));
 			String exceptionDetails = sw.toString();
 			logger.severe("Exception ["+e.toString()+"] at "+exceptionDetails);
+			
 		}
 	}
 
