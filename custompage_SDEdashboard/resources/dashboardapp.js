@@ -31,7 +31,7 @@ appCommand.controller('DashboardControler',
 						{"title":"Schd online Date", "id":"ScheduledOnlineDate","size":"20", "ctrl":"date" }, 
 						{"title":"Basic Well Data", "id":"BasicWellData", "size":"10", "ctrl":"semaphore" },
 						{"title":"Status", "id":"Status", "size":"20" }, 
-						{"title":"Assigned RO", "id":"Assigned_RO", "size":"20", "ctrl":"input"  },
+						{"title":"Assigned RO", "id":"AssignedRO", "size":"20", "ctrl":"input"  },
 						{"title":"", "id":"buttons", "size":"0","ctrl":"button" },
 						];
 
@@ -88,8 +88,8 @@ appCommand.controller('DashboardControler',
 		$http.get( '?page=custompage_SDEdashboard&action=init')
 			.then( function ( jsonResult ) {	
 						self.isAllowPropertiesView = jsonResult.data.isAllowPropertiesView;
+						self.isAdmin = jsonResult.data.isAdmin;
 						self.properties.updatesdeurl= jsonResult.data.updatesdeurl;
-						self.properties.version=jsonResult.data.version;
 					},
 					function ( jsonResult ) {
 							});
@@ -112,6 +112,8 @@ appCommand.controller('DashboardControler',
 				.success( function ( jsonResult ) {
 
 					self.listcases 				= jsonResult.listcases;
+					self.admininfo 				= jsonResult.admininfo;
+					
 					console.log('get all task listBusinessFilter '+angular.toJson(self.listcases ));
 				})
 				.error( function(e) {
@@ -232,21 +234,44 @@ appCommand.controller('DashboardControler',
 		this.isshowform=true;
 	}
 	
+	this.ngChange = function ( headerlabel, onetask) {
+		console.log("NgChange on ["+headerlabel.id+"]");
+		if (headerlabel.id =="AssignedRO") 
+			{
+				console.log("NgChange changeAssignRO !!");
+			
+				onetask.changeAssignRO= true;
+			}
+	}
+	this.ngStyle = function ( headerlabel, onetask) {
+		if (headerlabel.id =="AssignedRO" && onetask.changeAssignRO) 
+		{
+			console.log("Return style "+onetask.AssignedRO);
+			return "background-color: burlywood;"; // burlywood
+		}
+		return "";
+	}
 	this.saveAssignedRO = function () {
 		var sendvalue={};
 		sendvalue.list=[];
 		for(var i=0;i<this.listcases.length;i++) {
-			var oneline = {};
-			oneline.SDENUMBER  = this.listcases[ i ].sdenumber;
-			oneline.ASSIGNED_RO = this.listcases[ i ].Assigned_RO;
-			sendvalue.list.push( oneline );
+			console.log("changeAssignRO[ i ]:"+this.listcases[ i ].changeAssignRO);
+			if (this.listcases[ i ].changeAssignRO !=null && this.listcases[ i ].changeAssignRO) {
+				var oneline = {};
+				oneline.SDE  = this.listcases[ i ].sdenumber;
+				oneline.ARO = this.listcases[ i ].AssignedRO;
+				sendvalue.list.push( oneline );
+			}
 		}
-		var json=angular.toJson(sendvalue,true );
+		var json=angular.toJson(sendvalue, false );
 		var self = this;
 		$http.get( '?page=custompage_SDEdashboard&action=updateRo&json='+json )
 					.then( function ( jsonResult ) {
 						self.errormessage	= jsonResult.data.ERRORSTATUS;
 						self.message	= jsonResult.data.STATUS;
+						for(var i=0;i<self.listcases.length;i++) {
+							self.listcases[ i ].changeAssignRO = false;
+							}
 						},
 						function( jsonResult ) {
 							alert('error on server '+jsonResult.status);
@@ -303,15 +328,10 @@ appCommand.controller('DashboardControler',
 		var listcasesfiltered = $filter('filter') (this.listcases, this.filtercase );
 		// console.log('Filter filter='+ angular.toJson(this.filtercase,true ) +' Order='+  this.orderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(listcasesfiltered));
 		this.casenbitems = listcasesfiltered.length;
-		console.log("listcase.length="+this.listcases.length+", listcasefiltered.length="+listcasesfiltered.length+" begin="+begin+" casepagenumber="+this.casepagenumber+" itemperpage="+this.caseitemsperpage);
-		if (begin > listcasesfiltered.length) {
-			console.log("RESET CASE PAGENUMBER to 1");
+		listcasesfiltered=  listcasesfiltered.slice(begin, end);
+		if (begin > listcasesfiltered.length)
 			this.casepagenumber = 1;
-			begin=0;
-			end = begin + this.caseitemsperpage;
-			}
-		var listcasesfilteredslice =  listcasesfiltered.slice(begin, end);
-		return listcasesfilteredslice;
+		return listcasesfiltered;
 	}
 
 
@@ -387,7 +407,7 @@ appCommand.controller('DashboardControler',
 	// this function is call at each display : on a filter, or on a order for example
 	this.getWellListPage = function()
 	{
-		console.log("getWellList : start "+this.listwelllist);
+		// console.log("getWellList : start "+this.listwelllist);
 		if (this.listwelllist==null)
 		{
 			this.listwelllist=[];
@@ -398,7 +418,7 @@ appCommand.controller('DashboardControler',
 		this.listwelllist = $filter('orderBy')(this.listwelllist, this.welllistorderByField, this.welllistorderByField);
 
 		var listwelllistfiltered = $filter('filter') (this.listwelllist, this.filterwelllist );
-		console.log('Filter filter='+ angular.toJson( listwelllistfiltered,true ) +' Order='+  this.welllistorderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(this.filterwelllist));
+		// console.log('Filter filter='+ angular.toJson( listwelllistfiltered,true ) +' Order='+  this.welllistorderByField + ' reservesort='+this.reverseSort+' listcasesfiltered='+angular.toJson(this.filterwelllist));
 		
 		return listwelllistfiltered.slice(begin, end);
 	}
@@ -428,6 +448,7 @@ appCommand.controller('DashboardControler',
 				.then( function ( jsonResult ) {
 					// console.log('searchSystemSummary: Sucess is '+angular.toJson(jsonResult.data ));
 					self.systemSummary.listsde 				= jsonResult.data.RESULT;
+					
 					// console.log('searchSystemSummary: result is '+angular.toJson(self.systemSummary.listsde ));
 
 				}, function( jsonResult) {
@@ -555,8 +576,7 @@ appCommand.controller('DashboardControler',
 	// --------------------------------------------------------------------------
 	this.properties ={};
 	this.properties.updatesdeurl="";
-	this.properties.debug=false;	
-	this.properties.version=0;
+	this.properties.debug=false;
 	this.setproperties = function() 
 	{
 		this.propertiesmessage="Processing...";
@@ -626,6 +646,9 @@ appCommand.controller('DashboardControler',
 		return this.isAllowPropertiesView;
 	}
 
+	this.allowAdminView = function () {
+		return this.isAdmin;
+	}
 	this.getButtonClass = function (isCurrent ) {
 		if (isCurrent) 
 			return "btn btn-primary";

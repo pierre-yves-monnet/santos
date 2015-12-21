@@ -56,7 +56,7 @@ public class JUnitSdeAccess {
             final ListCasesParameter listCasesParameter = new ListCasesParameter();
             listCasesParameter.sourceIsDatabase = true;
             listCasesParameter.sdeParameter.allowDirectConnection = true;
-            listCasesParameter.sdeParameter.scheduledOnlineDateInFutur = true;
+            listCasesParameter.sdeParameter.scheduledOnlineDateInFutur = false;
 
             Map<String, Object> result = SdeAccess.getWellTrackerDashboardList(listCasesParameter, apiSession,
                     TenantAPIAccessor.getProcessAPI(apiSession),

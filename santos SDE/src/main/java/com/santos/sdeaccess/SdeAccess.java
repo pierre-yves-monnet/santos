@@ -37,6 +37,7 @@ import org.bonitasoft.engine.session.APISession;
 import org.json.simple.JSONValue;
 
 import com.bonitasoft.engine.bpm.process.impl.ProcessInstanceSearchDescriptor;
+import com.santos.sdeaccess.SdeBusinessAccess.AssignROParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.CreateWellParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.PADashboardParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.SdeNumberStatus;
@@ -172,6 +173,7 @@ public class SdeAccess {
 
         if (listCasesParameter.sourceIsDatabase)
         {
+            traceinfo += "Source Database;";
             final Calendar limitToInitiateSde = Calendar.getInstance();
             limitToInitiateSde.set(Calendar.MILLISECOND, 0);
             limitToInitiateSde.set(Calendar.SECOND, 0);
@@ -192,7 +194,8 @@ public class SdeAccess {
             if (sdeResult.status != null) {
                 traceinfo += "sdeBusinessAccess.Status:" + sdeResult.status + ";";
             }
-            traceinfo += "ListSource[" + listSdeNumber.size() + "] NumberResult[" + sdeResult.listSdeInformation.size() + "]";
+            traceinfo += "sqlRequest[" + sdeResult.sqlRequest + "];ListSdeNumberFilter[" + listSdeNumber.size() + "] NumberResult["
+                    + sdeResult.listSdeInformation.size() + "]";
             for (final SdeNumberStatus keySdeNumberStatus : sdeResult.listSdeInformation.keySet())
             {
                 final Map<String, Object> sdeInfo = sdeResult.listSdeInformation.get(keySdeNumberStatus);
@@ -219,7 +222,7 @@ public class SdeAccess {
                         caseMap.put("initiateSdeRequest", false);
                     }
                     */
-                    
+
                     // rule #51 : if the status is RED, the initiateSdeRequest is not available
                     final String status = Toolbox.getString(sdeInfo.get(SdeBusinessAccess.TableDashBoard.BWD_STATUS), null);
                     if ("RED".equals(status)) {
@@ -237,7 +240,7 @@ public class SdeAccess {
                         caseMap.put("processversion", processDefinition.getVersion());
                         caseMap.put("processid", processDefinition.getId());
                     }
-                } 
+                }
                 else{
                     caseMap.put("initiateSdeRequest", false);
                 }
@@ -280,8 +283,13 @@ public class SdeAccess {
                 caseMap.put("sdestatus", sdeInfo.get(TableDashBoard.SDE_STATUS));
                 // caseMap.put("glng", "GLNG");
                 // caseMap.put("caseid", processInstance.getId());
-                if(((Boolean)caseMap.get("initiateSdeRequest")) == true){
+
+                if (Boolean.TRUE.equals(caseMap.get("initiateSdeRequest"))) {
                     listCases.add(caseMap);
+                }
+                else {
+                    traceinfo += "SdeNumber[" + sdeInfo.get(TableDashBoard.SDE_NUMBER) + "]/Status[" + sdeInfo.get(TableDashBoard.SDE_STATUS)
+                            + "] InitateSdeRequest is FALSE, don't keep it;";
                 }
             }
 
@@ -363,7 +371,7 @@ public class SdeAccess {
                             }
                         }
                         searchOptionsBuilder.rightParenthesis();
-                        logger.info("getListCasesForSdeDashboard.Filter on processes :" + traceinfo);
+                        logger.info("SdeAccess.getListCasesForSdeDashboard.Filter on processes :" + traceinfo);
                         if (countFilter == 0)
                         {
                             logger.severe("No process found with filter [" + listCasesParameter.listOfProcesses);
@@ -374,7 +382,7 @@ public class SdeAccess {
                         final StringWriter sw = new StringWriter();
                         e.printStackTrace(new PrintWriter(sw));
                         final String exceptionDetails = sw.toString();
-                        logger.severe("During getListCasesForSdeDashboard " + e.toString() + " at " + exceptionDetails);
+                        logger.severe("SdeAccess.getListCasesForSdeDashboard " + e.toString() + " at " + exceptionDetails);
                     }
                 }
 
@@ -460,7 +468,7 @@ public class SdeAccess {
                 final StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
                 final String exceptionDetails = sw.toString();
-                logger.severe("During getListCases " + e.toString() + " at " + exceptionDetails + "traceInfo=" + traceinfo);
+                logger.severe("SdeAccess.getListCasesForSdeDashboard:" + e.toString() + " at " + exceptionDetails + "traceInfo=" + traceinfo);
 
                 result.put("error", e.toString());
             } catch (final Exception ex)
@@ -468,7 +476,7 @@ public class SdeAccess {
                 final StringWriter sw = new StringWriter();
                 ex.printStackTrace(new PrintWriter(sw));
                 final String exceptionDetails = sw.toString();
-                logger.severe("During getListCases " + ex.toString() + " at " + exceptionDetails + "traceInfo=" + traceinfo);
+                logger.severe("SdeAccess.getListCasesForSdeDashboard:" + ex.toString() + " at " + exceptionDetails + "traceInfo=" + traceinfo);
 
             }
 
@@ -489,7 +497,7 @@ public class SdeAccess {
                     if (caseMap == null)
                     {
                         // not normal !
-                        logger.severe("getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
+                        logger.severe("SdeAccess.getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
                         continue;
                     }
 
@@ -509,8 +517,8 @@ public class SdeAccess {
         }
 
         result.put("listcases", listCases);
-
-        logger.info("listCases= " + result + "] trace=" + traceinfo);
+        result.put("admininfo", traceinfo);
+        logger.info("SdeAccess.getListCasesForSdeDashboard: " + listCases.size() + " records, " + result + "] trace=" + traceinfo);
 
         return result;
     }
@@ -581,6 +589,31 @@ public class SdeAccess {
         final HashMap<String, Object> result = new HashMap<String, Object>();
 
         final SdeResult sdeResult = sdeBusinessAccess.createWellList(createWellParameter);
+
+        result.put("STATUS", sdeResult.status);
+        result.put("ERRORSTATUS", sdeResult.errorstatus);
+        return result;
+    }
+
+    /* ******************************************************************************** */
+    /*                                                                                  */
+    /* AssignRO */
+    /*                                                                                  */
+    /*                                                                                  */
+    /* ******************************************************************************** */
+
+    /**
+     * @param parameter
+     * @param session
+     * @param processAPI
+     * @return
+     */
+    public static Map<String, Object> updateAssignRo(final AssignROParameter parameter, final APISession session, final ProcessAPI processAPI)
+    {
+        final HashMap<String, Object> result = new HashMap<String, Object>();
+
+        final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
+        final SdeResult sdeResult = sdeBusinessAccess.updateAssignRo(parameter);
 
         result.put("STATUS", sdeResult.status);
         result.put("ERRORSTATUS", sdeResult.errorstatus);

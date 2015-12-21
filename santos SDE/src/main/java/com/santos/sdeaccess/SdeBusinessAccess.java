@@ -233,6 +233,7 @@ public class SdeBusinessAccess {
 
         public String status;
         public String errorstatus;
+        public String sqlRequest;
         public Map<SdeNumberStatus, Map<String, Object>> listSdeInformation = new HashMap<SdeNumberStatus, Map<String, Object>>();
         public List<Map<String, Object>> listRecords = new ArrayList<Map<String, Object>>();
 
@@ -296,14 +297,15 @@ public class SdeBusinessAccess {
      */
     public SdeResult getSynthesisListSdeInformation(final List<SdeNumberStatus> listSdeNumber, final SdeParameter sdeParameter)
     {
-        final SdeResult sdeResult = new SdeResult();
         Connection con = getConnection(sdeParameter.allowDirectConnection);
+        final SdeResult sdeResult = new SdeResult();
         if (con == null)
         {
             sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
             sdeResult.errorstatus = "Can't access the datasource [" + DATASOURCE_NAME + "]";
             return sdeResult;
         }
+        String sqlRequest = null;
         try
         {
             final DataModel dashBoard = new DataModel(TableDashBoard.TABLE_NAME, null, null, null, false, TableDashBoard.DB_ID);
@@ -312,7 +314,7 @@ public class SdeBusinessAccess {
 
             final List<Object> listDataValue = new ArrayList<Object>();
 
-            String sqlRequest = "select * from "
+            sqlRequest = "select * from "
                     + dashBoard.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName) + ", "
                     + wellInfo.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName)
                     + " where  " + wellInfo.getLinkToFather();
@@ -356,7 +358,7 @@ public class SdeBusinessAccess {
             }
             sqlRequest += " order by " + TableDashBoard.SDE_NUMBER + "," + TableDashBoard.SDE_STATUS;
 
-            logger.info("Execute the request [" + sqlRequest + "] parameters onlyNewRecord[" + sdeParameter.scheduledOnlineDateInFutur + "]");
+            sdeResult.sqlRequest = sqlRequest;
             final PreparedStatement preparedStatement = con.prepareStatement(sqlRequest);
 
             for (int i = 0; i < listDataValue.size(); i++) {
@@ -388,19 +390,25 @@ public class SdeBusinessAccess {
 
                     record.put(key, rs.getObject(i));
                 }
-                logger.info("Read  [" + record + "]");
+                logger.info("SdeBusinessAccess.getSynthesisListSdeInformationRead  [" + record + "]");
                 final Long sdeNumber = Long.valueOf(Toolbox.getInteger(record.get(TableDashBoard.SDE_NUMBER), null));
                 final Long sdeStatus = Long.valueOf(Toolbox.getInteger(record.get(TableDashBoard.SDE_STATUS), null));
 
                 sdeResult.add(SdeNumberStatus.getInstance(sdeNumber, sdeStatus), record);
             }
             preparedStatement.close();
+
+            logger.info("SdeBusinessAccess.getSynthesisListSdeInformationNumber found[" + sdeResult.listSdeInformation.size() + "] record with sqlRequest["
+                    + sqlRequest + "] onlyNewRecord["
+                    + sdeParameter.scheduledOnlineDateInFutur + "]");
+
         } catch (final Exception e)
         {
             final StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
 
-            logger.severe("Error during the sql request call " + e.toString() + " at " + sw.toString());
+            logger.severe("SdeBusinessAccess.getSynthesisListSdeInformationError during the sql request[" + sqlRequest + "] call " + e.toString() + " at "
+                    + sw.toString());
             sdeResult.status = "FAILED";
             sdeResult.errorstatus = "Error during query the table";
         }
@@ -738,8 +746,10 @@ public class SdeBusinessAccess {
             return sdeResult;
         }
         String sqlRequest = "";
+
         try
         {
+            String trace = "";
 
             for (final Map<String, Object> oneRecord : parameter.listUpdate)
             {
@@ -748,17 +758,22 @@ public class SdeBusinessAccess {
                         + " set " + TableDashBoard.ASSIGNED_RO + " = ?"
                         + " where " + TableDashBoard.SDE_NUMBER + " = ? "
                         + " and " + TableDashBoard.SDE_STATUS + "= 9";
-                logger.info("Update AssignRO [" + sqlRequest + "]");
+                logger.info("Update AssignRO [" + sqlRequest + "] AssignedRO=" + oneRecord.get("ARO") + "] SdeNumber[" + oneRecord.get("SDE")
+                        + "]");
+                trace += oneRecord.get("SDE") + ",";
 
                 final PreparedStatement pstmt = con.prepareStatement(sqlRequest);
-                pstmt.setObject(1, oneRecord.get("ASSIGNED_RO"));
-                pstmt.setObject(2, oneRecord.get("SDENUMBER"));
+                pstmt.setObject(1, oneRecord.get("ARO"));
+                pstmt.setObject(2, oneRecord.get("SDE"));
                 pstmt.executeUpdate();
                 pstmt.close();
             }
             con.commit();
 
-            sdeResult.status = "update " + parameter.listUpdate.size() + " records";
+            if (trace.length() > 0) {
+                trace = "(" + trace.substring(0, trace.length() - 1) + ")";
+            }
+            sdeResult.status = "update " + parameter.listUpdate.size() + " record " + (parameter.listUpdate.size() > 1 ? "s" : "") + " " + trace;
             sdeResult.errorstatus = "";
 
         } catch (final Exception e) {
@@ -1951,7 +1966,7 @@ public class SdeBusinessAccess {
         // --------- artificial_lift
         lists.add(new ListDefinition("artificial_lift", "value", "value", "r_form_data", "type='artsys_code' and business_unit='EABU'"));
 
-        // --------- rmu_interval_name         
+        // --------- rmu_interval_name
         // Changing reference table from 'r_form_data' to 'r_pool'
         //lists.add(new ListDefinition("rmu_interval_name", "value", "value", "r_form_data", "type='rmu' and business_unit='BOTH'"));
         lists.add(new ListDefinition("rmu_interval_name", "RMU", "RMU", "r_pool", null));
@@ -2283,47 +2298,47 @@ public class SdeBusinessAccess {
         String listFieldKey = "";
         String listFieldValue = "";
 
-        
+
         // RMU field is custom widget in UI.
         // This field is created on the fly by the user, hence has no sequence generated for its primary key
         // The following if statement is a special handling for RMU data
         if(dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName).equalsIgnoreCase("RMU")){
-            
+
             logger.info("SdeBusinessAccess.insert :: Found RMU.");
-            
+
             // get sequence
             // TODO :: May need to externalise to a method if needed for other tables.
-            Statement sequenceStatement = con.createStatement();
-            ResultSet sequenceResultSet = sequenceStatement.executeQuery("select sde.rmu_seq.nextval from dual");            
+            final Statement sequenceStatement = con.createStatement();
+            final ResultSet sequenceResultSet = sequenceStatement.executeQuery("select sde.rmu_seq.nextval from dual");
             sequenceResultSet.next();
-            int sequence = sequenceResultSet.getInt(1);            
+            final int sequence = sequenceResultSet.getInt(1);
             sequenceResultSet.close();
             sequenceStatement.close();
 
             logger.info("SdeBusinessAccess.insert :: Generated sequence for RMU: " + sequence);
-            
-            dataThisLevel.put("RMU_ID", sequence);            
+
+            dataThisLevel.put("RMU_ID", sequence);
             dataThisLevel.put("MODIFIED_BY", "DASH_ADMN");
             dataThisLevel.put("MODIFIED_DATE", new Date());
             // get Basic Well Information key, needed as foreign key
-            Map<String, Object> dashboardMap = (Map<String, Object>) sdeData.data.get("dashboard");
+            final Map<String, Object> dashboardMap = (Map<String, Object>) sdeData.data.get("dashboard");
             if(dashboardMap == null){
                 System.out.println("ewfoefenfjenk");
                 logger.severe("SdeBusinessAccess.insert :: Could not obtain 'dashboard' map.");
                 return;
             }
-            
-            Map<String, Object> basic_well_infoMap = (Map<String, Object>) dashboardMap.get("basic_well_info");
+
+            final Map<String, Object> basic_well_infoMap = (Map<String, Object>) dashboardMap.get("basic_well_info");
             if(basic_well_infoMap == null){
                 logger.severe("SdeBusinessAccess.insert :: Could not obtain 'basic_well_info' map.");
                 return;
             }
-            
-            dataThisLevel.put("RMU_BWI_ID", basic_well_infoMap.get("BWI_ID"));        
+
+            dataThisLevel.put("RMU_BWI_ID", basic_well_infoMap.get("BWI_ID"));
         }
-            
-        
-        
+
+
+
         for (final String key : dataThisLevel.keySet())
         {
             if (listChildsName.contains(key)) {
@@ -2393,7 +2408,7 @@ public class SdeBusinessAccess {
         listFieldValue = listFieldValue.substring(0, listFieldValue.length() - 1);
 
         sqlRequest += "(" + listFieldKey + ") values (" + listFieldValue + ")";
-        
+
         logger.info(" data[" + dataModel.getSdeDataName() + "] data[" + sdeData.getPointerData() + "] InsertRequest [" + sqlRequest + "] ListData "
                 + listDataValue.toString() + "]");
 
