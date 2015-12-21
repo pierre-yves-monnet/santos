@@ -475,8 +475,9 @@ appCommand.controller('DashboardControler',
 	this.padashboard.listdata = [];
 	
 	this.searchPADashboard = function() {
-		var self=this;		 
+		var self=this;		 		
 		this.padashboard.processName="SDEdemo";
+		
 		var json= angular.toJson(this.padashboard.search, false);		 
 		console.log("Call URL PADashboard : "+json);
 				 
@@ -492,21 +493,22 @@ appCommand.controller('DashboardControler',
 						alert("Error during the request "+angular.toJson(jsonResult));
 					});
 	};
+	this.searchPADashboard();
 	
 	
 	this.getPADashboardPage = function() {
 	
-	
+				 
 	// console.log("---- getSystemSummaryPage : start list["+angular.toJson(this.systemSummary.listsde )+"]");
 		if (this.padashboard.listdata==null)
-		{		
+		{				
 			this.padashboard.listdata=[];
 			return this.padashboard.listdata;
 		}
 		if (this.padashboard.listdata.length ==0)
 		{
 			return this.padashboard.listdata;
-		}				
+		}		
 		var begin = ((this.padashboard.pagenumber - 1) * this.padashboard.sdeperpage);
 		var end = begin + this.padashboard.sdeperpage;
 		this.padashboard.listdata = $filter('orderBy')(this.padashboard.listdata, this.padashboard.orderByField, this.padashboard.reversesort);
@@ -528,12 +530,12 @@ appCommand.controller('DashboardControler',
 			
 		}
 		
-	}
+	}	
 	this.submitPADashboard = function() {
 	
 	var self=this;		 
 		var json= angular.toJson(this.padashboard.listdata, false);	
-	
+		
 	$http.get( '?page=custompage_SDEdashboard&action=setPADashboard&json='+json )
 			.then( function ( jsonResult ) {			
 						self.padashboard.listdata = jsonResult.data.LISTPADASHBOARD	
@@ -545,6 +547,7 @@ appCommand.controller('DashboardControler',
 						self.padashboard.message= "";
 						alert("Error during the request "+angular.toJson(jsonResult));
 					});
+	this.searchPADashboard();
 	};
 	
 	

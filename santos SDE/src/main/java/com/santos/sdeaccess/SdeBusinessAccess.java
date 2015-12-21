@@ -925,8 +925,7 @@ public class SdeBusinessAccess {
                     stmt.close();
                 }
 
-                con.commit();
-                con.close();
+                con.commit();                
 
             } catch (final Exception e) {
                 final StringWriter sw = new StringWriter();

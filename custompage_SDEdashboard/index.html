@@ -630,8 +630,11 @@
 	<!-- ******************************************************************************** -->
 	<div class="col-lg-11" ng-show="dashctrl.isshowPADashboard" style="margin-left:35px">
 		<h1>PA Dashboard</h1>
-			
-		<h2>Result</h2>
+		
+		<br/><br/>
+
+		<button id="refresh" ng-click="dashctrl.searchPADashboard()"><span class="glyphicon glyphicon-refresh"></span></button>	
+		
 		<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
 		<tr>
 			<th><span class="table-header">Date Received</span>
@@ -713,6 +716,8 @@
 
 		</p>			
 		
+		
+		<!-- Removed Search functionality based on SDE-67
 		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
 		<tr><td colspan="4"><h2>Search</h2></td></tr>
 		<tr>
@@ -742,6 +747,7 @@
 		<span class="label label-success" >{{dashctrl.padashboard.message}}</span><br>
 		</div>
 		<span class="label label-danger" >{{dashctrl.padashboard.errormessage}}</span><br>
+		-->
 	</div>
 
 	
