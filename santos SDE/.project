@@ -37,6 +37,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_gcdmdashboard/index.html</locationURI>
 		</link>
 		<link>
+			<name>custompage/GCDM/santos.css</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_gcdmdashboard/resources/style/santos.css</locationURI>
+		</link>
+		<link>
 			<name>custompage/SDE/Index.groovy</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_SDEdashboard/Index.groovy</locationURI>
