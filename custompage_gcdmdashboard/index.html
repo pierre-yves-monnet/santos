@@ -120,6 +120,44 @@
                         </div>
                     </div>
                 </div>
+                
+                
+                 <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><span class="glyphicon glyphicon-th">
+                            </span>Reports</a>
+                        </h4>
+                    </div>
+                    <div id="collapseThree" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <table class="table">
+                                <tbody>
+								 <tr>
+                                    <td>
+                                        <a ng-click="gcdmctrl.showReport('gascompositiondefault', 'Report Gas Composition Default')">Gas Composition Default</a>
+                                    </td>
+                                </tr>
+								 <tr>
+                                    <td>
+                                        <a ng-click="gcdmctrl.showReport('gascompositionminimum', 'Report Gas Composition Minimum')">Gas Composition Minimum</a>
+                                    </td>
+                                </tr>
+								 <tr>
+                                    <td>
+                                        <a ng-click="gcdmctrl.showReport('gascompositionblendalarm', 'Report Gas Composition Blend Alarm')">Gas Composition Blend Alarms</a>
+                                    </td>
+                                </tr>
+								 <tr>
+                                    <td>
+                                        <a ng-click="gcdmctrl.showReport('pressure', 'Pressure')">Pressure</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
@@ -172,7 +210,7 @@
 
 			
 
-
+	{{gcdmctrl.gasComposition.showModal}}
 			<span class="label label-success">{{gcdmctrl.gasComposition.message}}</span><br>
 			<span class="label label-danger">{{gcdmctrl.gasComposition.errorMessage}}</span><br>
 			<div ng-bind-html="gcdmctrl.getListEvents( gcdmctrl.gasComposition.listeventst )"></div>
@@ -192,7 +230,7 @@
 			 </div>
 
 
-			<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
+			<table class="table table-striped table-hover table-condensed  table-bordered" style="border:1">
 				<tr>
 					<th></th> <!-- check box -->
 					
@@ -213,7 +251,10 @@
 					<td><input type="checkbox" ng-model="onetask.linechecked">&nbsp;
 					</td>
 					<td ng-repeat="headerlabel in gcdmctrl.getGasCompositionColsHeader() track by $index" >
-						{{onetask[headerlabel.id]}} 
+				
+						<div ng-show="headerlabel.type=='date'">{{onetask[headerlabel.id] | date : 'dd/MM/yyyy'}}</div>
+						<div ng-show="headerlabel.type=='number'" style="text-align:left">{{onetask[headerlabel.id]}}</div>
+						<div ng-show="headerlabel.type=='text'">{{onetask[headerlabel.id]}}</div> 
 					</td>
 					
 				</tr>
@@ -256,7 +297,9 @@
 							</tr>
 							<tr>
 								<td>Effective Data/Time</td>
-								<td><input type="date" ng-model="gcdmctrl.gasComposition.search.EFFECTIVEDATE" 
+								
+								<td>
+								<input type="date" ng-model="gcdmctrl.gasComposition.search.EFFECTIVEDATE" 
 									ng-change="gcdmctrl.checkDateByTheDay(gcdmctrl.gasComposition.search.EFFECTIVEDATE) ">
 									<input type="time" ng-model="gcdmctrl.gasComposition.search.EFFECTIVETIME" ><br>
 									<span class="label label-danger">{{gcdmctrl.errorMessage}}</span>
@@ -266,7 +309,9 @@
 							<tr>
 								<td colspan="2">
 								<button class="btn btn-info" ng-click="gcdmctrl.searchNewGasComposition()">Search</button>
-								<button class="btn btn-success" ng-click="gcdmctrl.saveNewGasComposition()">Save</button>
+								
+								<!--  ng-click="gcdmctrl.saveNewGasComposition()" -->
+								<button class="btn btn-success" ng-click="gcdmctrl.saveNewValue('gascomposition', gcdmctrl.gasComposition)">Save</button>
 								<button class="btn btn-danger" ng-click="gcdmctrl.deleteNewGasComposition()">Delete</button>
 								</td>
 								
@@ -301,8 +346,22 @@
 							</tbody>
 	
 						</table>
-	
+						
+					Details of calculation:
+					<table>
+						<tr><td class="label label-info">Specifics Gravity : {{gcdmctrl.gasComposition.modalSpecificGravityValue}}</td><tr>
+						<tr><td><input type="checkbox" ng-model="gcdmctrl.gasComposition.modalshowgravityformula">Formula:
+							<span ng-show="gcdmctrl.gasComposition.modalshowgravityformula" style="font: italic bold 12px/30px Georgia, serif;padding:10px">{{gcdmctrl.gasComposition.modalSpecificGravityFormula}}</span></td></tr>
+						<tr><td><input type="checkbox" ng-model="gcdmctrl.gasComposition.modalshowgravitydetail">Details:
+						
+						<span ng-show="gcdmctrl.gasComposition.modalshowgravitydetail" style="font: italic bold 12px/30px Georgia, serif">{{gcdmctrl.gasComposition.modalSpecificGravityDetails}}</span></td></tr>
+						<tr><td class="label label-info">Specifics Gravity : {{gcdmctrl.gasComposition.modalHeatingValue}}</td><tr>
+						<tr><td><input type="checkbox" ng-model="gcdmctrl.gasComposition.modalshowheatingformula">Formula:
+							<span ng-show="gcdmctrl.gasComposition.modalshowheatingformula" style="font: italic bold 12px/30px Georgia, serif;padding:10px">{{gcdmctrl.gasComposition.modalHeatingFormula}}</span></td></tr>
+						<tr><td><input type="checkbox" ng-model="gcdmctrl.gasComposition.modalshowheatingdetails">Details:
+							<span  ng-show="gcdmctrl.gasComposition.modalshowheatingdetails" style="font: italic bold 12px/30px Georgia, serif">{{gcdmctrl.gasComposition.modalHeatingDetails}}</span></td></tr>
 				
+					</table>
 				
 				</div>
 				 </modal-dialog>
@@ -375,10 +434,9 @@
 					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="modal">
 					<button class="btn btn-danger" ng-click="gcdmctrl.closeDialog(gcdmctrl.pressure)">Close</button>
 				
-								
-					<span class="label label-success">{{gcdmctrl.pressure.newMessage}}</span><br>
-					<span class="label label-danger">{{gcdmctrl.pressure.newErrorMessage}}</span><br>
-					<div ng-bind-html="gcdmctrl.getListNewEvents( gcdmctrl.pressure.newListeventst)"></div>
+					<span class="label label-success">{{gcdmctrl.pressure.modalMessage}}</span><br>
+					<span class="label label-danger">{{gcdmctrl.pressure.modalErrorMessage}}</span><br>
+					<div ng-bind-html="gcdmctrl.getListNewEvents( gcdmctrl.pressure.modalListEvents)"></div>
 			
 						<!-- style="border-width:3px; border-style:solid; border-color:black;"-->
 						<table class="table table-striped table-hover table-condensed table-bordered"  >
@@ -415,7 +473,70 @@
 				 </modal-dialog>
 				
 		</div>
-			
+		
+		<!-- ******************************************************************************** -->
+		<!--                                                                                  -->
+		<!--                Reports                                          -->
+		<!--                                                                                  -->
+		<!--                                                                                  -->
+		<!-- ******************************************************************************** -->
+		<div class="col-lg-9" ng-show="gcdmctrl.isshowReport" ng-disabled="gcdmctrl.isinprogress">
+			<legend class="text-primary"><span class="glyphicon glyphicon-th"></span>{{gcdmctrl.report.legend}}</legend>
+			<span class="label label-success">{{gcdmctrl.report.message}}</span><br>
+			<span class="label label-danger">{{gcdmctrl.report.errorMessage}}</span><br>
+			<div ng-bind-html="gcdmctrl.getListEvents( gcdmctrl.report.listeventst )"></div>
+
+			<table class="table table-striped table-hover table-condensed table-bordered santosbluelight"  >
+				<tr><th>Supply chain Point</th><th>From</th><th>To</th><th>Audit Trail</th><th></th></tr>
+				<tr>
+					<td><select ng-model="gcdmctrl.report.search.SUPPLYCHAINPOINT" >
+							<option ng-repeat="option in gcdmctrl.getReportListSupplychain()" value="{{option.id}}">{{option.name}}</option>
+						</select>
+					</td><td>
+						<input type="date" ng-model="gcdmctrl.report.search.FROMDATE" >
+					</td><td>
+						<input type="date" ng-model="gcdmctrl.report.search.TODATE" >
+					</td><td>
+						<input type="checkbox" ng-model="gcdmctrl.report.search.AUDITTRAIL" >
+					</td>
+					</td><td>
+						<button class="btn btn-info" ng-click="gcdmctrl.getReport()" >OK</button>
+					</td>
+				</tr>
+			</table>
+						<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
+				<tr>
+					<th ng-repeat="headerlabel in gcdmctrl.getReportColsHeader() track by $index" id="santosheadertable">
+						<a href="#" ng-click="gcdmctrl.setOrder( gcdmctrl.report, headerlabel.id, ! gcdmctrl.report.reverseSort)" style="text-decoration:none">
+							{{headerlabel.display}}
+								<span ng-show="gcdmctrl.report.orderByField === headerlabel.id && gcdmctrl.report.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
+								<span ng-show="gcdmctrl.report.orderByField === headerlabel.id && ! gcdmctrl.report.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
+						</a>
+					</th>
+				</tr>
+				
+				<tbody  ng-repeat="oneLineReport in gcdmctrl.getListValue( gcdmctrl.report ) track by $index">
+				<tr >
+					<td ng-repeat="headerlabel in gcdmctrl.getReportColsHeader() track by $index" style="{{gcdmctrl.getReportLineStyle( oneLineReport )}}">
+						<div ng-show="headerlabel.type=='date'">{{oneLineReport[headerlabel.id] | date : 'dd/MM/yyyy'}}</div>
+						<div ng-show="headerlabel.type=='number'" style="text-align:left">{{oneLineReport[headerlabel.id]}}</div>
+						<div ng-show="headerlabel.type=='text'">{{oneLineReport[headerlabel.id]}}</div> 
+					</td>
+				</tr>
+				</tbody>
+			</table>
+			<div >
+				Nb line per page:
+				<select ng-model="gcdmctrl.report.caseitemsperpage">						
+						<option value="10">10</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+				</select>
+			</div>
+			<pagination ng-model="gcdmctrl.report.casepagenumber" total-items="gcdmctrl.report.casenbitems" items-per-page="gcdmctrl.report.caseitemsperpage">
+				</pagination>
+		</div>			
+		
 		<!-- ******************************************************************************** -->
 		<!--                                                                                  -->
 		<!--                Show Form				                                          -->
