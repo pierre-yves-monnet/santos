@@ -646,7 +646,7 @@ public class GcdmBusinessAccess {
         }
         else if (typeDisplay == EnuTypeDisplays.Minimum)
         {
-            // FDR 60
+            // FDR-60
             gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
             gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
             gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
@@ -663,7 +663,7 @@ public class GcdmBusinessAccess {
         }
         else if (typeDisplay == EnuTypeDisplays.BlendAlarm)
         {
-            // FDR 62
+            // FDR-62
             gcdmResult.addHeaderColumns("EFFECTIVEDATE_ST", "Effective Date/Time", typeColumn.date);
             gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
             gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
