@@ -168,17 +168,26 @@
 								<div ng-show="headerlabel.ctrl == null">
 									{{onetask[headerlabel.id]}}
 								</div>
+								<div ng-show="headerlabel.ctrl == 'text'">
+									{{onetask[headerlabel.id]}}
+								</div>
 								<div ng-show="headerlabel.ctrl == 'link'">
 									<a href="" ng-click="dashctrl.link( headerlabel, onetask)">{{onetask[headerlabel.id]}}</a>
 								</div>
 								<div ng-show="headerlabel.ctrl == 'button'">
 									<!-- display all buttons -->
-									<div ng-show="onetask.initiateSdeRequest">
+									
+									<!-- 
+										Always show the orange button, no need to apply condition to show.
+										Blue and Green buttons are no longer needed.
+										<div ng-show="onetask.initiateSdeRequest">
+									-->									
+									<div>
 										<button ng-click="dashctrl.initiateSdeRequestbutton( headerlabel, onetask)" class="btn btn-xs  btn-warning"
 										style="background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Initiate SDE Request</button>
 										
 									</div>
-									<div ng-show="onetask.accesstask">
+									<!--div ng-show="onetask.accesstask">
 										<button ng-click="dashctrl.accessTaskButton( headerlabel, onetask)" class="btn btn-xs btn-info" 
 										style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Access SDE Request Task</button>
 									</div>
@@ -186,7 +195,7 @@
 										<button ng-click="dashctrl.accessCaseOverviewButton( headerlabel, onetask)" 
 											class="btn btn-xs btn-success" 
 											style="background-color: #5cb85c;border-color: #5cb85c;padding: 0px 10px;">SDE Overview</button>
-										</div>
+										</div-->
 								</div>
 								<div ng-show="headerlabel.ctrl == 'date'">
 									{{onetask[headerlabel.id] | date:'dd-MM-yyyy' }}
@@ -205,9 +214,9 @@
 							</td>
 						</tr>
 					</tbody>
-					<tr><td colspan="8"></td><td><button ng-click="dashctrl.saveAssignedRO()" title="Click here to save all Assigned RO fields" 
+					<!--tr><td colspan="8"></td><td><button ng-click="dashctrl.saveAssignedRO()" title="Click here to save all Assigned RO fields" 
 						 style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Update Assign RO</td></td>
-					</tr>
+					</tr-->
 									
 				</table>
 			</div>			
