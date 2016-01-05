@@ -1,3 +1,6 @@
+import com.santos.gcdmaccess.GcdmToolbox;
+import com.santos.gcdmaccess.GcdmPressureAccess.PressureParameter;
+
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import java.text.SimpleDateFormat;
@@ -61,13 +64,21 @@ import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
 	
 	
 import com.santos.gcdmaccess.GcdmAccess;
+import com.santos.gcdmaccess.GcdmPressureAccess;
+import com.santos.gcdmaccess.GcdmPressureAccess.NewPressureParameter;
 
+import com.santos.gcdmaccess.GcdmBusinessAccess.CalculGravityParameter;
 import com.santos.gcdmaccess.GcdmBusinessAccess.GasCompositionParameter;
 import com.santos.gcdmaccess.GcdmBusinessAccess.NewGasCompositionParameter;
 
+import com.santos.gcdmaccess.GcdmReport;
+import com.santos.gcdmaccess.GcdmReport.ReportParameter;
+
+
+
 public class Index implements PageController {
 
-	@Override
+	
 	public void doGet(HttpServletRequest request, HttpServletResponse response, PageResourceProvider pageResourceProvider, PageContext pageContext) {
 	
 		Logger logger= Logger.getLogger("org.bonitasoft");
@@ -91,38 +102,118 @@ public class Index implements PageController {
 				return;
 			}
 			
-			APISession session = pageContext.getApiSession()
-			ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
-			ProfileAPI profileAPI = TenantAPIAccessor.getProfileAPI(session);
-			PlatformMonitoringAPI platformMonitoringAPI = TenantAPIAccessor.getPlatformMonitoringAPI(session);
-			IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
+			APISession apiSession = pageContext.getApiSession()
+			ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(apiSession);
+			ProfileAPI profileAPI = TenantAPIAccessor.getProfileAPI(apiSession);
+			PlatformMonitoringAPI platformMonitoringAPI = TenantAPIAccessor.getPlatformMonitoringAPI(apiSession);
+			IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(apiSession);
 			
 			if ("showgascomposition".equals(action))
 			{
 				String jsonSt =request.getParameter("json");
 				GasCompositionParameter gasCompositionParameter = GasCompositionParameter.getFromJson( jsonSt );
-				result = GcdmAccess.getListGasComposition(gasCompositionParameter, session, processAPI );
-			}					
+				result = GcdmAccess.getListGasComposition(gasCompositionParameter, apiSession  ).toMap();
+			}		
+            else if ("editgascomposition".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                GasCompositionParameter gasCompositionParameter = GasCompositionParameter.getFromJson( jsonSt );
+                result = GcdmAccess.getGasComposition(gasCompositionParameter, apiSession ).toMap();
+            }       
+            
 			else if ("deletegascomposition".equals(action))
 			{
 				String jsonSt =request.getParameter("json");
 				GasCompositionParameter gasCompositionParameter = GasCompositionParameter.getFromJson( jsonSt );
-				result = GcdmAccess.deleteListGasComposition(gasCompositionParameter, session, processAPI );
-			}					
+				result = GcdmAccess.deleteListGasComposition(gasCompositionParameter, apiSession ).toMap();
+			}		            
+            else if ("defaultaddgascomposition".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                GasCompositionParameter gasCompositionParameter = GasCompositionParameter.getFromJson( jsonSt );
+                result = GcdmAccess.getDefaultGasComposition(gasCompositionParameter, apiSession ).toMap();
+            }
 			else if ("searchnewgascomposition".equals(action))
 			{
 				String jsonSt =request.getParameter("json");
 				NewGasCompositionParameter newGasCompositionParameter = NewGasCompositionParameter.getFromJson( jsonSt );
-				result = GcdmAccess.searchListGasComposition(newGasCompositionParameter, session, processAPI );
+				result = GcdmAccess.searchListGasComposition(newGasCompositionParameter, apiSession );
 			}		
             
-            else if ("savenewgascomposition".equals(action))
+         
+            else if ("save".equals(action))
             {
                 String jsonSt =request.getParameter("json");
-                NewGasCompositionParameter newGasCompositionParameter = NewGasCompositionParameter.getFromJson( jsonSt );
-                result = GcdmAccess.addNewGasComposition(newGasCompositionParameter, session, processAPI );
+                String type =request.getParameter("type");
+                logger.info("Save type["+type+"]");
+                if ("gascomposition".equals(type))
+                {
+                    NewGasCompositionParameter newGasCompositionParameter = NewGasCompositionParameter.getFromJson( jsonSt );
+                    result = GcdmAccess.addNewGasComposition(newGasCompositionParameter, apiSession );
+                } else if ("pressure".equals(type))
+                {
+                    NewPressureParameter newGasCompositionParameter = NewPressureParameter.getFromJson( jsonSt );
+                    result = GcdmPressureAccess.addNewPressure(newGasCompositionParameter, apiSession ).toMap();
+                }
+                else
+                {
+                    result = new HashMap<String,Object>();
+                    result.put("ERRORMESSAGE", "action[save] unknow type["+type+"]");
+    
+                }
+            }
+            else if ("calculategascomposition".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                 CalculGravityParameter calculGravityParameter = CalculGravityParameter.getFromJson(jsonSt);
+                 result = GcdmAccess.calculateGravityAndHeating(calculGravityParameter, apiSession ).toMap();
+                 
+            }
+            else if ("showpressure".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                PressureParameter pressureParameter = PressureParameter.getFromJson( jsonSt );
+                result = GcdmPressureAccess.getListPressure(pressureParameter,apiSession ).toMap();
+
+            }
+            else if ("defaultaddpressure".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                NewPressureParameter pressureParameter = NewPressureParameter.getFromJson( jsonSt );
+                result = GcdmPressureAccess.getDefaultPressure(pressureParameter, apiSession ).toMap();
+      
+            }
+            else if ("editpressure".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                PressureParameter pressureParameter = PressureParameter.getFromJson( jsonSt );
+                result = GcdmPressureAccess.getPressure(pressureParameter, apiSession ).toMap();
             }
             
+            else if ("deletepressure".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                PressureParameter pressureParameter = PressureParameter.getFromJson( jsonSt );
+                result = GcdmPressureAccess.deleteListPressure(pressureParameter, apiSession ).toMap();
+            }
+            else if ("savenewpressure".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                NewPressureParameter pressureParameter = NewPressureParameter.getFromJson( jsonSt );
+                result = GcdmPressureAccess.addNewPressure( pressureParameter, apiSession ).toMap();
+            }            
+            else if ("reportinfo".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                ReportParameter reportParameter = ReportParameter.getFromJson( jsonSt );
+                result = GcdmReport.report( reportParameter, apiSession ).toMap();
+            }
+            else
+            {
+                result = new HashMap<String,Object>();
+                result.put("ERRORMESSAGE", "Unknow action["+action+"]");
+            }
+
 			
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();

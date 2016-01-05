@@ -22,19 +22,39 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>custompage/Index.groovy</name>
+			<name>custompage/GCDM/Index.groovy</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_gcdmdashboard/Index.groovy</locationURI>
 		</link>
 		<link>
-			<name>custompage/gcdmmonitor.js</name>
+			<name>custompage/GCDM/gcdmmonitor.js</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_gcdmdashboard/resources/gcdmmonitor.js</locationURI>
 		</link>
 		<link>
-			<name>custompage/index.html</name>
+			<name>custompage/GCDM/index.html</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_gcdmdashboard/index.html</locationURI>
+		</link>
+		<link>
+			<name>custompage/GCDM/santos.css</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_gcdmdashboard/resources/style/santos.css</locationURI>
+		</link>
+		<link>
+			<name>custompage/SDE/Index.groovy</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_SDEdashboard/Index.groovy</locationURI>
+		</link>
+		<link>
+			<name>custompage/SDE/dashboardapp.js</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_SDEdashboard/resources/dashboardapp.js</locationURI>
+		</link>
+		<link>
+			<name>custompage/SDE/index.html</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/atelier/BPM-SP-7.1.0/workspace/tomcat/bonita/client/tenants/1/work/pages/custompage_SDEdashboard/index.html</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -31,7 +31,7 @@ appCommand.controller('DashboardControler',
 						{"title":"Schd online Date", "id":"ScheduledOnlineDate","size":"20", "ctrl":"date" }, 
 						{"title":"Basic Well Data", "id":"BasicWellData", "size":"10", "ctrl":"semaphore" },
 						{"title":"Status", "id":"Status", "size":"20" }, 
-						{"title":"Assigned RO", "id":"Assigned_RO", "size":"20", "ctrl":"input"  },
+						{"title":"Assigned RO", "id":"Assigned_RO", "size":"20", "ctrl":null  },
 						{"title":"", "id":"buttons", "size":"0","ctrl":"button" },
 						];
 

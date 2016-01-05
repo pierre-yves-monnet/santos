@@ -52,7 +52,7 @@ public class SdeAccess {
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    public static String version = "SDE Java version 0.0.7";
+    public static String version = "SDE Java version 1.92";
 
     static{
         logger.info(version);
@@ -280,7 +280,7 @@ public class SdeAccess {
                 caseMap.put("sdestatus", sdeInfo.get(TableDashBoard.SDE_STATUS));
                 // caseMap.put("glng", "GLNG");
                 // caseMap.put("caseid", processInstance.getId());
-                if(((Boolean)caseMap.get("initiateSdeRequest")) == true){
+                if(Boolean.TRUE.equals(caseMap.get("initiateSdeRequest"))){
                     listCases.add(caseMap);
                 }
             }
