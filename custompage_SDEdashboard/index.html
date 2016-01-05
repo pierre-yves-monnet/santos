@@ -168,9 +168,6 @@
 								<div ng-show="headerlabel.ctrl == null">
 									{{onetask[headerlabel.id]}}
 								</div>
-								<div ng-show="headerlabel.ctrl == 'text'">
-									{{onetask[headerlabel.id]}}
-								</div>
 								<div ng-show="headerlabel.ctrl == 'link'">
 									<a href="" ng-click="dashctrl.link( headerlabel, onetask)">{{onetask[headerlabel.id]}}</a>
 								</div>
@@ -208,9 +205,9 @@
 							</td>
 						</tr>
 					</tbody>
-					<!--tr><td colspan="8"></td><td><button ng-click="dashctrl.saveAssignedRO()" title="Click here to save all Assigned RO fields" 
+					<tr><td colspan="8"></td><td><button ng-click="dashctrl.saveAssignedRO()" title="Click here to save all Assigned RO fields" 
 						 style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Update Assign RO</td></td>
-					</tr-->
+					</tr>
 									
 				</table>
 			</div>			
