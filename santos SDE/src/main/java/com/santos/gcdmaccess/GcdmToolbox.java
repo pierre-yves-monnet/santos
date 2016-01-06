@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,7 @@ public class GcdmToolbox {
          * @param type "string" or "date" or "number"
          */
         public enum typeColumn {
-            text, date, number
+            text, date, number, list, checkbox
         };
 
         public void addHeaderColumns(final String id, final String display, final typeColumn type) {
@@ -75,7 +76,7 @@ public class GcdmToolbox {
             listHeader.add(oneheader);
         }
 
-        public void addEditFields(final String id, final String display, final typeColumn typeofField,
+        public Map<String, Object> addEditFields(final String id, final String display, final typeColumn typeofField,
                 boolean mandatory,
                 final boolean readonly, final Object minrange, final Object maxrange) {
             final HashMap<String, Object> oneField = new HashMap<String, Object>();
@@ -106,6 +107,16 @@ public class GcdmToolbox {
             }
 
             newGasCompositionFields.add(oneField);
+            return oneField;
+        }
+
+        public Map<String, Object>  addEditFields(final String id, final String display, final typeColumn typeofField,
+                final boolean mandatory,
+                final boolean readonly, final String[] listValues) {
+
+            final Map<String, Object> oneField = addEditFields(id, display, typeofField, mandatory, readonly, null, null);
+            oneField.put("listvalues",Arrays.asList(listValues) );
+            return oneField;
         }
 
         /**
