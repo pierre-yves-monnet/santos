@@ -8,7 +8,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +114,16 @@ public class GcdmToolbox {
                 final boolean readonly, final String[] listValues) {
 
             final Map<String, Object> oneField = addEditFields(id, display, typeofField, mandatory, readonly, null, null);
-            oneField.put("listvalues",Arrays.asList(listValues) );
+
+            final List<Map<String, Object>> listLines = new ArrayList<Map<String, Object>>();
+            for (final String label : listValues)
+            {
+                final Map<String, Object> oneLine = new HashMap<String, Object>();
+                oneLine.put("value", label);
+                oneLine.put("label", label);
+                listLines.add(oneLine);
+            }
+            oneField.put("listvalues", listLines);
             return oneField;
         }
 

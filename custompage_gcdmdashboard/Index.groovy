@@ -74,6 +74,8 @@ import com.santos.gcdmaccess.GcdmBusinessAccess.NewGasCompositionParameter;
 import com.santos.gcdmaccess.GcdmReport;
 import com.santos.gcdmaccess.GcdmReport.ReportParameter;
 
+import com.santos.gcdmaccess.GcdmAdminAccess;
+import com.santos.gcdmaccess.GcdmAdminAccess.AdminParameter;
 
 
 public class Index implements PageController {
@@ -154,6 +156,11 @@ public class Index implements PageController {
                 {
                     NewPressureParameter newGasCompositionParameter = NewPressureParameter.getFromJson( jsonSt );
                     result = GcdmPressureAccess.addNewPressure(newGasCompositionParameter, apiSession ).toMap();
+             
+                } else if ("supplychainpoint".equals(type))
+                {
+                    AdminParameter adminParameter = AdminParameter.getFromJson( jsonSt );
+                    result = GcdmAdminAccess.addNewSupplyChainPoint(adminParameter, apiSession ).toMap();
                 }
                 else
                 {
@@ -188,25 +195,30 @@ public class Index implements PageController {
                 String jsonSt =request.getParameter("json");
                 PressureParameter pressureParameter = PressureParameter.getFromJson( jsonSt );
                 result = GcdmPressureAccess.getPressure(pressureParameter, apiSession ).toMap();
-            }
-            
+            }            
             else if ("deletepressure".equals(action))
             {
                 String jsonSt =request.getParameter("json");
                 PressureParameter pressureParameter = PressureParameter.getFromJson( jsonSt );
                 result = GcdmPressureAccess.deleteListPressure(pressureParameter, apiSession ).toMap();
             }
-            else if ("savenewpressure".equals(action))
-            {
-                String jsonSt =request.getParameter("json");
-                NewPressureParameter pressureParameter = NewPressureParameter.getFromJson( jsonSt );
-                result = GcdmPressureAccess.addNewPressure( pressureParameter, apiSession ).toMap();
-            }            
             else if ("reportinfo".equals(action))
             {
                 String jsonSt =request.getParameter("json");
                 ReportParameter reportParameter = ReportParameter.getFromJson( jsonSt );
                 result = GcdmReport.report( reportParameter, apiSession ).toMap();
+            }
+            else if ("getlist".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                AdminParameter adminParameter = AdminParameter.getFromJson( jsonSt );
+                result = GcdmAdminAccess.getAdminList(adminParameter, apiSession ).toMap();
+            }
+             else if ("getdefaultadd".equals(action))
+            {
+                String jsonSt =request.getParameter("json");
+                AdminParameter adminParameter = AdminParameter.getFromJson( jsonSt );
+                result = GcdmAdminAccess.getAdminDefaultAdd(adminParameter, apiSession ).toMap();
             }
             else
             {

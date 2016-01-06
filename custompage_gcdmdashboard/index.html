@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/bootstrap.min.css">
 	<!--<link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/main.css">-->
 	<link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/style.css">
+	<!--  https://github.com/adamalbrecht/ngModal + Modify the ng-modal-close-x to not display it -->
     <link rel="stylesheet" href="pageResource?page=custompage_gcdmdashboard&location=style/ng-modal.css">
     
 
@@ -161,21 +162,16 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><span class="glyphicon glyphicon-user">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseAdmin"><span class="glyphicon glyphicon-user">
                             </span>Admin</a>
                         </h4>
                     </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
+                    <div id="collapseAdmin" class="panel-collapse collapse">
                         <div class="panel-body">
                             <table class="table">
                                 <tbody><tr>
                                     <td>
-                                        <a ng-click="gcdmctrl.showReportGasCompositionDefaults()">Users</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <a ng-click="gcdmctrl.showReportGasCompositionMinimum()">Supply Chain points</a> 
+                                        <a ng-click="gcdmctrl.showPage( gcdmctrl.supplychain )">Supply Chain Points</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -187,6 +183,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
@@ -210,7 +207,7 @@
 
 			
 
-	{{gcdmctrl.gasComposition.showModal}}
+			{{gcdmctrl.gasComposition.showModal}}
 			<span class="label label-success">{{gcdmctrl.gasComposition.message}}</span><br>
 			<span class="label label-danger">{{gcdmctrl.gasComposition.errorMessage}}</span><br>
 			<div ng-bind-html="gcdmctrl.getListEvents( gcdmctrl.gasComposition.listeventst )"></div>
@@ -274,19 +271,31 @@
 			</pagination>
 				-->
 				
-		    <!-- MODAL : newGasComposition -->
-			<modal-dialog show='gcdmctrl.gasComposition.showModal' dialog-title='Details' width='75%' height='80%' close="gcdmctrl.gasCompositionCloseDialog()">
-				<div class="modal-content" width='100%' height='100%'> 
-					<!-- <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="modal"> -->
-					<button type="button" class="close" ng-click="gcdmctrl.gasCompositionCloseDialog()"><span aria-hidden="true" class="modal"></span></button>
-					<button class="btn btn-danger" ng-click="gcdmctrl.gasCompositionCloseDialog()">Close</button>
+		
 				
+		    <!-- MODAL : newGasComposition dialog-title='Details' -->
+ 
+			<modal-dialog show='gcdmctrl.gasComposition.showModal'  width='75%' height='80%' >
+				<div class="modal-title">
+					<table width="100%"><tr><td>
+						<div style="font-weight: bold;font-size: 200%">Gas Composition Detail</div>
+						</td><td> 
+						<div style="text-align:right"><button  class="{{gcdmctrl.gasComposition.isChange ? 'btn btn-danger' : 'btn btn-info'}}" ng-click="gcdmctrl.closeDialog(gcdmctrl.gasComposition)">Close</button><br>
+							&nbsp;<div ng-show="gcdmctrl.gasComposition.isChange" class="label label-warning">Data modified</div>
+						</div>
+					</td></tr></table>				
+				</div>
+				
+				
+				<div class="modal-content" width='100%' height='100%'> 
+					
+					<!-- <button type="button" class="close" ng-click="gcdmctrl.gasCompositionCloseDialog()"><span aria-hidden="true" class="modal"></span></button> -->
+						
 								
 					<span class="label label-success">{{gcdmctrl.gasComposition.modalMessage}}</span><br>
 					<span class="label label-danger">{{gcdmctrl.gasComposition.modalErrorMessage}}</span><br>
 					<div ng-bind-html="gcdmctrl.getListEvents( gcdmctrl.gasComposition.modalListEvents )"></div>
 			
-						<!-- style="border-width:3px; border-style:solid; border-color:black;"-->
 						<table class="table table-striped table-hover table-condensed table-bordered"  >
 							<tr>
 								<td>Supply chain Point</td>
@@ -310,7 +319,7 @@
 								<td colspan="2">
 								<button class="btn btn-info" ng-click="gcdmctrl.searchNewGasComposition()">Search</button>
 								
-								<!--  ng-click="gcdmctrl.saveNewGasComposition()" -->
+								
 								<button class="btn btn-success" ng-click="gcdmctrl.saveNewValue('gascomposition', gcdmctrl.gasComposition)">Save</button>
 								<button class="btn btn-danger" ng-click="gcdmctrl.deleteNewGasComposition()">Delete</button>
 								</td>
@@ -429,10 +438,18 @@
 			</table>
 			
 			<!-- MODAL : Pressure -->
-			<modal-dialog show='gcdmctrl.pressure.showModal' dialog-title='Details' width='75%' height='80%'>
+			<modal-dialog show='gcdmctrl.pressure.showModal'  width='75%' height='80%'>
+				<div class="modal-title">
+					<table width="100%"><tr><td>
+						<div style="font-weight: bold;font-size: 200%">Pressure Detail</div>
+						</td><td> 
+						<div style="text-align:right"><button  class="{{gcdmctrl.pressure.isChange ? 'btn btn-danger' : 'btn btn-info'}}" ng-click="gcdmctrl.closeDialog(gcdmctrl.pressure)">Close</button><br>
+							&nbsp;<div ng-show="gcdmctrl.pressure.isChange" class="label label-warning">Data modified</div>
+						</div>
+					</td></tr></table>				
+				</div>
+			
 				<div class="modal-content" width='100%' height='100%'> 
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="modal">
-					<button class="btn btn-danger" ng-click="gcdmctrl.closeDialog(gcdmctrl.pressure)">Close</button>
 				
 					<span class="label label-success">{{gcdmctrl.pressure.modalMessage}}</span><br>
 					<span class="label label-danger">{{gcdmctrl.pressure.modalErrorMessage}}</span><br>
@@ -470,7 +487,7 @@
 				
 				
 				</div>
-				 </modal-dialog>
+			</modal-dialog>
 				
 		</div>
 		
@@ -536,6 +553,125 @@
 			<pagination ng-model="gcdmctrl.report.casepagenumber" total-items="gcdmctrl.report.casenbitems" items-per-page="gcdmctrl.report.caseitemsperpage">
 				</pagination>
 		</div>			
+		
+		 
+		 	
+		<!-- ******************************************************************************** -->
+		<!--                                                                                  -->
+		<!--                SupplyChainPoint				                                          -->
+		<!--                                                                                  -->
+		<!--                                                                                  -->
+		<!-- ******************************************************************************** -->
+		<!----  SHOW FORM -------->
+		<div class="col-lg-7" ng-show="gcdmctrl.supplychain.isshow" style="margin-left:35px">
+			<legend class="text-primary"><span class="glyphicon glyphicon-th"></span>Supply Chain Point</legend>
+			
+			<span class="label label-success">{{gcdmctrl.supplychain.message}}</span><br>
+			<span class="label label-danger">{{gcdmctrl.supplychain.errorMessage}}</span><br>
+			<div ng-bind-html="gcdmctrl.getListEvents( gcdmctrl.supplychain.listeventst )"></div>
+			
+			
+			<div>
+				 <button ng-click="gcdmctrl.modalAdd( gcdmctrl.supplychain )" class="btn btn-success" ng-show="gcdmctrl.isEditProfile()">Add</button>
+				 &nbsp;
+				 <button ng-click="gcdmctrl.modalEdit( gcdmctrl.supplychain )" class="btn btn-info" ng-show="gcdmctrl.isEditProfile()">Edit</button>
+				 &nbsp;
+				 <button ng-click="gcdmctrl.modalDelete( gcdmctrl.supplychain )" class="btn btn-danger" ng-show="gcdmctrl.isEditProfile()">Delete</button>
+				 &nbsp;
+				<button id="refresh" ng-click="gcdmctrl.showList( gcdmctrl.supplychain )"><span class="glyphicon glyphicon-refresh"></span></button>		  
+                                      
+			 </div>
+			  
+		
+			<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
+				<tr>
+					<th></th> <!-- check box -->
+					
+					<th ng-repeat="headerlabel in gcdmctrl.getColsHeader(  gcdmctrl.supplychain ) track by $index" id="santosheadertable">
+						<a href="#" ng-click="gcdmctrl.setOrder(  gcdmctrl.supplychain, headerlabel.id, ! gcdmctrl.supplychain.reverseSort)" style="text-decoration:none">
+							{{headerlabel.display}}
+								<span ng-show="gcdmctrl.supplychain.orderByField === headerlabel.id && gcdmctrl.supplychain.reverseSort" class="glyphicon glyphicon-chevron-down"></span>
+								<span ng-show="gcdmctrl.supplychain.orderByField === headerlabel.id && ! gcdmctrl.supplychain.reverseSort " class="glyphicon glyphicon-chevron-up"></span>
+						</a>
+					</th>
+					
+				
+					
+				</tr>
+				
+				<tbody  ng-repeat="onetask in gcdmctrl.getListValue( gcdmctrl.supplychain )   track by $index">
+				<tr>
+					<td><input type="checkbox" ng-model="onetask.linechecked">&nbsp;
+					</td>
+					<td ng-repeat="headerlabel in gcdmctrl.getColsHeader( gcdmctrl.supplychain ) track by $index" >
+						{{onetask[headerlabel.id]}} 
+					</td>
+					
+				</tr>
+				</tbody>
+			</table>
+			
+			<!-- MODAL : Pressure -->
+			<modal-dialog show='gcdmctrl.supplychain.showModal'  width='75%' height='80%'>
+				<div class="modal-title">
+					<table width="100%"><tr><td>
+						<div style="font-weight: bold;font-size: 200%">Supply Chain Point Detail</div>
+						</td><td> 
+						<div style="text-align:right"><button  class="{{gcdmctrl.supplychain.isChange ? 'btn btn-danger' : 'btn btn-info'}}" ng-click="gcdmctrl.closeDialog(gcdmctrl.supplychain)">Close</button><br>
+							&nbsp;<div ng-show="gcdmctrl.supplychain.isChange" class="label label-warning">Data modified</div>
+						</div>
+					</td></tr></table>				
+				</div>
+			
+				<div class="modal-content" width='100%' height='100%'> 
+				
+					<span class="label label-success">{{gcdmctrl.supplychain.modalMessage}}</span><br>
+					<span class="label label-danger">{{gcdmctrl.supplychain.modalErrorMessage}}</span><br>
+					<div ng-bind-html="gcdmctrl.getListNewEvents( gcdmctrl.supplychain.modalListEvents)"></div>
+			
+						<!-- style="border-width:3px; border-style:solid; border-color:black;"-->
+						<table class="table table-striped table-hover table-condensed table-bordered"  >
+						
+							<tr>
+								<td colspan="2">
+								<!--  <button class="btn btn-info" ng-click="gcdmctrl.searchNewGasComposition()">Search</button> -->
+								<button class="btn btn-success" ng-click="gcdmctrl.modalSaveNewValue( gcdmctrl.supplychain )">Save</button>
+								<!--  <button class="btn btn-danger" ng-click="gcdmctrl.deleteNewGasComposition()">Delete</button> -->
+								</td>
+								
+							</tr>
+						
+							<tr ng-repeat="headerlabel in gcdmctrl.getNewFields( gcdmctrl.supplychain ) track by $index" >
+								<td>{{headerlabel.display}}</td>
+								<td>
+								{{headerlabel.typeoffield}} list={{headerlabel.listvalues}}
+									<div ng-show="headerlabel.typeoffield == 'list'">
+										<select ng-model="gcdmctrl.supplychain.values[ headerlabel.id]" ng-options="value in headerlabel.listvalues">
+											<option ng-repeat="oneoption in headerlabel.listvalues" value="{{oneoption.value}}">{{oneoption.label}}</option>
+										</select>
+									</div>
+									<div ng-show="headerlabel.typeoffield != 'list'">
+										<input type="{{headerlabel.typeoffield}}" 
+										ng-model="gcdmctrl.supplychain.values[ headerlabel.id]"
+										ng-readonly="headerlabel.readonly"
+										id="{{headerlabel.cssclass}}"
+										ng-change="gcdmctrl.checkRange(headerlabel,gcdmctrl.supplychain)">
+										
+										<span ng-show="headerlabel.minrange != null">Range : [{{headerlabel.minrange}},{{headerlabel.maxrange}}]</span>
+										<span class="label label-danger">{{gcdmctrl.supplychain.NewValueGasComposition[ headerlabel.id + "_ERROR"]}}</span><br>
+									</div>
+								</td>
+							</tr>
+					
+	
+						</table>
+	
+				
+				
+				</div>
+			</modal-dialog>
+				
+		</div>
 		
 		<!-- ******************************************************************************** -->
 		<!--                                                                                  -->
