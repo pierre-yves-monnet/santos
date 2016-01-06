@@ -52,7 +52,7 @@ public class SdeAccess {
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    public static String version = "SDE Java version 1.92";
+    public static String version = "SDE Java version 1.95";
 
     static{
         logger.info(version);
@@ -1112,6 +1112,8 @@ public class SdeAccess {
         caseMap.put("WellFullName", sdeInfo.get(SdeBusinessAccess.TableDashBoard.WELL_FULL_NAME));
         caseMap.put("DateWellIdentified", sdeInfo.get(SdeBusinessAccess.TableDashBoard.DATE_WELL_IDENTIFIED));
 
+        
+        caseMap.put("WellAlias", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_ALIAS));
         caseMap.put("FieldName", sdeInfo.get(SdeBusinessAccess.TableWellInfo.FIELD_NAME));
 
         caseMap.put("WellCategoryPrimary", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_CATEGORY_PRIMARY));

@@ -120,6 +120,7 @@ public class SdeBusinessAccess {
         public static String BOTTOM_HOLE_LATITUDE = "BOTTOM_HOLE_LATITUDE";
         public static String BOTTOM_HOLE_LONGITUDE = "BOTTOM_HOLE_LONGITUDE";
         public static String COMPLETION_TYPE = "COMPLETION_TYPE";
+        public static String WELL_ALIAS = "WELL_ALIAS";
 
     }
 
