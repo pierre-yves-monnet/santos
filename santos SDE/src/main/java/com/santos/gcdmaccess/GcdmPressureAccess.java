@@ -51,7 +51,7 @@ public class GcdmPressureAccess {
         public boolean tableNameUpperCase = false;
         public boolean enquoteTableName = false;
         public boolean colNameUpperCase = false;
-        public Long uid;
+        public Long duid;
         public List<String> listToDelete = null;
 
         public static PressureParameter getFromJson(final String jsonSt)
@@ -65,7 +65,7 @@ public class GcdmPressureAccess {
                 return pressureParameter;
             }
             pressureParameter.listToDelete = (List) jsonHash.get("listtodelete");
-            pressureParameter.uid = Toolbox.getLong(jsonHash.get("UID"), null);
+            pressureParameter.duid = Toolbox.getLong(jsonHash.get("DUID"), null);
 
             return pressureParameter;
         }
@@ -90,7 +90,7 @@ public class GcdmPressureAccess {
         {
 
             // FDR-65 -- FDR 67 Column must be dynamique
-            sqlRequest = " select pre_uid_pk as UID, "
+            sqlRequest = " select pre_uid_pk as DUID, "
                     + "p.effectivedate as \"EFFECTIVEDATE\", "
                     + "dp.pointname as \"SUPPLYCHAINEPOINT\",  "
                     + "p.minimumthreshold as \"MINIMUMTHRESHOLD\","
@@ -236,7 +236,7 @@ public class GcdmPressureAccess {
         try
         {
             // FDR-14
-            final long delta = pressureParameter.uid;
+            final long delta = pressureParameter.duid;
 
             final Calendar c = Calendar.getInstance();
             c.set(Calendar.YEAR, 2015);
@@ -317,20 +317,20 @@ public class GcdmPressureAccess {
         try {
             final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(apiSession);
 
-            gcdmResult.status = "Delete list UID [";
+            gcdmResult.status = "Delete list DUID [";
             if (pressureParameter.listToDelete != null)
             {
                 for (final Object uidObj : pressureParameter.listToDelete)
                 {
-                    final Long uid = Toolbox.getLong(uidObj, null);
-                    if (uid == null)
+                    final Long duid = Toolbox.getLong(uidObj, null);
+                    if (duid == null)
                     {
                         logger.severe("Santos.GcdmPressureAccess: We receive a non LONG value is list [" + uidObj + "] list : ["
                                 + pressureParameter.listToDelete + "]");
                         continue;
                     }
 
-                    gcdmResult.status += (uid == null ? "null" : uid.toString()) + ",";
+                    gcdmResult.status += (duid == null ? "null" : duid.toString()) + ",";
                 }
             } else {
                 gcdmResult.status += " <null list>";

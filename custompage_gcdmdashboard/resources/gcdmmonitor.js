@@ -247,9 +247,9 @@ appCommand.controller('GcdmControler',
 	this.gasCompositionEdit = function ( ) {
 		var listToEdit=[];
 		for (var i=0;i<this.gasComposition.listValues .length;i++) {
-			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" uid="+this.gasComposition.listValues [ i ].UID);
+			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" duid="+this.gasComposition.listValues [ i ].DUID);
 			if (this.gasComposition.listValues [ i ].linechecked)
-				listToEdit.push( this.gasComposition.listValues [ i ].UID );
+				listToEdit.push( this.gasComposition.listValues [ i ].DUID );
 		}
 		if (listToEdit.length==0) {
 			alert("No line to edit; check one line");
@@ -262,7 +262,7 @@ appCommand.controller('GcdmControler',
 		
 		this.gasComposition.showModal = true;
 		this.gasComposition.isChange=false;
-		var param = { "UID" : listToEdit[ 0 ],"type" : this.gasComposition.type};
+		var param = { "DUID" : listToEdit[ 0 ],"type" : this.gasComposition.type};
 		var json = angular.toJson(param, false);
 		var self=this;
 		console.log("gasCompositionEdit: "+json)
@@ -289,9 +289,9 @@ appCommand.controller('GcdmControler',
 		console.log("gasCompositionDelete");
 		var listToDelete=[];
 		for (var i=0;i<this.gasComposition.listValues .length;i++) {
-			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" uid="+this.gasComposition.listValues [ i ].UID);
+			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" duid="+this.gasComposition.listValues [ i ].DUID);
 			if (this.gasComposition.listValues [ i ].linechecked)
-				listToDelete.push( this.gasComposition.listValues [ i ].UID );
+				listToDelete.push( this.gasComposition.listValues [ i ].DUID );
 		}
 		if (listToDelete.length==0) {
 			alert("No line to delete; check some lines");
@@ -540,9 +540,9 @@ appCommand.controller('GcdmControler',
 	this.pressureEdit = function ( ) {
 		var listToEdit=[];
 		for (var i=0;i<this.pressure.listValues .length;i++) {
-			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" uid="+this.pressure.listValues [ i ].UID);
+			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" duid="+this.pressure.listValues [ i ].DUID);
 			if (this.pressure.listValues [ i ].linechecked)
-				listToEdit.push( this.pressure.listValues [ i ].UID );
+				listToEdit.push( this.pressure.listValues [ i ].DUID );
 		}
 		if (listToEdit.length==0) {
 			alert("No line to edit; check one line");
@@ -555,7 +555,7 @@ appCommand.controller('GcdmControler',
 		
 		this.pressure.showModal = true;
 		this.pressure.isChange=false;
-		var param = { "UID" : listToEdit[ 0 ] };
+		var param = { "DUID" : listToEdit[ 0 ] };
 		var json = angular.toJson(param, false);
 		var self=this;
 		console.log("pressureEdit: "+json)
@@ -577,9 +577,9 @@ appCommand.controller('GcdmControler',
 		console.log("pressureDelete");
 		var listToDelete=[];
 		for (var i=0;i<this.pressure.listValues .length;i++) {
-			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" uid="+this.pressure.listValues [ i ].UID);
+			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" duid="+this.pressure.listValues [ i ].DUID);
 			if (this.pressure.listValues [ i ].linechecked)
-				listToDelete.push( this.pressure.listValues [ i ].UID );
+				listToDelete.push( this.pressure.listValues [ i ].DUID );
 		}
 		if (listToDelete.length==0) {
 			alert("No line to delete; check some lines");
@@ -770,9 +770,9 @@ appCommand.controller('GcdmControler',
 		var listToEdit=[];
 		
 		for (var i=0;i<dataoperation.listValues.length;i++) {
-			console.log("Checked "+dataoperation.listValues [ i ].linechecked+" uid="+dataoperation.listValues [ i ].UID);
+			console.log("Checked "+dataoperation.listValues [ i ].linechecked+" duid="+dataoperation.listValues [ i ].DUID);
 			if (tdataoperation.listValues [ i ].linechecked)
-				listToEdit.push( dataoperation.listValues [ i ].UID );
+				listToEdit.push( dataoperation.listValues [ i ].DUID );
 		}
 		if (listToEdit.length==0) {
 			alert("No line to edit; check one line");
@@ -785,7 +785,7 @@ appCommand.controller('GcdmControler',
 		
 		dataoperation.showModal = true;
 		dataoperation.isChange=false;
-		var param = { "UID" : listToEdit[ 0 ], "typedata": dataoperation.typedata };
+		var param = { "DUID" : listToEdit[ 0 ], "typedata": dataoperation.typedata };
 		var json = angular.toJson(param, false);
 		var self=this;
 		console.log("Edit: "+json)
@@ -806,9 +806,9 @@ appCommand.controller('GcdmControler',
 		console.log("modalDelete");
 		var listToDelete=[];
 		for (var i=0;i<dataoperation.listValues .length;i++) {
-			console.log("Checked "+dataoperation.listValues [ i ].linechecked+" uid="+dataoperation.listValues [ i ].UID);
+			console.log("Checked "+dataoperation.listValues [ i ].linechecked+" duid="+dataoperation.listValues [ i ].DUID);
 			if (dataoperation.listValues [ i ].linechecked)
-				listToDelete.push( dataoperation.listValues [ i ].UID );
+				listToDelete.push( dataoperation.listValues [ i ].DUID );
 		}
 		if (listToDelete.length==0) {
 			alert("No line to delete; check some lines");

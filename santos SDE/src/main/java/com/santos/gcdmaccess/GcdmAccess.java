@@ -22,6 +22,10 @@ import com.santos.toolbox.Toolbox;
 public class GcdmAccess {
 
     static Logger logger = Logger.getLogger("org.bonitasoft.GcdmAccess");
+    
+    static{
+        logger.info(Toolbox.version);
+    }
 
     /* ******************************************************************************** */
     /*                                                                                  */

@@ -59,7 +59,7 @@ public class GcdmBusinessAccess {
         public EnuTypeDisplays typeDisplay;
         public boolean viewFuturDatedDefaults = false;
 
-        public Long uid;
+        public Long duid;
 
         public boolean allowDirectConnection = false;
 
@@ -85,7 +85,7 @@ public class GcdmBusinessAccess {
             gasCompositionParameter.typeDisplay = EnuTypeDisplays.valueOf((String) jsonHash.get("type"));
             gasCompositionParameter.viewFuturDatedDefaults = Toolbox.getBoolean(jsonHash.get("viewFuturDatedDefaults"), Boolean.FALSE);
             gasCompositionParameter.listToDelete = (List) jsonHash.get("listtodelete");
-            gasCompositionParameter.uid = Toolbox.getLong(jsonHash.get("UID"), null);
+            gasCompositionParameter.duid = Toolbox.getLong(jsonHash.get("DUID"), null);
             return gasCompositionParameter;
         }
 
@@ -115,7 +115,7 @@ public class GcdmBusinessAccess {
             // FDR-07
             if (gasComposition.typeDisplay == EnuTypeDisplays.Defaults)
             {
-                sqlRequest = "select c.cpn_cse_uid_fk as uid, c.EffectiveDate, dp.PointName, 'SpecificGravity '  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value,"
+                sqlRequest = "select c.cpn_cse_uid_fk as duid, c.EffectiveDate, dp.PointName, 'SpecificGravity '  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value,"
                         + " 12 as METHANEC1"
                         + " from DataPoints dp, CompositionSets cs, Compositions c"
                         + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
@@ -128,7 +128,7 @@ public class GcdmBusinessAccess {
             // FDR-60
             if (gasComposition.typeDisplay == EnuTypeDisplays.Minimum)
             {
-                sqlRequest = "select c.cpn_cse_uid_fk as uid, c.EffectiveDate, dp.PointName, 'SpecificGravity'  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
+                sqlRequest = "select c.cpn_cse_uid_fk as duid, c.EffectiveDate, dp.PointName, 'SpecificGravity'  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
                         + " from DataPoints dp, CompositionSets cs, Compositions c"
                         + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
                         + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
@@ -139,7 +139,7 @@ public class GcdmBusinessAccess {
             // FDR-62
             if (gasComposition.typeDisplay == EnuTypeDisplays.BlendAlarm)
             {
-                sqlRequest = "select c.cpn_cse_uid_fk as UID, c.EffectiveDate, dp.PointName, 'SpecificGravity' as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
+                sqlRequest = "select c.cpn_cse_uid_fk as DUID, c.EffectiveDate, dp.PointName, 'SpecificGravity' as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
                         + " from DataPoints dp, CompositionSets cs, Compositions c"
                         + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
                         + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
@@ -155,15 +155,15 @@ public class GcdmBusinessAccess {
 
             // Simulation : just remplace some value
             if (gcdmResult.listValues.size()>1) {
-                gcdmResult.listValues.get(0).put("UID",3);
+                gcdmResult.listValues.get(0).put("DUID",3);
                 gcdmResult.listValues.get(0).put("SUPPLYCHAINEPOINT", gasComposition.typeDisplay.toString());
             }
             if (gcdmResult.listValues.size()>2) {
-                gcdmResult.listValues.get(1).put("UID",3);
+                gcdmResult.listValues.get(1).put("DUID",3);
             }
             for (final Map<String, Object> oneValue : gcdmResult.listValues)
             {
-                oneValue.put("SPECIFICGRAVITY", oneValue.get("SPECIFICGRAVITY") + " " + oneValue.get("UID"));
+                oneValue.put("SPECIFICGRAVITY", oneValue.get("SPECIFICGRAVITY") + " " + oneValue.get("DUID"));
             }
 
             // list SupplyChaine FDR-18
@@ -295,18 +295,18 @@ public class GcdmBusinessAccess {
         try
         {
             // FDR-14
-            long delta = gasComposition.uid;
+            long delta = gasComposition.duid;
             if (gasComposition.typeDisplay == EnuTypeDisplays.Defaults)
             {
-                delta = 10 + gasComposition.uid;;
+                delta = 10 + gasComposition.duid;;
             }
             if (gasComposition.typeDisplay == EnuTypeDisplays.Minimum)
             {
-                delta = 100 + gasComposition.uid;
+                delta = 100 + gasComposition.duid;
             };
             if (gasComposition.typeDisplay == EnuTypeDisplays.BlendAlarm)
             {
-                delta = 1000 + gasComposition.uid;
+                delta = 1000 + gasComposition.duid;
             }
 
             final Calendar c = Calendar.getInstance();
@@ -358,23 +358,23 @@ public class GcdmBusinessAccess {
         try {
             final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(apiSession);
 
-        gcdmResult.status = "Delete list UID [";
+        gcdmResult.status = "Delete list DUID [";
         String isInThePast = "";
         if (gasComposition.listToDelete != null)
         {
             for (final Object uidObj : gasComposition.listToDelete)
             {
-                final Long uid = Toolbox.getLong( uidObj, null);
-                if (uid==null)
+                final Long duid = Toolbox.getLong( uidObj, null);
+                if (duid==null)
                 {
                     logger.severe("We receive a non LONG value is list ["+uidObj+"] list : ["+gasComposition.listToDelete+"]");
                     continue;
                 }
-                if (uid % 3 ==0) {
-                    isInThePast+=uid.toString();
+                if (duid % 3 ==0) {
+                    isInThePast+=duid.toString();
                 }
 
-                gcdmResult.status += (uid == null ? "null" : uid.toString()) + ",";
+                gcdmResult.status += (duid == null ? "null" : duid.toString()) + ",";
             }
         } else {
             gcdmResult.status += " <null list>";

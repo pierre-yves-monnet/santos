@@ -48,7 +48,7 @@ public class GcdmAdminAccess {
         public boolean colNameUpperCase = false;
 
         public String typedata;
-        public Long uid;
+        public Long duid;
         public List<String> listToDelete = null;
 
         public static AdminParameter getFromJson(final String jsonSt)
@@ -63,7 +63,7 @@ public class GcdmAdminAccess {
             }
             pressureParameter.typedata = (String) jsonHash.get("typedata");
             pressureParameter.listToDelete = (List) jsonHash.get("listtodelete");
-            pressureParameter.uid = Toolbox.getLong(jsonHash.get("UID"), null);
+            pressureParameter.duid = Toolbox.getLong(jsonHash.get("DUID"), null);
 
             return pressureParameter;
         }
@@ -118,7 +118,7 @@ public class GcdmAdminAccess {
             // list of value
             // list of header
             // list of field to edit
-            sqlRequest = " select dp.dpt_uid_pk as UID, "
+            sqlRequest = " select dp.dpt_uid_pk as DUID, "
                     + "dp.effectivedate as \"EFFECTIVEDATE\", "
                     + "dp.pointname as \"SUPPLYCHAINEPOINT\"  "
                     + " from DataPoints dp"
@@ -266,7 +266,7 @@ public class GcdmAdminAccess {
 
             // simumationd
 
-            gcdmResult.values.put("PERMITBLENDDEFAULT", adminParameter.uid + 23);
+            gcdmResult.values.put("PERMITBLENDDEFAULT", adminParameter.duid + 23);
 
         } catch (final Exception e)
         {
@@ -334,20 +334,20 @@ public class GcdmAdminAccess {
         try {
             final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(apiSession);
 
-            gcdmResult.status = "Delete list UID [";
+            gcdmResult.status = "Delete list DUID [";
             if (adminParameter.listToDelete != null)
             {
                 for (final Object uidObj : adminParameter.listToDelete)
                 {
-                    final Long uid = Toolbox.getLong(uidObj, null);
-                    if (uid == null)
+                    final Long duid = Toolbox.getLong(uidObj, null);
+                    if (duid == null)
                     {
                         logger.severe("Santos.GcdmAdminAccess: We receive a non LONG value is list [" + uidObj + "] list : ["
                                 + adminParameter.listToDelete + "]");
                         continue;
                     }
 
-                    gcdmResult.status += (uid == null ? "null" : uid.toString()) + ",";
+                    gcdmResult.status += (duid == null ? "null" : duid.toString()) + ",";
                 }
             } else {
                 gcdmResult.status += " <null list>";
