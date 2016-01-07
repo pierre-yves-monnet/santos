@@ -644,61 +644,61 @@
 
 		<button id="refresh" ng-click="dashctrl.searchPADashboard()"><span class="glyphicon glyphicon-refresh"></span></button>	
 		
-		<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
-		<tr>
-			<th><span class="table-header">Date Received</span>
-				<input type="text" ng-model="dashctrl.padashboard.filter.DATE_RECEIVE" size="10" 
+		<table class="table table-striped table-hover table-condensed table-bordered">
+		<tr>		
+			<th><a class="table-header">Date Received</a>
+				<input type="text" ng-model="dashctrl.padashboard.filter.DATE_WELL_IDENTIFIED" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">SDE Number</span>
+			<th><a class="table-header">SDE Number</a>
 				<input type="text" ng-model="dashctrl.padashboard.filter.SDE_NUMBER" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">UWI</span>
-				<input type="text" ng-model="dashctrl.padashboard.filter.UWI" size="10" 
+			<th><a class="table-header">UWI</a>
+				<input type="text" ng-model="dashctrl.padashboard.filter.WELL_CODE" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Well Full Name</span>
+			<th><a class="table-header">Well Full Name</a>
 				<input type="text" ng-model="dashctrl.padashboard.filter.WELL_FULL_NAME" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Request Type</span>
+			<th><a class="table-header">Request Type</a>
 				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_TYPE" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Business Unit</span>
+			<th><a class="table-header">Business Unit</a>
 				<input type="text" ng-model="dashctrl.padashboard.filter.BUSINESS_UNIT" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Schedule Online Date</span>
+			<th><a class="table-header">Schedule Online Date</a>
 				<input type="text" ng-model="dashctrl.padashboard.filter.SCHEDULED_ONLINE_DATE" size="10" 
 							class="form-control filter-control"	
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Update Effective Date</span>
-				<input type="text" ng-model="dashctrl.padashboard.filter.UPDATE_EFFECTIVE_DATE" size="10" 
+			<th><a class="table-header">Update Effective Date</a>
+				<input type="text" ng-model="dashctrl.padashboard.filter.MODIFIED_DATE" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>			
-			<th><span class="table-header">Actual Online Date</span>
+			<th><a class="table-header">Actual Online Date</a>
 				<input type="text" ng-model="dashctrl.padashboard.filter.ACTUAL_ONLINE_DATE" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Request Status</span>
+			<th><a class="table-header">Request Status</a>
 				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_STATUS" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Hold Clarification</span></th>
-			<th><span class="table-header">Do not Load</span></th>
-			<th><span class="table-header">Update EC</span><blockquote/></th>			
+			<th><a class="table-header">Hold Clarification</a></th>
+			<th><a class="table-header">Do not Load</a></th>
+			<th><a class="table-header">Update EC</a><blockquote/></th>			
 			</tr>
 			<tbody  ng-repeat="onesynthesis in dashctrl.getPADashboardPage() track by $index">
 				<tr>			

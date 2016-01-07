@@ -37,6 +37,7 @@ public class SdeBusinessAccess {
 
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    private static SimpleDateFormat dashboardDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     public static String DATASOURCE_NAME = "SDE_DS";
 
@@ -181,6 +182,14 @@ public class SdeBusinessAccess {
         public static String LINK_TO_FATHER = TableWellInfo.COMPLETE_BWI_ID + " = PAT_BWI_ID";
         public static String PAT_BWI_ID = "PAT_BWI_ID";
         public static String PAT_ID = "PAT_ID";
+    }
+    
+    public final static class TableSalasGWS {
+
+        public static String TABLE_NAME = "SALAS_GWS";
+        public static String LINK_TO_FATHER = TableWellInfo.COMPLETE_BWI_ID + " = SG_BWI_ID";
+        public static String SG_BWI_ID = "SG_BWI_ID";
+        public static String SG_ID = "SG_ID";
     }
 
     public final static class TableRWellList {
@@ -383,7 +392,7 @@ public class SdeBusinessAccess {
                     key = key.toUpperCase();
                     if (rs.getObject(i) instanceof Date && sdeParameter.formatDateJson) {
                         final Date date = rs.getDate(i);
-                        record.put(key, date.getTime());
+                        record.put(key, dashboardDateFormat.format(date));                        
                         continue;
                     }
 
@@ -1055,8 +1064,8 @@ public class SdeBusinessAccess {
                     key = key.toUpperCase();
 
                     if (rs.getObject(i) instanceof Date && paDashboardParameter.formatDateJson) {
-                        final Date date = rs.getDate(i);
-                        record.put(key, date.getTime());
+                        final Date date = rs.getDate(i);                        
+                        record.put(key, dashboardDateFormat.format(date));
                         continue;
                     }
                     if (key.equalsIgnoreCase("ON_HOLD")) {
@@ -1582,6 +1591,10 @@ public class SdeBusinessAccess {
                 TableProdAllocTag.PAT_BWI_ID, true, TableProdAllocTag.PAT_ID);
         wellInfo.addChild(prodAllocTag);
 
+        final DataModel salasGWS = new DataModel(TableSalasGWS.TABLE_NAME, TableWellInfo.TABLE_NAME, TableWellInfo.BWI_ID,
+                TableSalasGWS.SG_BWI_ID, true, TableSalasGWS.SG_BWI_ID);
+        wellInfo.addChild(salasGWS);        
+        
         return dashBoard;
 
     }
@@ -1865,7 +1878,7 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("r_area_numbers_by_field", "area_number", "area_name", "r_area_numbers_by_field", null));
         lists.add(new ListDefinition("r_genset_make_models", "energy_input_gj_hr", "engine_make_and_model", "r_genset_make_models", null));
         lists.add(new ListDefinition("ov_well_hole", "distinct op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null));
-        lists.add(new ListDefinition("r_prod_alloc_tag_glng", "rpa_id", "ec_template_code", "r_prod_alloc_tag", "well_template = 'GLNG'"));
+        lists.add(new ListDefinition("r_prod_alloc_tag_glng", "distinct ec_template_code", "ec_template_code", "r_prod_alloc_tag", "well_template = 'GLNG'"));
         lists.add(new ListDefinition("r_well_group", "distinct value", "value", "r_form_data", "type = 'well_group'"));
         lists.add(new ListDefinition("r_well_category", "value", "value", "r_form_data", "type='well_cat'"));
         lists.add(new ListDefinition("r_gas_inlet", "value", "value", "r_form_data", "type='gas_inlet'"));
@@ -1876,7 +1889,10 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("artificial_lift_glng", "value", "value", "r_form_data", "type='artsys_code' and business_unit='GLNG'"));
         // operator area
         lists.add(new ListDefinition("operator_area_glng", "value", "value", "r_form_data", "type='operator_area' and business_unit='GLNG'"));
-
+        // r_pool
+        //  xxxxxxxxx
+        lists.add(new ListDefinition("r_pool_layer_short", "RMU", "LAYER_SHORT", "r_pool", null));
+        lists.add(new ListDefinition("r_pool_formation", "RMU", "FORMATION", "r_pool", null));
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list
@@ -2007,11 +2023,11 @@ public class SdeBusinessAccess {
                         final Object value = rs.getObject(2);
                         if (key != null && value != null)
                         {
-                            oneValue.put("key", key); // keep the same type for the key
-                            oneValue.put("value", value.toString());
-                            listValues.add(oneValue);
+                                oneValue.put("key", key); // keep the same type for the key
+                                oneValue.put("value", value.toString());                            
+                                listValues.add(oneValue);
                         }
-
+                        
                     }
                 }
                 logger.info(" list[" + definition.name + "] nbResult(" + listValues.size() + ") by sqlRequest [" + sqlRequest + "]");
@@ -2284,7 +2300,8 @@ public class SdeBusinessAccess {
         String listFieldValue = "";
 
         
-        // RMU field is custom widget in UI.
+        // RMU 
+        // This field is custom widget in UI.
         // This field is created on the fly by the user, hence has no sequence generated for its primary key
         // The following if statement is a special handling for RMU data
         if(dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName).equalsIgnoreCase("RMU")){
@@ -2307,8 +2324,7 @@ public class SdeBusinessAccess {
             dataThisLevel.put("MODIFIED_DATE", new Date());
             // get Basic Well Information key, needed as foreign key
             Map<String, Object> dashboardMap = (Map<String, Object>) sdeData.data.get("dashboard");
-            if(dashboardMap == null){
-                System.out.println("ewfoefenfjenk");
+            if(dashboardMap == null){                
                 logger.severe("SdeBusinessAccess.insert :: Could not obtain 'dashboard' map.");
                 return;
             }
@@ -2319,7 +2335,28 @@ public class SdeBusinessAccess {
                 return;
             }
             
-            dataThisLevel.put("RMU_BWI_ID", basic_well_infoMap.get("BWI_ID"));        
+            dataThisLevel.put("RMU_BWI_ID", basic_well_infoMap.get("BWI_ID"));
+            
+            // populate PERF_INTERVAL_CODE & PERF_INTERVAL_NAME
+            /*
+            // PERF_INTERVAL_CODE :
+            // To construct the perf_interval_code: 
+            // basic_well_info.well_bore_interval || / || r_pool.layer_short 
+            String rmu = (String)dataThisLevel.get("RMU");
+            String wellBoreInterval  = (String)basic_well_infoMap.get("WELL_BORE_INTERVAL");
+            logger.info("SdeBusinessAccess.insert :: Obtained data [rmu="+rmu+"] [wellBoreInterval=" +wellBoreInterval+"]");            
+            System.out.println("xxxxxxxxxxxxxx" + sdeData.listsValue.keySet());
+            logger.info("xxxxxxxxxxxxxx" + sdeData.listsValue.keySet());
+            Map<String, Object> r_pool_layer_short = (Map<String, Object>) sdeData.listsValue.get("r_pool_layer_short");            
+            logger.info("r_pool_layer_short.size()"+ r_pool_layer_short.size() );
+            logger.info("r_pool_layer_short.keySet()"+r_pool_layer_short.keySet());
+            String layerShort = (String)r_pool_layer_short.get(rmu);
+            // PERF_INTERVAL_NAME :
+            // To construct the perf_interval_name as follows 
+            // initCap(basic_well_info.well_full_name) || - || r_pool.formation             
+            Map<String, Object> r_pool_formation = (Map<String, Object>) sdeData.listsValue.get("r_pool_formation");
+            */
+            
         }
             
         
@@ -2484,6 +2521,7 @@ public class SdeBusinessAccess {
      */
     private Connection getConnection(final boolean allowDirectConnection)
     {
+        
         Context ctx = null;
         try
         {
@@ -2492,7 +2530,7 @@ public class SdeBusinessAccess {
         {
             logger.severe("Cant' get an InitialContext : can't access the datasource");
             return null;
-        }
+    }
 
         DataSource ds = null;
         Connection con = null;
