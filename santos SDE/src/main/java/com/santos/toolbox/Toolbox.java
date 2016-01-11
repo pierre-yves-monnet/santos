@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 public class Toolbox {
 
     static Logger logger = Logger.getLogger(Toolbox.class.getName());
+    
+    public static String version = "SDE Java version 1.96";
 
     public static SimpleDateFormat sdfJavasscript = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
@@ -139,5 +141,44 @@ public class Toolbox {
             return defaultValue;
         }
     }
+    
+    // TODO :: Ideally this should be in a DASH wide util class.
+    // Taken from Talend SDE project; routines.WellNameUtil
+    public static String formatWellName(String name) {
 
+        name = name.trim();//
+        name = name.replaceAll(" +", " ");//
+        if (!name.isEmpty() && !name.equals("")) {
+            String[] nameArray = name.split(" ");
+            if (nameArray.length > 1) {
+                for (int i = 1; i < nameArray.length; i++) {
+
+                    if (!(nameArray[i].charAt(0) < 48 || nameArray[i].charAt(0) > 57)) {
+                        String newName;     	   		 
+                        newName = nameArray[i].replaceAll("[^0-9]+", " ").trim();
+
+                        if (!newName.equals("")) {
+                            newName = newName.replaceAll(" +", " ");
+                            String[] newNameArray = newName.split(" ");
+                            if (newNameArray[0].length() == 1) {
+
+                                name = name.replaceFirst(" " + nameArray[i], " " + nameArray[i].replaceFirst(newNameArray[0], "00" + newNameArray[0]));
+
+                            } else if (newNameArray[0].length() == 2) {
+
+                                name = name.replaceFirst(" " + nameArray[i], " " + nameArray[i].replaceFirst(newNameArray[0], "0" + newNameArray[0]));
+                            }
+                        }
+
+                        break;
+
+                    }
+
+                }
+            }           
+
+        }
+
+        return name;
+    }
 }

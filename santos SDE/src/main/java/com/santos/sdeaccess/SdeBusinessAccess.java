@@ -1733,7 +1733,13 @@ public class SdeBusinessAccess {
 
             // set again
             sdeData.setPointerData(dashboard);
-            insert(sdeData, getDataModel(), con, sdeParameter);
+            
+            final HashMap<String, HashMap<String, String>> r_list = new HashMap<String, HashMap<String, String>>();
+            r_list.put("r_pool_layer_short", populateReferenceMap(con, "select RMU, LAYER_SHORT from r_pool" ));            
+            r_list.put("r_pool_formation", populateReferenceMap(con, "select RMU, FORMATION from r_pool" ));
+            
+            insert(sdeData, getDataModel(), con, sdeParameter, r_list);
+            
             con.commit();
             logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData : OK SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]");
             sdeData.status = SdeDataStatus.OK;
@@ -1889,10 +1895,6 @@ public class SdeBusinessAccess {
         lists.add(new ListDefinition("artificial_lift_glng", "value", "value", "r_form_data", "type='artsys_code' and business_unit='GLNG'"));
         // operator area
         lists.add(new ListDefinition("operator_area_glng", "value", "value", "r_form_data", "type='operator_area' and business_unit='GLNG'"));
-        // r_pool
-        //  xxxxxxxxx
-        lists.add(new ListDefinition("r_pool_layer_short", "RMU", "LAYER_SHORT", "r_pool", null));
-        lists.add(new ListDefinition("r_pool_formation", "RMU", "FORMATION", "r_pool", null));
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list
@@ -2247,7 +2249,7 @@ public class SdeBusinessAccess {
      * @param sdeParameter
      * @throws SQLException
      */
-    private void insert(final SdeData sdeData, final DataModel dataModel, final Connection con, final SdeParameter sdeParameter) throws SQLException
+    private void insert(final SdeData sdeData, final DataModel dataModel, final Connection con, final SdeParameter sdeParameter, final HashMap<String, HashMap<String, String>> r_list) throws SQLException
     {
         logger.info(" -- manage level [" + dataModel.getSdeDataName() + "] Table["
                 + dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName) + "]");
@@ -2338,24 +2340,25 @@ public class SdeBusinessAccess {
             dataThisLevel.put("RMU_BWI_ID", basic_well_infoMap.get("BWI_ID"));
             
             // populate PERF_INTERVAL_CODE & PERF_INTERVAL_NAME
-            /*
+             
             // PERF_INTERVAL_CODE :
             // To construct the perf_interval_code: 
             // basic_well_info.well_bore_interval || / || r_pool.layer_short 
             String rmu = (String)dataThisLevel.get("RMU");
             String wellBoreInterval  = (String)basic_well_infoMap.get("WELL_BORE_INTERVAL");
             logger.info("SdeBusinessAccess.insert :: Obtained data [rmu="+rmu+"] [wellBoreInterval=" +wellBoreInterval+"]");            
-            System.out.println("xxxxxxxxxxxxxx" + sdeData.listsValue.keySet());
-            logger.info("xxxxxxxxxxxxxx" + sdeData.listsValue.keySet());
-            Map<String, Object> r_pool_layer_short = (Map<String, Object>) sdeData.listsValue.get("r_pool_layer_short");            
-            logger.info("r_pool_layer_short.size()"+ r_pool_layer_short.size() );
-            logger.info("r_pool_layer_short.keySet()"+r_pool_layer_short.keySet());
+            Map<String, String> r_pool_layer_short = (Map<String, String>) r_list.get("r_pool_layer_short");            
             String layerShort = (String)r_pool_layer_short.get(rmu);
+            dataThisLevel.put("PERF_INTERVAL_CODE", wellBoreInterval+ "/" + layerShort); 
+                        
             // PERF_INTERVAL_NAME :
             // To construct the perf_interval_name as follows 
             // initCap(basic_well_info.well_full_name) || - || r_pool.formation             
-            Map<String, Object> r_pool_formation = (Map<String, Object>) sdeData.listsValue.get("r_pool_formation");
-            */
+            String wellFullName  = (String)basic_well_infoMap.get("WELL_FULL_NAME");
+            logger.info("SdeBusinessAccess.insert :: Obtained data [wellFullName="+wellFullName+"]");            
+            Map<String, String> r_pool_formation = (Map<String, String>) r_list.get("r_pool_formation");
+            String formation = (String)r_pool_formation.get(rmu);
+            dataThisLevel.put("PERF_INTERVAL_NAME", Toolbox.formatWellName(wellFullName) + "-" + formation);            
             
         }
             
@@ -2474,14 +2477,14 @@ public class SdeBusinessAccess {
                 {
 
                     sdeData.setPointerData(childData);
-                    insert(sdeData, dataModelChild, con, sdeParameter);
+                    insert(sdeData, dataModelChild, con, sdeParameter, r_list);
                 }
             }
             else
             {
                 final Map<String, Object> childData = (Map) dataThisLevel.get(dataModelChild.getSdeDataName());
                 sdeData.setPointerData(childData);
-                insert(sdeData, dataModelChild, con, sdeParameter);
+                insert(sdeData, dataModelChild, con, sdeParameter, r_list);
             }
         }
     }
@@ -2496,7 +2499,26 @@ public class SdeBusinessAccess {
     /*
     *
     */
+    
+    private HashMap<String, String> populateReferenceMap(Connection connection, String sql) throws SQLException {
+        
+        final HashMap<String, String> record = new HashMap<String, String>();
+        final PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
+        final ResultSet rs = preparedStatement.executeQuery();
+
+        while (rs.next()) {            
+            
+            record.put(rs.getString(1), rs.getString(2));
+        }
+
+        rs.close();
+        preparedStatement.close();
+        
+        return record;
+
+    }
+    
     private Connection getDirectConnection()
     {
         try {
@@ -2522,6 +2544,12 @@ public class SdeBusinessAccess {
     private Connection getConnection(final boolean allowDirectConnection)
     {
         
+//        // TODO :: For unit test only
+//        if(true){
+//            logger.severe("SdeBusinessAccess.getConnection :: Using local database.");
+//            return main.Main.sdeConnection();
+//        }
+         
         Context ctx = null;
         try
         {

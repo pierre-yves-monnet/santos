@@ -52,10 +52,8 @@ public class SdeAccess {
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    public static String version = "SDE Java version 1.95";
-
     static{
-        logger.info(version);
+        logger.info(Toolbox.version);
     }
 
     /* ******************************************************************************** */
@@ -809,7 +807,7 @@ public class SdeAccess {
 
             startprocessParameter.waitFirstTask = Toolbox.getBoolean(jsonHash.get("waitfirsttask"), false);
             startprocessParameter.waitFirstTask = Toolbox.getBoolean(jsonHash.get("assigntasktouser"), false);
-            startprocessParameter.timeToWaitInMs = Toolbox.getInteger(jsonHash.get("timetowaitinms"), 2000);
+            startprocessParameter.timeToWaitInMs = Toolbox.getInteger(jsonHash.get("timetowaitinms"), 10000);
 
             return startprocessParameter;
 
@@ -888,6 +886,7 @@ public class SdeAccess {
                         result.put("taskName", activityInstance.getName());
                         result.put("taskDescription", activityInstance.getDescription());
                         result.put("taskid", taskId);
+                        logger.info("SdeAccess.startProcessParameter() " + taskId);
                         break;
                     }
                     else
@@ -896,7 +895,7 @@ public class SdeAccess {
                             break;
                         }
                         numberOfLoop++;
-                        try {
+                        try {                        
                             Thread.sleep(500);
                         } catch (final InterruptedException e) {
                         }

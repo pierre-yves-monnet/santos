@@ -166,7 +166,7 @@ appCommand.controller('DashboardControler',
 							"processname":"SDEdemo", 
 							"waitfirsttask":true, 
 							"assigntasktouser": true,
-							"timetowaitinms":"2000" };
+							"timetowaitinms":"10000" };
 			var json= angular.toJson(post, false);
 			this.errormessage="";
 			this.message="Creation in progress";
