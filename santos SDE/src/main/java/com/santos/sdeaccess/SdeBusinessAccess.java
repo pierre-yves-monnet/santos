@@ -1005,13 +1005,23 @@ public class SdeBusinessAccess {
 
             final DataModel dataModel = new DataModel(TableDashBoard.TABLE_NAME, null, null, null, false, null);
 
+            // TODO :: Remove after System Test & before User Acceptance Test
             // old version
             sqlRequest = "select * from "
                     + dataModel.getTableName(paDashboardParameter.tableNameUpperCase, paDashboardParameter.enquoteTableName)
                     + " where  1=1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and (SDE_STATUS in (1) and SDE_NUMBER not in (select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8)) ";
 
+            // TODO :: Remove after System Test & before User Acceptance Test
             // new version to pickup status = 9
             sqlRequest = "select * from DASHBOARD where  SDE_STATUS <> 0 and SDE_STATUS <> 1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and " +
+                    "SDE_NUMBER in (" +
+                    "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
+                    "minus " +
+                    "select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8) ";
+            
+            // new version : included UPDATE_EC as part of filtering.
+            sqlRequest = "select * from DASHBOARD where  SDE_STATUS <> 0 and SDE_STATUS <> 1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and " +
+                    "(UPDATE_EC ='N' or UPDATE_EC is null) and " +
                     "SDE_NUMBER in (" +
                     "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
                     "minus " +
@@ -1068,11 +1078,13 @@ public class SdeBusinessAccess {
                         record.put(key, dashboardDateFormat.format(date));
                         continue;
                     }
+                    
                     if (key.equalsIgnoreCase("ON_HOLD")) {
                         System.out.println(key);
                         record.put(key, convertBitToBoolean(rs.getString(i)));
                         continue;
                     }
+                    
                     if (key.equalsIgnoreCase("DO_NOT_LOAD")) {
                         System.out.println(key);
                         record.put(key, convertBitToBoolean(rs.getString(i)));

@@ -199,9 +199,13 @@ public class SdeAccess {
                 //  final Integer sdeStatus = Toolbox.getInteger(sdeInfo.get(TableDashBoard.SDE_STATUS), null);
                 final String submited = (String) sdeInfo.get(TableDashBoard.SUBMITTED);
                 final String initiated = (String) sdeInfo.get(TableDashBoard.INITIATED);
+                
+                // keep as is, it will be used to determine to display Initiate SDE Request button.
+                // this will give user a visual clue if the task was closed without Cancel or Submit.
+                caseMap.put("INITIATED", initiated);
 
                 // before : sdeStatus != null && (sdeStatus.intValue() == 0 || sdeStatus.intValue() == 9)) {
-                if (!"Y".equals(initiated)) {
+                if (!"Y".equals(submited)) {
                     // #41 : we can initiate ONLY
                     // Initiate SDE Request is possible only if Schedule_online_Date ? SYSDATE < 2 months
                     // (in the future OK, in the past 2 month not. Example : we are the 10 November, only November and October is OK)
