@@ -12,7 +12,7 @@ public class Toolbox {
 
     static Logger logger = Logger.getLogger(Toolbox.class.getName());
     
-    public static String version = "SDE Java version 1.96";
+    public static String version = "SDE Java version 1.97";
 
     public static SimpleDateFormat sdfJavasscript = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 

@@ -115,37 +115,789 @@ public class GcdmBusinessAccess {
             // FDR-07
             if (gasComposition.typeDisplay == EnuTypeDisplays.Defaults)
             {
-                sqlRequest = "select c.cpn_cse_uid_fk as duid, c.EffectiveDate, dp.PointName, 'SpecificGravity '  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value,"
-                        + " 12 as METHANEC1"
-                        + " from DataPoints dp, CompositionSets cs, Compositions c"
-                        + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
-                        + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
-                        + " and cs.effectivedate = (select max(effectivedate) from CompositionSets where c.recordstatus = 'CURRENT')"
-                        + " and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate"
-                        + " order by dp.PointName, c.pgmscode";
+//                sqlRequest = "select c.cpn_cse_uid_fk as duid, c.EffectiveDate, dp.PointName, 'SpecificGravity '  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value,"
+//                        + " 12 as METHANEC1"
+//                        + " from DataPoints dp, CompositionSets cs, Compositions c"
+//                        + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
+//                        + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
+//                        + " and cs.effectivedate = (select max(effectivedate) from CompositionSets where c.recordstatus = 'CURRENT')"
+//                        + " and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate"
+//                        + " order by dp.PointName, c.pgmscode";
+//                
+            
+                // FDR-06
+                sqlRequest =  "select distinct" +
+                        "    Q1.comp_effectivedate as \"EFFECTIVEDATE\",	" +
+                        "    Q1.data_point as \"SUPPLYCHAINEPOINT\"," +
+                        "    (nvl(Q2.C1_SG, 0) + nvl(Q2.C2_SG, 0) + nvl(Q2.C3_SG, 0) + nvl(Q2.C4I_SG, 0) + nvl(Q2.C4N_SG, 0) + nvl(Q2.C5I_SG, 0) + nvl(Q2.C5N_SG, 0) + nvl(Q2.C6_SG, 0) + nvl(Q2.C7_SG, 0) + nvl(Q2.C8_SG, 0) + nvl(Q2.C9_SG, 0) + nvl(Q2.C10_SG, 0) + nvl(Q2.CO2_SG, 0) + nvl(Q2.H2_SG, 0) + nvl(Q2.H2S_SG, 0) + nvl(Q2.He_SG, 0) + nvl(Q2.N2_SG, 0) + nvl(Q2.O2_SG, 0)) as \"SPECIFICGRAVITY\"," +
+                        "    (nvl(Q2.C1_HV, 0) + nvl(Q2.C2_HV, 0) + nvl(Q2.C3_HV, 0) + nvl(Q2.C4I_HV, 0) + nvl(Q2.C4N_HV, 0) + nvl(Q2.C5I_HV, 0) + nvl(Q2.C5N_HV, 0) + nvl(Q2.C6_HV, 0) + nvl(Q2.C7_HV, 0) + nvl(Q2.C8_HV, 0) + nvl(Q2.C9_HV, 0) + nvl(Q2.C10_HV, 0) + nvl(Q2.CO2_HV, 0) + nvl(Q2.H2_HV, 0) + nvl(Q2.H2S_HV, 0) + nvl(Q2.He_HV, 0) + nvl(Q2.N2_HV, 0) + nvl(Q2.O2_HV, 0) ) as \"HEATINGVALUE\",  " +
+                        "    Q2.C1  as \"COLUMN_1\",  " +
+                        "    Q2.C2  as \"COLUMN_2\",  " +
+                        "    Q2.C3  as \"COLUMN_3\",   " +
+                        "    Q2.C4I  as \"COLUMN_4\",   " +
+                        "    Q2.C4N  as \"COLUMN_5\",   " +
+                        "    Q2.C5I  as \"COLUMN_6\",  " +                        
+                        "    Q2.C5N  as \"COLUMN_7\",   " +
+                        "    Q2.C6  as \"COLUMN_8\"," +
+                        "    Q2.C7  as \"COLUMN_9\",    " +
+                        "    Q2.C8  as \"COLUMN_10\",  " +
+                        "    Q2.C9  as \"COLUMN_11\"," +
+                        "    Q2.C10  as \"COLUMN_12\",    " +
+                        "    Q2.CO2  as \"COLUMN_13\"," +
+                        "    Q2.H2  as \"COLUMN_14\"," +
+                        "    Q2.H2S  as \"COLUMN_15\"," +
+                        "    Q2.He  as \"COLUMN_16\",        " +
+                        "    Q2.N2  as \"COLUMN_17\"," +
+                        "    Q2.O2  as \"COLUMN_18\"" +
+                        
+                        /*
+                        "    Q2.C1  as \"Methane C1 mole %\",  " +
+                        "    Q2.C2  as \"Ethane C2 mole %\",  " +
+                        "    Q2.C3  as \"Propane C3 mole %\",   " +
+                        "    Q2.C4I  as \"i-Butane C4I mole %\",   " +
+                        "    Q2.C4N  as \"n-Butane C4N mole %\",   " +
+                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +                        
+                        "    Q2.C5N  as \"n-Pentane C5N mole %\",   " +
+                        "    Q2.C6  as \"Hexane C6 ppm\"," +
+                        "    Q2.C7  as \"Water C7 mg/Sm3\",    " +
+                        "    Q2.C8  as \"Octane C8 ppb\",  " +
+                        "    Q2.C9  as \"Nonane C9 ppb\"," +
+                        "    Q2.C10  as \"Total Sulphur C10 ppm\",    " +
+                        "    Q2.CO2  as \"Carbon Dioxide CO2 mole %\"," +
+                        "    Q2.H2  as \"Benzene H2 ppb\"," +
+                        "    Q2.H2S  as \"Hydrogen Sulphide H2S ppm\"," +
+                        "    Q2.He  as \"Neo-Pentane He NEO\",        " +
+                        "    Q2.N2  as \"Nitrogen N2 mole %\"," +
+                        "    Q2.O2  as \"CycloHexane O2 ppb\"" +
+                        */
+                        " from" +
+                        " (" +
+                        " Select " +
+                        " data_point_name as data_point, " +
+                        " comp_effectivedate as comp_effectivedate" +
+                        " from" +
+                        " (" +
+                        " Select" +
+                        "    dp.pointname as data_point_name," +
+                        "    c.effectivedate as comp_effectivedate" +
+                        " From" +
+                        "    gcdm.compositions  				c," +
+                        "    gcdm.compositionsets      			cs," +
+                        "    gcdm.datapoints  				dp" +
+                        " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk" +
+                        "                    and cs.cse_uid_pk = c.cpn_cse_uid_fk " +
+                        "            	    and dp.recordstatus = 'CURRENT' and dp.effectivedate < sysdate and dp.enddate is null" +
+                        "		    and cs.effectivedate = (select max(effectivedate) from gcdm.CompositionSets where c.recordstatus = 'CURRENT' and cs.cse_uid_pk = c.cpn_cse_uid_fk and effectivedate < sysdate and enddate is null ) " +
+                        "		    and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate and c.effectivedate < sysdate and c.enddate is null)" +
+                        " group by data_point_name, comp_effectivedate " +
+                        " ) Q1," +
+                        " (" +
+                        " Select" +
+                        "    DP.pointname   as data_point," +
+                        "    c.effectivedate as comp_effectivedate," +
+                        "    sum( decode ( C.pgmscode, 'C1' , C.value ) ) as C1," +
+                        "    sum( decode ( C.pgmscode, 'C2' , C.value ) ) as C2," +
+                        "    sum( decode ( C.pgmscode, 'C3' , C.value ) ) as C3," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , C.value ) ) as C4I," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , C.value ) ) as C4N," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , C.value ) ) as C5I," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , C.value ) ) as C5N," +
+                        "    sum( decode ( C.pgmscode, 'C6' , C.value ) ) as C6," +
+                        "    sum( decode ( C.pgmscode, 'C7' , C.value ) ) as C7," +
+                        "    sum( decode ( C.pgmscode, 'C8' , C.value ) ) as C8," +
+                        "    sum( decode ( C.pgmscode, 'C9' , C.value ) ) as C9," +
+                        "    sum( decode ( C.pgmscode, 'C10' , C.value ) ) as C10," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , C.value ) ) as CO2," +
+                        "    sum( decode ( C.pgmscode, 'H2' , C.value ) ) as H2," +
+                        "    sum( decode ( C.pgmscode, 'H2S' , C.value ) ) as H2S," +
+                        "    sum( decode ( C.pgmscode, 'He' , C.value ) ) as He," +
+                        "    sum( decode ( C.pgmscode, 'N2' , C.value ) ) as N2," +
+                        "    sum( decode ( C.pgmscode, 'O2' , C.value ) ) as O2," +
+                        "    sum( decode ( C.pgmscode, 'C1' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C1_HV," +
+                        "    sum( decode ( C.pgmscode, 'C2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C2_HV," +
+                        "    sum( decode ( C.pgmscode, 'C3' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C3_HV," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4I_HV," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4N_HV," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5I_HV," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5N_HV," +
+                        "    sum( decode ( C.pgmscode, 'C6' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C6_HV," +
+                        "    sum( decode ( C.pgmscode, 'C7' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C7_HV, " +
+                        "    sum( decode ( C.pgmscode, 'C8' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C8_HV," +
+                        "    sum( decode ( C.pgmscode, 'C9' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C9_HV," +
+                        "    sum( decode ( C.pgmscode, 'C10' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C10_HV," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as CO2_HV," +
+                        "    sum( decode ( C.pgmscode, 'H2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2_HV," +
+                        "    sum( decode ( C.pgmscode, 'H2S' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2S_HV, " +
+                        "    sum( decode ( C.pgmscode, 'He' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as He_HV," +
+                        "    sum( decode ( C.pgmscode, 'N2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as N2_HV, " +
+                        "    sum( decode ( C.pgmscode, 'O2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as O2_HV," +
+                        "    sum( decode ( C.pgmscode, 'C1' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C1_SG," +
+                        "    sum( decode ( C.pgmscode, 'C2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C2_SG," +
+                        "    sum( decode ( C.pgmscode, 'C3' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C3_SG," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4I_SG," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4N_SG," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5I_SG," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5N_SG," +
+                        "    sum( decode ( C.pgmscode, 'C6' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C6_SG," +
+                        "    sum( decode ( C.pgmscode, 'C7' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C7_SG," +
+                        "    sum( decode ( C.pgmscode, 'C8' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C8_SG," +
+                        "    sum( decode ( C.pgmscode, 'C9' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C9_SG," +
+                        "    sum( decode ( C.pgmscode, 'C10' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C10_SG," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as CO2_SG," +
+                        "    sum( decode ( C.pgmscode, 'H2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2_SG, " +
+                        "    sum( decode ( C.pgmscode, 'H2S' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2S_SG,  " +
+                        "    sum( decode ( C.pgmscode, 'He' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as He_SG," +
+                        "    sum( decode ( C.pgmscode, 'N2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as N2_SG," +
+                        "    sum( decode ( C.pgmscode, 'O2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as O2_SG       " +
+                        " From" +
+                        "    gcdm.compositions  				c," +
+                        "    gcdm.compositionsets      			cs," +
+                        "    gcdm.datapoints  				dp," +
+                        "    gcdm.r_conversionfactors			rc" +
+                        " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk" +
+                        "    and cs.cse_uid_pk = c.cpn_cse_uid_fk" +
+                        "    and c.pgmscode = rc.pgmscode  " +
+                        "    and dp.recordstatus = 'CURRENT' and dp.effectivedate < sysdate and dp.enddate is null" +
+                        "    and cs.effectivedate = (select max(effectivedate) from gcdm.CompositionSets where c.recordstatus = 'CURRENT' and cs.cse_uid_pk = c.cpn_cse_uid_fk and effectivedate < sysdate and enddate is null ) " +
+                        "    and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate and c.effectivedate < sysdate and c.enddate is null" +
+                        "    and rc.recordstatus = 'CURRENT' and rc.effectivedate <= c.effectivedate and rc.effectivedate < sysdate and rc.enddate is null" +
+                        " Group by" +
+                        "    DP.pointname, c.effectivedate    " +
+                        " ) Q2" +
+                        " where Q1.data_point = Q2.data_point" +
+                        "    and Q1.comp_effectivedate = Q2.comp_effectivedate" +
+                        " order by 1";
             }
 
             // FDR-60
             if (gasComposition.typeDisplay == EnuTypeDisplays.Minimum)
             {
-                sqlRequest = "select c.cpn_cse_uid_fk as duid, c.EffectiveDate, dp.PointName, 'SpecificGravity'  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
-                        + " from DataPoints dp, CompositionSets cs, Compositions c"
-                        + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
-                        + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
-                        + " and cs.effectivedate = (select max(effectivedate) from CompositionSets where c.recordstatus = 'CURRENT')"
-                        + " and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate"
-                        + " order by dp.PointName, c.pgmscode";
+//                sqlRequest = "select c.cpn_cse_uid_fk as duid, c.EffectiveDate, dp.PointName, 'SpecificGravity'  as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
+//                        + " from DataPoints dp, CompositionSets cs, Compositions c"
+//                        + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
+//                        + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
+//                        + " and cs.effectivedate = (select max(effectivedate) from CompositionSets where c.recordstatus = 'CURRENT')"
+//                        + " and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate"
+//                        + " order by dp.PointName, c.pgmscode";
+                // FDR-06
+                sqlRequest =  "select distinct" +
+                        "    Q1.comp_effectivedate as \"EFFECTIVEDATE\",	" +
+                        "    Q1.data_point as \"SUPPLYCHAINEPOINT\"," +
+                        "    (nvl(Q2.C1_SG, 0) + nvl(Q2.C2_SG, 0) + nvl(Q2.C3_SG, 0) + nvl(Q2.C4I_SG, 0) + nvl(Q2.C4N_SG, 0) + nvl(Q2.C5I_SG, 0) + nvl(Q2.C5N_SG, 0) + nvl(Q2.C6_SG, 0) + nvl(Q2.C7_SG, 0) + nvl(Q2.C8_SG, 0) + nvl(Q2.C9_SG, 0) + nvl(Q2.C10_SG, 0) + nvl(Q2.CO2_SG, 0) + nvl(Q2.H2_SG, 0) + nvl(Q2.H2S_SG, 0) + nvl(Q2.He_SG, 0) + nvl(Q2.N2_SG, 0) + nvl(Q2.O2_SG, 0)) as \"SPECIFICGRAVITY\"," +
+                        "    (nvl(Q2.C1_HV, 0) + nvl(Q2.C2_HV, 0) + nvl(Q2.C3_HV, 0) + nvl(Q2.C4I_HV, 0) + nvl(Q2.C4N_HV, 0) + nvl(Q2.C5I_HV, 0) + nvl(Q2.C5N_HV, 0) + nvl(Q2.C6_HV, 0) + nvl(Q2.C7_HV, 0) + nvl(Q2.C8_HV, 0) + nvl(Q2.C9_HV, 0) + nvl(Q2.C10_HV, 0) + nvl(Q2.CO2_HV, 0) + nvl(Q2.H2_HV, 0) + nvl(Q2.H2S_HV, 0) + nvl(Q2.He_HV, 0) + nvl(Q2.N2_HV, 0) + nvl(Q2.O2_HV, 0) ) as \"HEATINGVALUE\",  " +
+                        "    Q2.C1  as \"COLUMN_1\",  " +
+                        "    Q2.C2  as \"COLUMN_2\",  " +
+                        "    Q2.C3  as \"COLUMN_3\",   " +
+                        "    Q2.C4I  as \"COLUMN_4\",   " +
+                        "    Q2.C4N  as \"COLUMN_5\",   " +
+                        "    Q2.C5I  as \"COLUMN_6\",  " +                        
+                        "    Q2.C5N  as \"COLUMN_7\",   " +
+                        "    Q2.C6  as \"COLUMN_8\"," +
+                        "    Q2.C7  as \"COLUMN_9\",    " +
+                        "    Q2.C8  as \"COLUMN_10\",  " +
+                        "    Q2.C9  as \"COLUMN_11\"," +
+                        "    Q2.C10  as \"COLUMN_12\",    " +
+                        "    Q2.CO2  as \"COLUMN_13\"," +
+                        "    Q2.H2  as \"COLUMN_14\"," +
+                        "    Q2.H2S  as \"COLUMN_15\"," +
+                        "    Q2.He  as \"COLUMN_16\",        " +
+                        "    Q2.N2  as \"COLUMN_17\"," +
+                        "    Q2.O2  as \"COLUMN_18\"" +
+                        
+                        /*
+                        "    Q2.C1  as \"Methane C1 mole %\",  " +
+                        "    Q2.C2  as \"Ethane C2 mole %\",  " +
+                        "    Q2.C3  as \"Propane C3 mole %\",   " +
+                        "    Q2.C4I  as \"i-Butane C4I mole %\",   " +
+                        "    Q2.C4N  as \"n-Butane C4N mole %\",   " +
+                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +                        
+                        "    Q2.C5N  as \"n-Pentane C5N mole %\",   " +
+                        "    Q2.C6  as \"Hexane C6 ppm\"," +
+                        "    Q2.C7  as \"Water C7 mg/Sm3\",    " +
+                        "    Q2.C8  as \"Octane C8 ppb\",  " +
+                        "    Q2.C9  as \"Nonane C9 ppb\"," +
+                        "    Q2.C10  as \"Total Sulphur C10 ppm\",    " +
+                        "    Q2.CO2  as \"Carbon Dioxide CO2 mole %\"," +
+                        "    Q2.H2  as \"Benzene H2 ppb\"," +
+                        "    Q2.H2S  as \"Hydrogen Sulphide H2S ppm\"," +
+                        "    Q2.He  as \"Neo-Pentane He NEO\",        " +
+                        "    Q2.N2  as \"Nitrogen N2 mole %\"," +
+                        "    Q2.O2  as \"CycloHexane O2 ppb\"" +
+                        */
+                        " from" +
+                        " (" +
+                        " Select " +
+                        " data_point_name as data_point, " +
+                        " comp_effectivedate as comp_effectivedate" +
+                        " from" +
+                        " (" +
+                        " Select" +
+                        "    dp.pointname as data_point_name," +
+                        "    c.effectivedate as comp_effectivedate" +
+                        " From" +
+                        "    gcdm.compositions  				c," +
+                        "    gcdm.compositionsets      			cs," +
+                        "    gcdm.datapoints  				dp" +
+                        " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk" +
+                        "                    and cs.cse_uid_pk = c.cpn_cse_uid_fk " +
+                        "            	    and dp.recordstatus = 'CURRENT' and dp.effectivedate < sysdate and dp.enddate is null" +
+                        "		    and cs.effectivedate = (select max(effectivedate) from gcdm.CompositionSets where c.recordstatus = 'CURRENT' and cs.cse_uid_pk = c.cpn_cse_uid_fk and effectivedate < sysdate and enddate is null ) " +
+                        "		    and c.CompositionUse='MINIMUM' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate and c.effectivedate < sysdate and c.enddate is null)" +
+                        " group by data_point_name, comp_effectivedate " +
+                        " ) Q1," +
+                        " (" +
+                        " Select" +
+                        "    DP.pointname   as data_point," +
+                        "    c.effectivedate as comp_effectivedate," +
+                        "    sum( decode ( C.pgmscode, 'C1' , C.value ) ) as C1," +
+                        "    sum( decode ( C.pgmscode, 'C2' , C.value ) ) as C2," +
+                        "    sum( decode ( C.pgmscode, 'C3' , C.value ) ) as C3," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , C.value ) ) as C4I," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , C.value ) ) as C4N," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , C.value ) ) as C5I," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , C.value ) ) as C5N," +
+                        "    sum( decode ( C.pgmscode, 'C6' , C.value ) ) as C6," +
+                        "    sum( decode ( C.pgmscode, 'C7' , C.value ) ) as C7," +
+                        "    sum( decode ( C.pgmscode, 'C8' , C.value ) ) as C8," +
+                        "    sum( decode ( C.pgmscode, 'C9' , C.value ) ) as C9," +
+                        "    sum( decode ( C.pgmscode, 'C10' , C.value ) ) as C10," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , C.value ) ) as CO2," +
+                        "    sum( decode ( C.pgmscode, 'H2' , C.value ) ) as H2," +
+                        "    sum( decode ( C.pgmscode, 'H2S' , C.value ) ) as H2S," +
+                        "    sum( decode ( C.pgmscode, 'He' , C.value ) ) as He," +
+                        "    sum( decode ( C.pgmscode, 'N2' , C.value ) ) as N2," +
+                        "    sum( decode ( C.pgmscode, 'O2' , C.value ) ) as O2," +
+                        "    sum( decode ( C.pgmscode, 'C1' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C1_HV," +
+                        "    sum( decode ( C.pgmscode, 'C2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C2_HV," +
+                        "    sum( decode ( C.pgmscode, 'C3' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C3_HV," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4I_HV," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4N_HV," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5I_HV," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5N_HV," +
+                        "    sum( decode ( C.pgmscode, 'C6' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C6_HV," +
+                        "    sum( decode ( C.pgmscode, 'C7' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C7_HV, " +
+                        "    sum( decode ( C.pgmscode, 'C8' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C8_HV," +
+                        "    sum( decode ( C.pgmscode, 'C9' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C9_HV," +
+                        "    sum( decode ( C.pgmscode, 'C10' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C10_HV," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as CO2_HV," +
+                        "    sum( decode ( C.pgmscode, 'H2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2_HV," +
+                        "    sum( decode ( C.pgmscode, 'H2S' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2S_HV, " +
+                        "    sum( decode ( C.pgmscode, 'He' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as He_HV," +
+                        "    sum( decode ( C.pgmscode, 'N2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as N2_HV, " +
+                        "    sum( decode ( C.pgmscode, 'O2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as O2_HV," +
+                        "    sum( decode ( C.pgmscode, 'C1' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C1_SG," +
+                        "    sum( decode ( C.pgmscode, 'C2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C2_SG," +
+                        "    sum( decode ( C.pgmscode, 'C3' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C3_SG," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4I_SG," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4N_SG," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5I_SG," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5N_SG," +
+                        "    sum( decode ( C.pgmscode, 'C6' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C6_SG," +
+                        "    sum( decode ( C.pgmscode, 'C7' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C7_SG," +
+                        "    sum( decode ( C.pgmscode, 'C8' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C8_SG," +
+                        "    sum( decode ( C.pgmscode, 'C9' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C9_SG," +
+                        "    sum( decode ( C.pgmscode, 'C10' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C10_SG," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as CO2_SG," +
+                        "    sum( decode ( C.pgmscode, 'H2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2_SG, " +
+                        "    sum( decode ( C.pgmscode, 'H2S' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2S_SG,  " +
+                        "    sum( decode ( C.pgmscode, 'He' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as He_SG," +
+                        "    sum( decode ( C.pgmscode, 'N2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as N2_SG," +
+                        "    sum( decode ( C.pgmscode, 'O2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as O2_SG       " +
+                        " From" +
+                        "    gcdm.compositions  				c," +
+                        "    gcdm.compositionsets      			cs," +
+                        "    gcdm.datapoints  				dp," +
+                        "    gcdm.r_conversionfactors			rc" +
+                        " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk" +
+                        "    and cs.cse_uid_pk = c.cpn_cse_uid_fk" +
+                        "    and c.pgmscode = rc.pgmscode  " +
+                        "    and dp.recordstatus = 'CURRENT' and dp.effectivedate < sysdate and dp.enddate is null" +
+                        "    and cs.effectivedate = (select max(effectivedate) from gcdm.CompositionSets where c.recordstatus = 'CURRENT' and cs.cse_uid_pk = c.cpn_cse_uid_fk and effectivedate < sysdate and enddate is null ) " +
+                        "    and c.CompositionUse='MINIMUM' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate and c.effectivedate < sysdate and c.enddate is null" +
+                        "    and rc.recordstatus = 'CURRENT' and rc.effectivedate <= c.effectivedate and rc.effectivedate < sysdate and rc.enddate is null" +
+                        " Group by" +
+                        "    DP.pointname, c.effectivedate    " +
+                        " ) Q2" +
+                        " where Q1.data_point = Q2.data_point" +
+                        "    and Q1.comp_effectivedate = Q2.comp_effectivedate" +
+                        " order by 1";
             }
             // FDR-62
             if (gasComposition.typeDisplay == EnuTypeDisplays.BlendAlarm)
             {
-                sqlRequest = "select c.cpn_cse_uid_fk as DUID, c.EffectiveDate, dp.PointName, 'SpecificGravity' as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
-                        + " from DataPoints dp, CompositionSets cs, Compositions c"
-                        + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
-                        + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
-                        + " and cs.effectivedate = (select max(effectivedate) from CompositionSets where c.recordstatus = 'CURRENT')"
-                        + " and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate"
-                        + " order by dp.PointName, c.pgmscode";
+//                sqlRequest = "select c.cpn_cse_uid_fk as DUID, c.EffectiveDate, dp.PointName, 'SpecificGravity' as SPECIFICGRAVITY, 'HeatingValue'      as HeatingValue, c.value"
+//                        + " from DataPoints dp, CompositionSets cs, Compositions c"
+//                        + " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk "
+//                        + " and cs.cse_uid_pk = c.cpn_cse_uid_fk "
+//                        + " and cs.effectivedate = (select max(effectivedate) from CompositionSets where c.recordstatus = 'CURRENT')"
+//                        + " and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate"
+//                        + " order by dp.PointName, c.pgmscode";
+                // FDR-06
+                sqlRequest =  "select distinct" +
+                        "    Q1.comp_effectivedate as \"EFFECTIVEDATE\",	" +
+                        "    Q1.data_point as \"SUPPLYCHAINEPOINT\"," +
+                        "    (nvl(Q2.C1_SG, 0) + nvl(Q2.C2_SG, 0) + nvl(Q2.C3_SG, 0) + nvl(Q2.C4I_SG, 0) + nvl(Q2.C4N_SG, 0) + nvl(Q2.C5I_SG, 0) + nvl(Q2.C5N_SG, 0) + nvl(Q2.C6_SG, 0) + nvl(Q2.C7_SG, 0) + nvl(Q2.C8_SG, 0) + nvl(Q2.C9_SG, 0) + nvl(Q2.C10_SG, 0) + nvl(Q2.CO2_SG, 0) + nvl(Q2.H2_SG, 0) + nvl(Q2.H2S_SG, 0) + nvl(Q2.He_SG, 0) + nvl(Q2.N2_SG, 0) + nvl(Q2.O2_SG, 0)) as \"SPECIFICGRAVITY\"," +
+                        "    (nvl(Q2.C1_HV, 0) + nvl(Q2.C2_HV, 0) + nvl(Q2.C3_HV, 0) + nvl(Q2.C4I_HV, 0) + nvl(Q2.C4N_HV, 0) + nvl(Q2.C5I_HV, 0) + nvl(Q2.C5N_HV, 0) + nvl(Q2.C6_HV, 0) + nvl(Q2.C7_HV, 0) + nvl(Q2.C8_HV, 0) + nvl(Q2.C9_HV, 0) + nvl(Q2.C10_HV, 0) + nvl(Q2.CO2_HV, 0) + nvl(Q2.H2_HV, 0) + nvl(Q2.H2S_HV, 0) + nvl(Q2.He_HV, 0) + nvl(Q2.N2_HV, 0) + nvl(Q2.O2_HV, 0) ) as \"HEATINGVALUE\",  " +
+                        "    Q2.C1  as \"COLUMN_1\",  " +
+                        "    Q2.C2  as \"COLUMN_2\",  " +
+                        "    Q2.C3  as \"COLUMN_3\",   " +
+                        "    Q2.C4I  as \"COLUMN_4\",   " +
+                        "    Q2.C4N  as \"COLUMN_5\",   " +
+                        "    Q2.C5I  as \"COLUMN_6\",  " +                        
+                        "    Q2.C5N  as \"COLUMN_7\",   " +
+                        "    Q2.C6  as \"COLUMN_8\"," +
+                        "    Q2.C7  as \"COLUMN_9\",    " +
+                        "    Q2.C8  as \"COLUMN_10\",  " +
+                        "    Q2.C9  as \"COLUMN_11\"," +
+                        "    Q2.C10  as \"COLUMN_12\",    " +
+                        "    Q2.CO2  as \"COLUMN_13\"," +
+                        "    Q2.H2  as \"COLUMN_14\"," +
+                        "    Q2.H2S  as \"COLUMN_15\"," +
+                        "    Q2.He  as \"COLUMN_16\",        " +
+                        "    Q2.N2  as \"COLUMN_17\"," +
+                        "    Q2.O2  as \"COLUMN_18\"" +
+                        
+                        /*
+                        "    Q2.C1  as \"Methane C1 mole %\",  " +
+                        "    Q2.C2  as \"Ethane C2 mole %\",  " +
+                        "    Q2.C3  as \"Propane C3 mole %\",   " +
+                        "    Q2.C4I  as \"i-Butane C4I mole %\",   " +
+                        "    Q2.C4N  as \"n-Butane C4N mole %\",   " +
+                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +                        
+                        "    Q2.C5N  as \"n-Pentane C5N mole %\",   " +
+                        "    Q2.C6  as \"Hexane C6 ppm\"," +
+                        "    Q2.C7  as \"Water C7 mg/Sm3\",    " +
+                        "    Q2.C8  as \"Octane C8 ppb\",  " +
+                        "    Q2.C9  as \"Nonane C9 ppb\"," +
+                        "    Q2.C10  as \"Total Sulphur C10 ppm\",    " +
+                        "    Q2.CO2  as \"Carbon Dioxide CO2 mole %\"," +
+                        "    Q2.H2  as \"Benzene H2 ppb\"," +
+                        "    Q2.H2S  as \"Hydrogen Sulphide H2S ppm\"," +
+                        "    Q2.He  as \"Neo-Pentane He NEO\",        " +
+                        "    Q2.N2  as \"Nitrogen N2 mole %\"," +
+                        "    Q2.O2  as \"CycloHexane O2 ppb\"" +
+                        */
+                        " from" +
+                        " (" +
+                        " Select " +
+                        " data_point_name as data_point, " +
+                        " comp_effectivedate as comp_effectivedate" +
+                        " from" +
+                        " (" +
+                        " Select" +
+                        "    dp.pointname as data_point_name," +
+                        "    c.effectivedate as comp_effectivedate" +
+                        " From" +
+                        "    gcdm.compositions  				c," +
+                        "    gcdm.compositionsets      			cs," +
+                        "    gcdm.datapoints  				dp" +
+                        " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk" +
+                        "                    and cs.cse_uid_pk = c.cpn_cse_uid_fk " +
+                        "            	    and dp.recordstatus = 'CURRENT' and dp.effectivedate < sysdate and dp.enddate is null" +
+                        "		    and cs.effectivedate = (select max(effectivedate) from gcdm.CompositionSets where c.recordstatus = 'CURRENT' and cs.cse_uid_pk = c.cpn_cse_uid_fk and effectivedate < sysdate and enddate is null ) " +
+                        "		    and c.CompositionUse='ALARM' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate and c.effectivedate < sysdate and c.enddate is null)" +
+                        " group by data_point_name, comp_effectivedate " +
+                        " ) Q1," +
+                        " (" +
+                        " Select" +
+                        "    DP.pointname   as data_point," +
+                        "    c.effectivedate as comp_effectivedate," +
+                        "    sum( decode ( C.pgmscode, 'C1' , C.value ) ) as C1," +
+                        "    sum( decode ( C.pgmscode, 'C2' , C.value ) ) as C2," +
+                        "    sum( decode ( C.pgmscode, 'C3' , C.value ) ) as C3," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , C.value ) ) as C4I," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , C.value ) ) as C4N," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , C.value ) ) as C5I," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , C.value ) ) as C5N," +
+                        "    sum( decode ( C.pgmscode, 'C6' , C.value ) ) as C6," +
+                        "    sum( decode ( C.pgmscode, 'C7' , C.value ) ) as C7," +
+                        "    sum( decode ( C.pgmscode, 'C8' , C.value ) ) as C8," +
+                        "    sum( decode ( C.pgmscode, 'C9' , C.value ) ) as C9," +
+                        "    sum( decode ( C.pgmscode, 'C10' , C.value ) ) as C10," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , C.value ) ) as CO2," +
+                        "    sum( decode ( C.pgmscode, 'H2' , C.value ) ) as H2," +
+                        "    sum( decode ( C.pgmscode, 'H2S' , C.value ) ) as H2S," +
+                        "    sum( decode ( C.pgmscode, 'He' , C.value ) ) as He," +
+                        "    sum( decode ( C.pgmscode, 'N2' , C.value ) ) as N2," +
+                        "    sum( decode ( C.pgmscode, 'O2' , C.value ) ) as O2," +
+                        "    sum( decode ( C.pgmscode, 'C1' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C1_HV," +
+                        "    sum( decode ( C.pgmscode, 'C2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C2_HV," +
+                        "    sum( decode ( C.pgmscode, 'C3' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C3_HV," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4I_HV," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4N_HV," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5I_HV," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5N_HV," +
+                        "    sum( decode ( C.pgmscode, 'C6' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C6_HV," +
+                        "    sum( decode ( C.pgmscode, 'C7' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C7_HV, " +
+                        "    sum( decode ( C.pgmscode, 'C8' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C8_HV," +
+                        "    sum( decode ( C.pgmscode, 'C9' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C9_HV," +
+                        "    sum( decode ( C.pgmscode, 'C10' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C10_HV," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as CO2_HV," +
+                        "    sum( decode ( C.pgmscode, 'H2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2_HV," +
+                        "    sum( decode ( C.pgmscode, 'H2S' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2S_HV, " +
+                        "    sum( decode ( C.pgmscode, 'He' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as He_HV," +
+                        "    sum( decode ( C.pgmscode, 'N2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as N2_HV, " +
+                        "    sum( decode ( C.pgmscode, 'O2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.hvconversionfactor > 0  THEN RC.hvconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.hvconversionfactor > 0 THEN RC.hvconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as O2_HV," +
+                        "    sum( decode ( C.pgmscode, 'C1' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C1_SG," +
+                        "    sum( decode ( C.pgmscode, 'C2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C2_SG," +
+                        "    sum( decode ( C.pgmscode, 'C3' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C3_SG," +
+                        "    sum( decode ( C.pgmscode, 'C4I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4I_SG," +
+                        "    sum( decode ( C.pgmscode, 'C4N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C4N_SG," +
+                        "    sum( decode ( C.pgmscode, 'C5I' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5I_SG," +
+                        "    sum( decode ( C.pgmscode, 'C5N' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C5N_SG," +
+                        "    sum( decode ( C.pgmscode, 'C6' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C6_SG," +
+                        "    sum( decode ( C.pgmscode, 'C7' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C7_SG," +
+                        "    sum( decode ( C.pgmscode, 'C8' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C8_SG," +
+                        "    sum( decode ( C.pgmscode, 'C9' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C9_SG," +
+                        "    sum( decode ( C.pgmscode, 'C10' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as C10_SG," +
+                        "    sum( decode ( C.pgmscode, 'CO2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as CO2_SG," +
+                        "    sum( decode ( C.pgmscode, 'H2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2_SG, " +
+                        "    sum( decode ( C.pgmscode, 'H2S' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as H2S_SG,  " +
+                        "    sum( decode ( C.pgmscode, 'He' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as He_SG," +
+                        "    sum( decode ( C.pgmscode, 'N2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as N2_SG," +
+                        "    sum( decode ( C.pgmscode, 'O2' , CASE WHEN C.unitofmeasure_fk='ppm' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000 " +
+                        "	                                   WHEN C.unitofmeasure_fk='ppb' and RC.sgconversionfactor > 0  THEN RC.sgconversionfactor*C.value/1000000000" +
+                        "					   WHEN C.unitofmeasure_fk not in ('ppb', 'ppm') and RC.sgconversionfactor > 0 THEN RC.sgconversionfactor*C.value/100" +
+                        "					   ELSE 0 END)) as O2_SG       " +
+                        " From" +
+                        "    gcdm.compositions  				c," +
+                        "    gcdm.compositionsets      			cs," +
+                        "    gcdm.datapoints  				dp," +
+                        "    gcdm.r_conversionfactors			rc" +
+                        " where dp.dpt_uid_pk = cs.cse_dpt_uid_fk" +
+                        "    and cs.cse_uid_pk = c.cpn_cse_uid_fk" +
+                        "    and c.pgmscode = rc.pgmscode  " +
+                        "    and dp.recordstatus = 'CURRENT' and dp.effectivedate < sysdate and dp.enddate is null" +
+                        "    and cs.effectivedate = (select max(effectivedate) from gcdm.CompositionSets where c.recordstatus = 'CURRENT' and cs.cse_uid_pk = c.cpn_cse_uid_fk and effectivedate < sysdate and enddate is null ) " +
+                        "    and c.CompositionUse='ALARM' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate and c.effectivedate < sysdate and c.enddate is null" +
+                        "    and rc.recordstatus = 'CURRENT' and rc.effectivedate <= c.effectivedate and rc.effectivedate < sysdate and rc.enddate is null" +
+                        " Group by" +
+                        "    DP.pointname, c.effectivedate    " +
+                        " ) Q2" +
+                        " where Q1.data_point = Q2.data_point" +
+                        "    and Q1.comp_effectivedate = Q2.comp_effectivedate" +
+                        " order by 1";
             }
             final List<Object> listRequestObject = new ArrayList<Object>();
 
@@ -169,12 +921,14 @@ public class GcdmBusinessAccess {
             // list SupplyChaine FDR-18
             completeListSupplyChain(con, gcdmResult);
 
+            
 
             // FDR-10 create the header
             completeGasCompositionHeader(con, gasComposition.typeDisplay, gcdmResult);
 
             // get the NewGasCompositionFields
             completeNewGasCompositionFields(con, gcdmResult);
+            
 
             gcdmResult.status = gcdmResult.listValues.size() + " item+" + (gcdmResult.listValues.size() > 1 ? "s" : "") + " found";
 
@@ -633,48 +1387,125 @@ public class GcdmBusinessAccess {
         // FDR-10
         if (typeDisplay == EnuTypeDisplays.Defaults)
         {
-            gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
-            gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
-            gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
-            gcdmResult.addHeaderColumns("HEATINGVALUE", "Heating Value", typeColumn.text);
-            gcdmResult.addHeaderColumns("METHANEC1", "Methane C1", typeColumn.number);
-            gcdmResult.addHeaderColumns("ETHANEC2", "Ethane C2", typeColumn.number);
-            gcdmResult.addHeaderColumns("PROPANEC3", "Propane C3", typeColumn.number);
-            gcdmResult.addHeaderColumns("IBUTANEC4I", "I-Butane C4i", typeColumn.number);
-            gcdmResult.addHeaderColumns("NBUTANEC4N", "N-Butane C4n", typeColumn.number);
-            gcdmResult.addHeaderColumns("BUTANEC4", "Butane C4", typeColumn.number);
+            
+            
+//            Methane C1 mole %
+//            Ethane C2 mole %
+//            Propane C3 mole %
+//            i-Butane C4I mole %
+//            n-Butane C4N mole %
+//            i-Pentane C5I mole %
+//            n-Pentane C5N mole %
+//            Hexane C6 ppm
+//            Water C7 mg/Sm3
+//            Octane C8 ppb
+//            Nonane C9 ppb
+//            Total Sulphur C10 ppm
+//            Carbon Dioxide CO2 mole %
+//            Benzene H2 ppb
+//            Hydrogen Sulphide H2S ppm
+//            Neo-Pentane He NEO
+//            Nitrogen N2 mole %
+//            CycloHexane O2 ppb            
+            
+         gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
+gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
+gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
+gcdmResult.addHeaderColumns("HEATINGVALUE", "Heating Value", typeColumn.text);
+gcdmResult.addHeaderColumns("COLUMN_1","Methane C1 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_2","Ethane C2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_3","Propane C3 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_4","i-Butane C4I mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_5","n-Butane C4N mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_6","i-Pentane C5I mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_7","n-Pentane C5N mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_8","Hexane C6 ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_9","Water C7 mg/Sm3", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_10","Octane C8 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_11","Nonane C9 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_12","Total Sulphur C10 ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_13","Carbon Dioxide CO2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_14","Benzene H2 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_15","Hydrogen Sulphide H2S ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_16","Neo-Pentane He NEO", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_17","Nitrogen N2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_18","CycloHexane O2 ppb", typeColumn.number);
+
+
+            
+            
+             
+            
+            
+            
+            
+            
+            
+//            gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
+//            gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
+//            gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
+//            gcdmResult.addHeaderColumns("HEATINGVALUE", "Heating Value", typeColumn.text);
+//            gcdmResult.addHeaderColumns("METHANEC1", "Methane C1", typeColumn.number);
+//            gcdmResult.addHeaderColumns("ETHANEC2", "Ethane C2", typeColumn.number);
+//            gcdmResult.addHeaderColumns("PROPANEC3", "Propane C3", typeColumn.number);
+//            gcdmResult.addHeaderColumns("IBUTANEC4I", "I-Butane C4i", typeColumn.number);
+//            gcdmResult.addHeaderColumns("NBUTANEC4N", "N-Butane C4n", typeColumn.number);
+//            gcdmResult.addHeaderColumns("BUTANEC4", "Butane C4xxxxxxxxxx", typeColumn.number);
         }
         else if (typeDisplay == EnuTypeDisplays.Minimum)
         {
-            // FDR-60
-            gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
-            gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
-            gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
-            gcdmResult.addHeaderColumns("HEATINGVALUE", "Heating Value", typeColumn.text);
-            gcdmResult.addHeaderColumns("METHANEC1", "Methane C1", typeColumn.number);
-            gcdmResult.addHeaderColumns("ETHANEC2", "Ethane C2", typeColumn.number);
-            gcdmResult.addHeaderColumns("PROPANEC3", "Propane C3", typeColumn.number);
-            gcdmResult.addHeaderColumns("IBUTANEC4I", "I-Butane C4i", typeColumn.number);
-            gcdmResult.addHeaderColumns("NBUTANEC4N", "N-Butane C4n", typeColumn.number);
-            gcdmResult.addHeaderColumns("BUTANEC4", "Butane C4", typeColumn.number);
-            gcdmResult.addHeaderColumns("IPENTANEC5", "IPentane C5", typeColumn.number);
-            gcdmResult.addHeaderColumns("NEOPENTANE", "Neo_Pentane", typeColumn.number);
+gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
+gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
+gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
+gcdmResult.addHeaderColumns("HEATINGVALUE", "Heating Value", typeColumn.text);
+gcdmResult.addHeaderColumns("COLUMN_1","Methane C1 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_2","Ethane C2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_3","Propane C3 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_4","i-Butane C4I mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_5","n-Butane C4N mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_6","i-Pentane C5I mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_7","n-Pentane C5N mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_8","Hexane C6 ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_9","Water C7 mg/Sm3", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_10","Octane C8 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_11","Nonane C9 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_12","Total Sulphur C10 ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_13","Carbon Dioxide CO2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_14","Benzene H2 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_15","Hydrogen Sulphide H2S ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_16","Neo-Pentane He NEO", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_17","Nitrogen N2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_18","CycloHexane O2 ppb", typeColumn.number);
+
 
         }
         else if (typeDisplay == EnuTypeDisplays.BlendAlarm)
         {
-            // FDR-62
-            gcdmResult.addHeaderColumns("EFFECTIVEDATE_ST", "Effective Date/Time", typeColumn.date);
-            gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
-            gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
-            gcdmResult.addHeaderColumns("HEATINGVALUE", "Heating Value", typeColumn.text);
-            gcdmResult.addHeaderColumns("METHANEC1", "Methane C1", typeColumn.number);
-            gcdmResult.addHeaderColumns("ETHANEC2", "Ethane C2", typeColumn.number);
-            gcdmResult.addHeaderColumns("PROPANEC3", "Propane C3", typeColumn.number);
-            gcdmResult.addHeaderColumns("IBUTANEC4I", "I-Butane C4i", typeColumn.number);
-            gcdmResult.addHeaderColumns("NBUTANEC4N", "N-Butane C4n", typeColumn.number);
-            gcdmResult.addHeaderColumns("BUTANEC4", "Butane C4", typeColumn.number);
-            gcdmResult.addHeaderColumns("IPENTANEC5", "IPentane C5", typeColumn.number);
+gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
+gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
+gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
+gcdmResult.addHeaderColumns("HEATINGVALUE", "Heating Value", typeColumn.text);
+gcdmResult.addHeaderColumns("COLUMN_1","Methane C1 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_2","Ethane C2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_3","Propane C3 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_4","i-Butane C4I mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_5","n-Butane C4N mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_6","i-Pentane C5I mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_7","n-Pentane C5N mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_8","Hexane C6 ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_9","Water C7 mg/Sm3", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_10","Octane C8 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_11","Nonane C9 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_12","Total Sulphur C10 ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_13","Carbon Dioxide CO2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_14","Benzene H2 ppb", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_15","Hydrogen Sulphide H2S ppm", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_16","Neo-Pentane He NEO", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_17","Nitrogen N2 mole %", typeColumn.number);
+gcdmResult.addHeaderColumns("COLUMN_18","CycloHexane O2 ppb", typeColumn.number);
+
+
+
         }
 
     }

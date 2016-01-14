@@ -547,8 +547,10 @@ appCommand.controller('DashboardControler',
 						self.padashboard.message= "";
 						alert("Error during the request "+angular.toJson(jsonResult));
 					});
-	this.searchPADashboard();
+		this.searchPADashboard();
 	};
+	// repeat for Internet Explorer
+	this.searchPADashboard();
 	
 	
 	// --------------------------------------------------------------------------
