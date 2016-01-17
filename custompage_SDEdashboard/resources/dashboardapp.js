@@ -381,7 +381,7 @@ appCommand.controller('DashboardControler',
 	this.listwelllist=[];
 	this.welllistpagenumber=1;
 	this.filterwelllist = {};
-	this.welllistitemsperpage=10;
+	this.welllistitemsperpage=1000;
 	this.welllistorderByField="uwi";
 	this.welllistreverseSort=true;
 	// this function is call at each display : on a filter, or on a order for example
