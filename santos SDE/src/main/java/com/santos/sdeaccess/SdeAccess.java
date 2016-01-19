@@ -46,6 +46,10 @@ import com.santos.sdeaccess.SdeBusinessAccess.SystemSummaryParameter;
 import com.santos.sdeaccess.SdeBusinessAccess.TableDashBoard;
 import com.santos.sdeaccess.SdeBusinessAccess.WellListParameter;
 import com.santos.toolbox.Toolbox;
+import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
+import org.bonitasoft.engine.exception.ServerAPIException;
+import org.bonitasoft.engine.exception.UnknownAPITypeException;
+import org.bonitasoft.engine.identity.Role;
 
 public class SdeAccess {
 
@@ -969,6 +973,30 @@ public class SdeAccess {
             }
         }
         return false;
+
+    }
+    
+    public static boolean hasRole(final String lookupRole, final APISession apiSession) throws ServerAPIException, BonitaHomeNotSetException, UnknownAPITypeException, SearchException {
+    
+        boolean hasRole = false;
+        
+        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
+        final IdentityAPI identityAPI = com.bonitasoft.engine.api.TenantAPIAccessor.getIdentityAPI(apiSession);
+        final SearchResult<org.bonitasoft.engine.identity.Role> roleResults = identityAPI.searchRoles(builder.done());
+
+        for (Role role : roleResults.getResult()) {
+
+            if (role.getName().equalsIgnoreCase(lookupRole)) {
+                hasRole = true;
+                break;
+            }
+        }
+        
+        if(hasRole == false){
+            logger.severe("SdeAccess.hasRole :: No matching role found for input = "+lookupRole);
+        }
+        
+        return hasRole;
 
     }
 

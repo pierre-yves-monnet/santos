@@ -88,6 +88,9 @@ appCommand.controller('DashboardControler',
 		$http.get( '?page=custompage_SDEdashboard&action=init')
 			.then( function ( jsonResult ) {	
 						self.isAllowPropertiesView = jsonResult.data.isAllowPropertiesView;
+						self.hasRORole = jsonResult.data.hasRORole;
+						self.hasPARole = jsonResult.data.hasPARole;
+						self.hasAdminRole = jsonResult.data.hasAdminRole;						
 						self.properties.updatesdeurl= jsonResult.data.updatesdeurl;
 						self.properties.version=jsonResult.data.version;
 					},
@@ -592,6 +595,11 @@ appCommand.controller('DashboardControler',
 	this.isshowUpdateSdeDetails=false;
 	this.isshowProperties=false;
 	this.isAllowPropertiesView=false;
+	
+	this.hasRORole=false;
+	this.hasPARole=false;
+	this.hasAdminRole=false;
+	
 	this.isshowPADashboard = false;
 	
 	this.resetView = function()
@@ -629,6 +637,16 @@ appCommand.controller('DashboardControler',
 	};
 	this.allowPropertiesView = function() {
 		return this.isAllowPropertiesView;
+	}
+	
+	this.allowROView = function() {
+		return this.hasRORole;
+	}
+	this.allowPAView = function() {
+		return this.hasPARole;
+	}
+	this.allowAdminView = function() {
+		return this.hasAdminRole;
 	}
 
 	this.getButtonClass = function (isCurrent ) {

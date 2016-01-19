@@ -109,6 +109,9 @@ public class Index implements PageController {
 				result = SdeAccess.getProperties(fileExternalProperties);
 				logger.info("GetProperties in file ["+fileExternalProperties+"] : "+result);
             	result.put("isAllowPropertiesView", SdeAccess.isAdminProfile( session.getUserId(), profileAPI));
+				result.put("hasRORole", SdeAccess.hasRole("Role-SDE-RO_User", session));
+				result.put("hasPARole", SdeAccess.hasRole("Role-SDE-PA_User", session));
+				result.put("hasAdminRole", SdeAccess.hasRole("Role-SDE-Admin", session));
 			}
 			else if ("getWellTrackerDashboardList".equals(action))
 			{

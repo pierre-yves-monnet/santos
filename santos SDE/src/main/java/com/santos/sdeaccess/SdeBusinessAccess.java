@@ -2023,20 +2023,8 @@ public class SdeBusinessAccess {
                     + (definition.whereClause != null ? " where " + definition.whereClause : "")
                     + " order by "
                     + definition.colValue;
-            
-           
+
             final List<Map<String, Object>> listValues = new ArrayList<Map<String, Object>>();
-            
-            // add empty row to drop-down
-            // this is not needed for other drop-downs because the form can handle it.
-            // this particular drop-down is part of custom widget, hence cannot be handled by form
-            if(definition.name.equalsIgnoreCase("r_prod_alloc_tag_glng")){
-                final Map<String, Object> oneValue = new HashMap<String, Object>();
-                oneValue.put("key", null); 
-                oneValue.put("value", "");      
-                listValues.add(oneValue);
-            }
-            
             try
             {
                 if (stmt != null)
