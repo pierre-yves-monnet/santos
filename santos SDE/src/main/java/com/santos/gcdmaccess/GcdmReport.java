@@ -147,6 +147,12 @@ public class GcdmReport {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
 
     }

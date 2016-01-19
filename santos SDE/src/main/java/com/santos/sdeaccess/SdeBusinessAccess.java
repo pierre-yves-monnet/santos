@@ -183,7 +183,7 @@ public class SdeBusinessAccess {
         public static String PAT_BWI_ID = "PAT_BWI_ID";
         public static String PAT_ID = "PAT_ID";
     }
-    
+
     public final static class TableSalasGWS {
 
         public static String TABLE_NAME = "SALAS_GWS";
@@ -307,7 +307,7 @@ public class SdeBusinessAccess {
     public SdeResult getSynthesisListSdeInformation(final List<SdeNumberStatus> listSdeNumber, final SdeParameter sdeParameter)
     {
         final SdeResult sdeResult = new SdeResult();
-        Connection con = getConnection(sdeParameter.allowDirectConnection);
+        final Connection con = getConnection(sdeParameter.allowDirectConnection);
         if (con == null)
         {
             sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
@@ -392,7 +392,7 @@ public class SdeBusinessAccess {
                     key = key.toUpperCase();
                     if (rs.getObject(i) instanceof Date && sdeParameter.formatDateJson) {
                         final Date date = rs.getDate(i);
-                        record.put(key, dashboardDateFormat.format(date));                        
+                        record.put(key, dashboardDateFormat.format(date));
                         continue;
                     }
 
@@ -414,10 +414,11 @@ public class SdeBusinessAccess {
             sdeResult.status = "FAILED";
             sdeResult.errorstatus = "Error during query the table";
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return sdeResult;
     }
 
@@ -514,7 +515,7 @@ public class SdeBusinessAccess {
     public SdeResult getWellList(final WellListParameter wellListParameter)
     {
         final SdeResult sdeResult = new SdeResult();
-        Connection con = getConnection(wellListParameter.allowDirectConnection);
+        final Connection con = getConnection(wellListParameter.allowDirectConnection);
         if (con == null)
         {
             sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
@@ -589,10 +590,11 @@ public class SdeBusinessAccess {
             sdeResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             sdeResult.listRecords = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return sdeResult;
     }
 
@@ -635,7 +637,7 @@ public class SdeBusinessAccess {
     public SdeResult createWellList(final CreateWellParameter createWellParameter)
     {
         final SdeResult sdeResult = new SdeResult();
-        Connection con = getConnection(createWellParameter.allowDirectConnection);
+        final Connection con = getConnection(createWellParameter.allowDirectConnection);
         if (con == null)
         {
             sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
@@ -698,9 +700,11 @@ public class SdeBusinessAccess {
             } catch (final SQLException se) {
             };
         }
-        if (con != null) {
-            con = null;
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return sdeResult;
     }
 
@@ -780,6 +784,11 @@ public class SdeBusinessAccess {
             sdeResult.errorstatus = "Error during create " + e.toString();
 
         }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
 
         return sdeResult;
     }
@@ -935,7 +944,7 @@ public class SdeBusinessAccess {
                     stmt.close();
                 }
 
-                con.commit();                
+                con.commit();
 
             } catch (final Exception e) {
                 final StringWriter sw = new StringWriter();
@@ -946,7 +955,12 @@ public class SdeBusinessAccess {
 
             } finally {
                 if (con != null) {
-                    con = null; // finish to use the connection
+                    // release the connection to the datasource
+                    try {
+                        con.close();
+                    } catch (final Exception e) {
+                    };
+
                 }
             }
             result.put("STATUS", sdeResult.status);
@@ -989,7 +1003,7 @@ public class SdeBusinessAccess {
     public SdeResult getListPaDashboard(final PADashboardParameter paDashboardParameter, final APISession session, final ProcessAPI processAPI)
     {
         final SdeResult sdeResult = new SdeResult();
-        Connection con = getConnection(paDashboardParameter.allowDirectConnection);
+        final Connection con = getConnection(paDashboardParameter.allowDirectConnection);
         if (con == null)
         {
             sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
@@ -1018,7 +1032,7 @@ public class SdeBusinessAccess {
                     "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
                     "minus " +
                     "select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8) ";
-            
+
             // new version : included UPDATE_EC as part of filtering.
             sqlRequest = "select * from DASHBOARD where  SDE_STATUS <> 0 and SDE_STATUS <> 1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and " +
                     "(UPDATE_EC ='N' or UPDATE_EC is null) and " +
@@ -1074,17 +1088,17 @@ public class SdeBusinessAccess {
                     key = key.toUpperCase();
 
                     if (rs.getObject(i) instanceof Date && paDashboardParameter.formatDateJson) {
-                        final Date date = rs.getDate(i);                        
+                        final Date date = rs.getDate(i);
                         record.put(key, dashboardDateFormat.format(date));
                         continue;
                     }
-                    
+
                     if (key.equalsIgnoreCase("ON_HOLD")) {
                         System.out.println(key);
                         record.put(key, convertBitToBoolean(rs.getString(i)));
                         continue;
                     }
-                    
+
                     if (key.equalsIgnoreCase("DO_NOT_LOAD")) {
                         System.out.println(key);
                         record.put(key, convertBitToBoolean(rs.getString(i)));
@@ -1129,10 +1143,11 @@ public class SdeBusinessAccess {
             sdeResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             sdeResult.listRecords = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return sdeResult;
     }
 
@@ -1210,7 +1225,7 @@ public class SdeBusinessAccess {
     public SdeResult getListSummary(final SystemSummaryParameter systemSummaryParameter)
     {
         final SdeResult sdeResult = new SdeResult();
-        Connection con = getConnection(systemSummaryParameter.allowDirectConnection);
+        final Connection con = getConnection(systemSummaryParameter.allowDirectConnection);
         if (con == null)
         {
             sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
@@ -1308,10 +1323,11 @@ public class SdeBusinessAccess {
             sdeResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             sdeResult.listRecords = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return sdeResult;
     }
 
@@ -1605,8 +1621,8 @@ public class SdeBusinessAccess {
 
         final DataModel salasGWS = new DataModel(TableSalasGWS.TABLE_NAME, TableWellInfo.TABLE_NAME, TableWellInfo.BWI_ID,
                 TableSalasGWS.SG_BWI_ID, true, TableSalasGWS.SG_BWI_ID);
-        wellInfo.addChild(salasGWS);        
-        
+        wellInfo.addChild(salasGWS);
+
         return dashBoard;
 
     }
@@ -1621,7 +1637,7 @@ public class SdeBusinessAccess {
     {
         logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.readSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]");
         final SdeData sdeData = new SdeData();
-        Connection con = getConnection(sdeParameter.allowDirectConnection);
+        final Connection con = getConnection(sdeParameter.allowDirectConnection);
         if (con == null)
         {
             sdeData.status = SdeDataStatus.NODATABASECONNECTION;
@@ -1693,10 +1709,11 @@ public class SdeBusinessAccess {
             sdeData.status = SdeDataStatus.ERROR;
             sdeData.statusdetails = "Error " + e.toString() + " at " + sw.toString();
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
 
         logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.readSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "] END  status:[" + sdeData.status
                 + "] details[" + sdeData.statusdetails + "]");
@@ -1716,6 +1733,7 @@ public class SdeBusinessAccess {
             sdeData.status = SdeDataStatus.NODATABASECONNECTION;
             sdeData.statusdetails = "Can't access the datasource [" + DATASOURCE_NAME + "]";
             logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData : No Datasource [" + DATASOURCE_NAME + "]");
+            return sdeData;
         }
         Object sdeNumber = null;
         Object sdeStatus = null;
@@ -1745,13 +1763,13 @@ public class SdeBusinessAccess {
 
             // set again
             sdeData.setPointerData(dashboard);
-            
+
             final HashMap<String, HashMap<String, String>> r_list = new HashMap<String, HashMap<String, String>>();
-            r_list.put("r_pool_layer_short", populateReferenceMap(con, "select RMU, LAYER_SHORT from r_pool" ));            
+            r_list.put("r_pool_layer_short", populateReferenceMap(con, "select RMU, LAYER_SHORT from r_pool" ));
             r_list.put("r_pool_formation", populateReferenceMap(con, "select RMU, FORMATION from r_pool" ));
-            
+
             insert(sdeData, getDataModel(), con, sdeParameter, r_list);
-            
+
             con.commit();
             logger.info("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData : OK SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]");
             sdeData.status = SdeDataStatus.OK;
@@ -1773,6 +1791,13 @@ public class SdeBusinessAccess {
             logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]" + e.toString() + " at "
                     + exceptionDetails);
             return sdeData;
+        }
+ finally {
+            // release the connection to the datasource
+            try {
+                con.close();
+            } catch (final Exception e) {
+            };
         }
     }
 
@@ -1848,6 +1873,14 @@ public class SdeBusinessAccess {
 
             logger.severe("SdeBusinessAccess.updateAttribut End FAIL --------------------------" + e.toString() + " at " + exceptionDetails);
             return sdeData;
+        }
+ finally {
+            // release the connection to the datasource
+            try {
+                con.close();
+            } catch (final Exception e) {
+            };
+
         }
     }
 
@@ -1981,7 +2014,7 @@ public class SdeBusinessAccess {
         // --------- artificial_lift
         lists.add(new ListDefinition("artificial_lift", "value", "value", "r_form_data", "type='artsys_code' and business_unit='EABU'"));
 
-        // --------- rmu_interval_name         
+        // --------- rmu_interval_name
         // Changing reference table from 'r_form_data' to 'r_pool'
         //lists.add(new ListDefinition("rmu_interval_name", "value", "value", "r_form_data", "type='rmu' and business_unit='BOTH'"));
         lists.add(new ListDefinition("rmu_interval_name", "RMU", "RMU", "r_pool", null));
@@ -2038,10 +2071,10 @@ public class SdeBusinessAccess {
                         if (key != null && value != null)
                         {
                                 oneValue.put("key", key); // keep the same type for the key
-                                oneValue.put("value", value.toString());                            
+                                oneValue.put("value", value.toString());
                                 listValues.add(oneValue);
                         }
-                        
+
                     }
                 }
                 logger.info(" list[" + definition.name + "] nbResult(" + listValues.size() + ") by sqlRequest [" + sqlRequest + "]");
@@ -2313,69 +2346,69 @@ public class SdeBusinessAccess {
         String listFieldKey = "";
         String listFieldValue = "";
 
-        
-        // RMU 
+
+        // RMU
         // This field is custom widget in UI.
         // This field is created on the fly by the user, hence has no sequence generated for its primary key
         // The following if statement is a special handling for RMU data
         if(dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName).equalsIgnoreCase("RMU")){
-            
+
             logger.info("SdeBusinessAccess.insert :: Found RMU.");
-            
+
             // get sequence
             // TODO :: May need to externalise to a method if needed for other tables.
-            Statement sequenceStatement = con.createStatement();
-            ResultSet sequenceResultSet = sequenceStatement.executeQuery("select sde.rmu_seq.nextval from dual");            
+            final Statement sequenceStatement = con.createStatement();
+            final ResultSet sequenceResultSet = sequenceStatement.executeQuery("select sde.rmu_seq.nextval from dual");
             sequenceResultSet.next();
-            int sequence = sequenceResultSet.getInt(1);            
+            final int sequence = sequenceResultSet.getInt(1);
             sequenceResultSet.close();
             sequenceStatement.close();
 
             logger.info("SdeBusinessAccess.insert :: Generated sequence for RMU: " + sequence);
-            
-            dataThisLevel.put("RMU_ID", sequence);            
+
+            dataThisLevel.put("RMU_ID", sequence);
             dataThisLevel.put("MODIFIED_BY", "DASH_ADMN");
             dataThisLevel.put("MODIFIED_DATE", new Date());
             // get Basic Well Information key, needed as foreign key
-            Map<String, Object> dashboardMap = (Map<String, Object>) sdeData.data.get("dashboard");
-            if(dashboardMap == null){                
+            final Map<String, Object> dashboardMap = (Map<String, Object>) sdeData.data.get("dashboard");
+            if(dashboardMap == null){
                 logger.severe("SdeBusinessAccess.insert :: Could not obtain 'dashboard' map.");
                 return;
             }
-            
-            Map<String, Object> basic_well_infoMap = (Map<String, Object>) dashboardMap.get("basic_well_info");
+
+            final Map<String, Object> basic_well_infoMap = (Map<String, Object>) dashboardMap.get("basic_well_info");
             if(basic_well_infoMap == null){
                 logger.severe("SdeBusinessAccess.insert :: Could not obtain 'basic_well_info' map.");
                 return;
             }
-            
+
             dataThisLevel.put("RMU_BWI_ID", basic_well_infoMap.get("BWI_ID"));
-            
+
             // populate PERF_INTERVAL_CODE & PERF_INTERVAL_NAME
-             
+
             // PERF_INTERVAL_CODE :
-            // To construct the perf_interval_code: 
-            // basic_well_info.well_bore_interval || / || r_pool.layer_short 
-            String rmu = (String)dataThisLevel.get("RMU");
-            String wellBoreInterval  = (String)basic_well_infoMap.get("WELL_BORE_INTERVAL");
-            logger.info("SdeBusinessAccess.insert :: Obtained data [rmu="+rmu+"] [wellBoreInterval=" +wellBoreInterval+"]");            
-            Map<String, String> r_pool_layer_short = (Map<String, String>) r_list.get("r_pool_layer_short");            
-            String layerShort = (String)r_pool_layer_short.get(rmu);
-            dataThisLevel.put("PERF_INTERVAL_CODE", wellBoreInterval+ "/" + layerShort); 
-                        
+            // To construct the perf_interval_code:
+            // basic_well_info.well_bore_interval || / || r_pool.layer_short
+            final String rmu = (String)dataThisLevel.get("RMU");
+            final String wellBoreInterval  = (String)basic_well_infoMap.get("WELL_BORE_INTERVAL");
+            logger.info("SdeBusinessAccess.insert :: Obtained data [rmu="+rmu+"] [wellBoreInterval=" +wellBoreInterval+"]");
+            final Map<String, String> r_pool_layer_short = r_list.get("r_pool_layer_short");
+            final String layerShort = r_pool_layer_short.get(rmu);
+            dataThisLevel.put("PERF_INTERVAL_CODE", wellBoreInterval+ "/" + layerShort);
+
             // PERF_INTERVAL_NAME :
-            // To construct the perf_interval_name as follows 
-            // initCap(basic_well_info.well_full_name) || - || r_pool.formation             
-            String wellFullName  = (String)basic_well_infoMap.get("WELL_FULL_NAME");
-            logger.info("SdeBusinessAccess.insert :: Obtained data [wellFullName="+wellFullName+"]");            
-            Map<String, String> r_pool_formation = (Map<String, String>) r_list.get("r_pool_formation");
-            String formation = (String)r_pool_formation.get(rmu);
-            dataThisLevel.put("PERF_INTERVAL_NAME", Toolbox.formatWellName(wellFullName) + "-" + formation);            
-            
+            // To construct the perf_interval_name as follows
+            // initCap(basic_well_info.well_full_name) || - || r_pool.formation
+            final String wellFullName  = (String)basic_well_infoMap.get("WELL_FULL_NAME");
+            logger.info("SdeBusinessAccess.insert :: Obtained data [wellFullName="+wellFullName+"]");
+            final Map<String, String> r_pool_formation = r_list.get("r_pool_formation");
+            final String formation = r_pool_formation.get(rmu);
+            dataThisLevel.put("PERF_INTERVAL_NAME", Toolbox.formatWellName(wellFullName) + "-" + formation);
+
         }
-            
-        
-        
+
+
+
         for (final String key : dataThisLevel.keySet())
         {
             if (listChildsName.contains(key)) {
@@ -2445,7 +2478,7 @@ public class SdeBusinessAccess {
         listFieldValue = listFieldValue.substring(0, listFieldValue.length() - 1);
 
         sqlRequest += "(" + listFieldKey + ") values (" + listFieldValue + ")";
-        
+
         logger.info(" data[" + dataModel.getSdeDataName() + "] data[" + sdeData.getPointerData() + "] InsertRequest [" + sqlRequest + "] ListData "
                 + listDataValue.toString() + "]");
 
@@ -2511,26 +2544,26 @@ public class SdeBusinessAccess {
     /*
     *
     */
-    
-    private HashMap<String, String> populateReferenceMap(Connection connection, String sql) throws SQLException {
-        
+
+    private HashMap<String, String> populateReferenceMap(final Connection connection, final String sql) throws SQLException {
+
         final HashMap<String, String> record = new HashMap<String, String>();
         final PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
         final ResultSet rs = preparedStatement.executeQuery();
 
-        while (rs.next()) {            
-            
+        while (rs.next()) {
+
             record.put(rs.getString(1), rs.getString(2));
         }
 
         rs.close();
         preparedStatement.close();
-        
+
         return record;
 
     }
-    
+
     private Connection getDirectConnection()
     {
         try {
@@ -2555,13 +2588,13 @@ public class SdeBusinessAccess {
      */
     private Connection getConnection(final boolean allowDirectConnection)
     {
-        
+
 //        // TODO :: For unit test only
 //        if(true){
 //            logger.severe("SdeBusinessAccess.getConnection :: Using local database.");
 //            return main.Main.sdeConnection();
 //        }
-         
+
         Context ctx = null;
         try
         {

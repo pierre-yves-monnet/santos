@@ -102,7 +102,7 @@ public class GcdmAdminAccess {
             final APISession apiSession)
     {
         final GcdmToolbox.GcdmResult gcdmResult = new GcdmToolbox.GcdmResult();
-        Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -154,10 +154,11 @@ public class GcdmAdminAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return gcdmResult;
     }
 
@@ -166,7 +167,7 @@ public class GcdmAdminAccess {
             final APISession apiSession)
     {
         final GcdmToolbox.GcdmResult gcdmResult = new GcdmToolbox.GcdmResult();
-        Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -190,10 +191,12 @@ public class GcdmAdminAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -248,7 +251,7 @@ public class GcdmAdminAccess {
     {
         logger.info("Santos.GcdmAdminAccess.getSupplyChainPoint: parameters=" + adminParameter.toString());
         final GcdmResult gcdmResult = new GcdmResult();
-        Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -278,10 +281,11 @@ public class GcdmAdminAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return gcdmResult;
     }
 
@@ -289,7 +293,7 @@ public class GcdmAdminAccess {
     public static GcdmToolbox.GcdmResult addNewSupplyChainPoint(final NewAdminParameter adminParameter, final APISession apiSession)
     {
         final GcdmToolbox.GcdmResult gcdmResult = new GcdmToolbox.GcdmResult();
-        Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(adminParameter.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -320,10 +324,11 @@ public class GcdmAdminAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
         return gcdmResult;
     }
 

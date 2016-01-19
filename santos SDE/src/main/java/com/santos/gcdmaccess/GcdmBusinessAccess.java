@@ -101,7 +101,7 @@ public class GcdmBusinessAccess {
     {
         logger.info("GcdmBusinessAccess.getListGasComposition: parameters=" + gasComposition.toString());
         final GcdmResult gcdmResult = new GcdmResult();
-        Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -123,8 +123,8 @@ public class GcdmBusinessAccess {
 //                        + " and cs.effectivedate = (select max(effectivedate) from CompositionSets where c.recordstatus = 'CURRENT')"
 //                        + " and c.CompositionUse='DEFAULT' and c.recordstatus = 'CURRENT' and cs.effectivedate <= c.effectivedate"
 //                        + " order by dp.PointName, c.pgmscode";
-//                
-            
+//
+
                 // FDR-06
                 sqlRequest =  "select distinct" +
                         "    Q1.comp_effectivedate as \"EFFECTIVEDATE\",	" +
@@ -136,7 +136,7 @@ public class GcdmBusinessAccess {
                         "    Q2.C3  as \"COLUMN_3\",   " +
                         "    Q2.C4I  as \"COLUMN_4\",   " +
                         "    Q2.C4N  as \"COLUMN_5\",   " +
-                        "    Q2.C5I  as \"COLUMN_6\",  " +                        
+                        "    Q2.C5I  as \"COLUMN_6\",  " +
                         "    Q2.C5N  as \"COLUMN_7\",   " +
                         "    Q2.C6  as \"COLUMN_8\"," +
                         "    Q2.C7  as \"COLUMN_9\",    " +
@@ -149,14 +149,14 @@ public class GcdmBusinessAccess {
                         "    Q2.He  as \"COLUMN_16\",        " +
                         "    Q2.N2  as \"COLUMN_17\"," +
                         "    Q2.O2  as \"COLUMN_18\"" +
-                        
+
                         /*
                         "    Q2.C1  as \"Methane C1 mole %\",  " +
                         "    Q2.C2  as \"Ethane C2 mole %\",  " +
                         "    Q2.C3  as \"Propane C3 mole %\",   " +
                         "    Q2.C4I  as \"i-Butane C4I mole %\",   " +
                         "    Q2.C4N  as \"n-Butane C4N mole %\",   " +
-                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +                        
+                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +
                         "    Q2.C5N  as \"n-Pentane C5N mole %\",   " +
                         "    Q2.C6  as \"Hexane C6 ppm\"," +
                         "    Q2.C7  as \"Water C7 mg/Sm3\",    " +
@@ -398,7 +398,7 @@ public class GcdmBusinessAccess {
                         "    Q2.C3  as \"COLUMN_3\",   " +
                         "    Q2.C4I  as \"COLUMN_4\",   " +
                         "    Q2.C4N  as \"COLUMN_5\",   " +
-                        "    Q2.C5I  as \"COLUMN_6\",  " +                        
+                        "    Q2.C5I  as \"COLUMN_6\",  " +
                         "    Q2.C5N  as \"COLUMN_7\",   " +
                         "    Q2.C6  as \"COLUMN_8\"," +
                         "    Q2.C7  as \"COLUMN_9\",    " +
@@ -411,14 +411,14 @@ public class GcdmBusinessAccess {
                         "    Q2.He  as \"COLUMN_16\",        " +
                         "    Q2.N2  as \"COLUMN_17\"," +
                         "    Q2.O2  as \"COLUMN_18\"" +
-                        
+
                         /*
                         "    Q2.C1  as \"Methane C1 mole %\",  " +
                         "    Q2.C2  as \"Ethane C2 mole %\",  " +
                         "    Q2.C3  as \"Propane C3 mole %\",   " +
                         "    Q2.C4I  as \"i-Butane C4I mole %\",   " +
                         "    Q2.C4N  as \"n-Butane C4N mole %\",   " +
-                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +                        
+                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +
                         "    Q2.C5N  as \"n-Pentane C5N mole %\",   " +
                         "    Q2.C6  as \"Hexane C6 ppm\"," +
                         "    Q2.C7  as \"Water C7 mg/Sm3\",    " +
@@ -659,7 +659,7 @@ public class GcdmBusinessAccess {
                         "    Q2.C3  as \"COLUMN_3\",   " +
                         "    Q2.C4I  as \"COLUMN_4\",   " +
                         "    Q2.C4N  as \"COLUMN_5\",   " +
-                        "    Q2.C5I  as \"COLUMN_6\",  " +                        
+                        "    Q2.C5I  as \"COLUMN_6\",  " +
                         "    Q2.C5N  as \"COLUMN_7\",   " +
                         "    Q2.C6  as \"COLUMN_8\"," +
                         "    Q2.C7  as \"COLUMN_9\",    " +
@@ -672,14 +672,14 @@ public class GcdmBusinessAccess {
                         "    Q2.He  as \"COLUMN_16\",        " +
                         "    Q2.N2  as \"COLUMN_17\"," +
                         "    Q2.O2  as \"COLUMN_18\"" +
-                        
+
                         /*
                         "    Q2.C1  as \"Methane C1 mole %\",  " +
                         "    Q2.C2  as \"Ethane C2 mole %\",  " +
                         "    Q2.C3  as \"Propane C3 mole %\",   " +
                         "    Q2.C4I  as \"i-Butane C4I mole %\",   " +
                         "    Q2.C4N  as \"n-Butane C4N mole %\",   " +
-                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +                        
+                        "    Q2.C5I  as \"i-Pentane C5I mole %\",  " +
                         "    Q2.C5N  as \"n-Pentane C5N mole %\",   " +
                         "    Q2.C6  as \"Hexane C6 ppm\"," +
                         "    Q2.C7  as \"Water C7 mg/Sm3\",    " +
@@ -921,14 +921,14 @@ public class GcdmBusinessAccess {
             // list SupplyChaine FDR-18
             completeListSupplyChain(con, gcdmResult);
 
-            
+
 
             // FDR-10 create the header
             completeGasCompositionHeader(con, gasComposition.typeDisplay, gcdmResult);
 
             // get the NewGasCompositionFields
             completeNewGasCompositionFields(con, gcdmResult);
-            
+
 
             gcdmResult.status = gcdmResult.listValues.size() + " item+" + (gcdmResult.listValues.size() > 1 ? "s" : "") + " found";
 
@@ -944,10 +944,12 @@ public class GcdmBusinessAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -961,7 +963,7 @@ public class GcdmBusinessAccess {
     {
         logger.info("GcdmBusinessAccess.getDefaultGasComposition: parameters=" + gasComposition.toString());
         final GcdmResult gcdmResult = new GcdmResult();
-        Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -1021,10 +1023,12 @@ public class GcdmBusinessAccess {
             gcdmResult.errorstatus = "Error during getDefaultAddComposition request[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
     /**
@@ -1037,7 +1041,7 @@ public class GcdmBusinessAccess {
     {
         logger.info("GcdmBusinessAccess.getGasComposition: parameters=" + gasComposition.toString());
         final GcdmResult gcdmResult = new GcdmResult();
-        Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -1098,10 +1102,12 @@ public class GcdmBusinessAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -1244,6 +1250,12 @@ public class GcdmBusinessAccess {
             gcdmResult.newGasCompositionValues.put((String) oneField.get("id"), Long.valueOf((long) (10 + 50 * Math.random())));
         }
         logger.info("GdmBusinessAccess.deleteListGasComposition - Search " + gcdmResult.status);
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -1373,6 +1385,12 @@ public class GcdmBusinessAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -1387,8 +1405,8 @@ public class GcdmBusinessAccess {
         // FDR-10
         if (typeDisplay == EnuTypeDisplays.Defaults)
         {
-            
-            
+
+
 //            Methane C1 mole %
 //            Ethane C2 mole %
 //            Propane C3 mole %
@@ -1406,8 +1424,8 @@ public class GcdmBusinessAccess {
 //            Hydrogen Sulphide H2S ppm
 //            Neo-Pentane He NEO
 //            Nitrogen N2 mole %
-//            CycloHexane O2 ppb            
-            
+//            CycloHexane O2 ppb
+
          gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
 gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
 gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);
@@ -1432,15 +1450,15 @@ gcdmResult.addHeaderColumns("COLUMN_17","Nitrogen N2 mole %", typeColumn.number)
 gcdmResult.addHeaderColumns("COLUMN_18","CycloHexane O2 ppb", typeColumn.number);
 
 
-            
-            
-             
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
 //            gcdmResult.addHeaderColumns("EFFECTIVEDATE", "Effective Date/Time", typeColumn.date);
 //            gcdmResult.addHeaderColumns("SUPPLYCHAINEPOINT", "Supply Chain point", typeColumn.text);
 //            gcdmResult.addHeaderColumns("SPECIFICGRAVITY", "Specific Gravity", typeColumn.text);

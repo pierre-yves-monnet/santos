@@ -77,7 +77,7 @@ public class GcdmPressureAccess {
             final APISession apiSession)
     {
         final GcdmToolbox.GcdmResult gcdmResult = new GcdmToolbox.GcdmResult();
-        Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(gasComposition.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -130,10 +130,12 @@ public class GcdmPressureAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -185,7 +187,7 @@ public class GcdmPressureAccess {
     {
         logger.info("Santos.GcdmPressureAccess.getDefaultPressure: parameters=" + pressureParameter.toString());
         final GcdmResult gcdmResult = new GcdmResult();
-        Connection con = GcdmToolbox.getConnection(pressureParameter.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(pressureParameter.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -210,10 +212,12 @@ public class GcdmPressureAccess {
             gcdmResult.errorstatus = "Error during getDefaultAddComposition request[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -224,7 +228,7 @@ public class GcdmPressureAccess {
     {
         logger.info("Santos.GcdmPressureAccess.getPressure: parameters=" + pressureParameter.toString());
         final GcdmResult gcdmResult = new GcdmResult();
-        Connection con = GcdmToolbox.getConnection(pressureParameter.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(pressureParameter.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -254,10 +258,12 @@ public class GcdmPressureAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
@@ -265,7 +271,7 @@ public class GcdmPressureAccess {
     public static GcdmToolbox.GcdmResult addNewPressure(final NewPressureParameter pressureComposition, final APISession apiSession)
     {
         final GcdmToolbox.GcdmResult gcdmResult = new GcdmToolbox.GcdmResult();
-        Connection con = GcdmToolbox.getConnection(pressureComposition.allowDirectConnection);
+        final Connection con = GcdmToolbox.getConnection(pressureComposition.allowDirectConnection);
         if (con == null)
         {
             gcdmResult.status = "";
@@ -303,10 +309,12 @@ public class GcdmPressureAccess {
             gcdmResult.errorstatus = "Error during query the table by[" + sqlRequest + "] : " + e.toString() + "]";
             gcdmResult.listValues = null;
         }
-        if (con != null)
-        {
-            con = null; // finish to use the connection
-        }
+        // release the connection to the datasource
+        try {
+            con.close();
+        } catch (final Exception e) {
+        };
+
         return gcdmResult;
     }
 
