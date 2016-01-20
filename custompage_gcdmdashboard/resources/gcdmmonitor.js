@@ -19,15 +19,11 @@ var appCommand = angular.module('gcdmmonitor', ['googlechart', 'ui.bootstrap','n
 //
 // --------------------------------------------------------------------------
 
-// 
+// Ping the server
 appCommand.controller('GcdmControler',
 	function ( $http, $scope, $filter,$sce ) {
 	
-	/*
-	app.config(function(ngModalDefaultsProvider) {
-		  ngModalDefaultsProvider.set('closeButtonHtml', 'AA');
-		 })
-	*/
+	
 	this.ismanager=false;
 	
 	this.casemaxresult = 100;
@@ -44,14 +40,10 @@ appCommand.controller('GcdmControler',
 	
 	this.isEditprofile = false;
 	
-	this.supplychain={};
-	this.supplychain.isshow=false;
-
 	this.resetview = function() {
 		this.isshowGasCompositionDefault=false;
 		this.isshowPressure =false;
 		this.isshowReport =false;
-		this.supplychain.isshow=false;
 	};
 
 
@@ -81,12 +73,12 @@ appCommand.controller('GcdmControler',
 		// console.log('ListValues.OrderBy Order='+  dataoperation.orderByField + ' reservesort='+dataoperation.reverseSort+' listcasesOrdered='+angular.toJson(dataoperation.listValues ));
 		
 		var listfiltered = $filter('filter') (dataoperation.listValues , dataoperation.filtercase );
-		console.log('ListValues.Filter typedata='+dataoperation.typedata+' filter='+ angular.toJson(dataoperation.filtercase,true ) + ' casePageNumber='+dataoperation.casepagenumber+' listfiltered='+angular.toJson( listfiltered ));
+		console.log('ListValues.Filter filter='+ angular.toJson(dataoperation.filtercase,true ) +' listfiltered='+angular.toJson( listfiltered ));
 		if (listfiltered==null)
 			return null;
 		dataoperation.casenbitems = listfiltered.length;
 		
-		// console.log('ListValues.slide ('+begin+','+end+") values");
+		console.log('ListValues.slide ('+begin+','+end+") values");
 
 		var listcasesfiltered=  listfiltered.slice(begin, end);
 		if (begin > listcasesfiltered.length)
@@ -201,7 +193,6 @@ appCommand.controller('GcdmControler',
 	this.gasCompositionCloseDialog = function () {
 		if (this.gasComposition.isChange==true) {
 			alert("You made some change without save them");
-			this.gasComposition.showModal = true;
 		}
 		else {
 			this.gasComposition.showModal = false;
@@ -247,9 +238,9 @@ appCommand.controller('GcdmControler',
 	this.gasCompositionEdit = function ( ) {
 		var listToEdit=[];
 		for (var i=0;i<this.gasComposition.listValues .length;i++) {
-			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" duid="+this.gasComposition.listValues [ i ].DUID);
+			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" uid="+this.gasComposition.listValues [ i ].UID);
 			if (this.gasComposition.listValues [ i ].linechecked)
-				listToEdit.push( this.gasComposition.listValues [ i ].DUID );
+				listToEdit.push( this.gasComposition.listValues [ i ].UID );
 		}
 		if (listToEdit.length==0) {
 			alert("No line to edit; check one line");
@@ -262,7 +253,7 @@ appCommand.controller('GcdmControler',
 		
 		this.gasComposition.showModal = true;
 		this.gasComposition.isChange=false;
-		var param = { "DUID" : listToEdit[ 0 ],"type" : this.gasComposition.type};
+		var param = { "UID" : listToEdit[ 0 ],"type" : this.gasComposition.type};
 		var json = angular.toJson(param, false);
 		var self=this;
 		console.log("gasCompositionEdit: "+json)
@@ -289,9 +280,9 @@ appCommand.controller('GcdmControler',
 		console.log("gasCompositionDelete");
 		var listToDelete=[];
 		for (var i=0;i<this.gasComposition.listValues .length;i++) {
-			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" duid="+this.gasComposition.listValues [ i ].DUID);
+			console.log("Checked "+this.gasComposition.listValues [ i ].linechecked+" uid="+this.gasComposition.listValues [ i ].UID);
 			if (this.gasComposition.listValues [ i ].linechecked)
-				listToDelete.push( this.gasComposition.listValues [ i ].DUID );
+				listToDelete.push( this.gasComposition.listValues [ i ].UID );
 		}
 		if (listToDelete.length==0) {
 			alert("No line to delete; check some lines");
@@ -540,9 +531,9 @@ appCommand.controller('GcdmControler',
 	this.pressureEdit = function ( ) {
 		var listToEdit=[];
 		for (var i=0;i<this.pressure.listValues .length;i++) {
-			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" duid="+this.pressure.listValues [ i ].DUID);
+			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" uid="+this.pressure.listValues [ i ].UID);
 			if (this.pressure.listValues [ i ].linechecked)
-				listToEdit.push( this.pressure.listValues [ i ].DUID );
+				listToEdit.push( this.pressure.listValues [ i ].UID );
 		}
 		if (listToEdit.length==0) {
 			alert("No line to edit; check one line");
@@ -555,7 +546,7 @@ appCommand.controller('GcdmControler',
 		
 		this.pressure.showModal = true;
 		this.pressure.isChange=false;
-		var param = { "DUID" : listToEdit[ 0 ] };
+		var param = { "UID" : listToEdit[ 0 ] };
 		var json = angular.toJson(param, false);
 		var self=this;
 		console.log("pressureEdit: "+json)
@@ -577,9 +568,9 @@ appCommand.controller('GcdmControler',
 		console.log("pressureDelete");
 		var listToDelete=[];
 		for (var i=0;i<this.pressure.listValues .length;i++) {
-			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" duid="+this.pressure.listValues [ i ].DUID);
+			console.log("Checked "+this.pressure.listValues [ i ].linechecked+" uid="+this.pressure.listValues [ i ].UID);
 			if (this.pressure.listValues [ i ].linechecked)
-				listToDelete.push( this.pressure.listValues [ i ].DUID );
+				listToDelete.push( this.pressure.listValues [ i ].UID );
 		}
 		if (listToDelete.length==0) {
 			alert("No line to delete; check some lines");
@@ -690,179 +681,6 @@ appCommand.controller('GcdmControler',
 			return "background-color: rgba(52, 152, 219, 0.54)";
 		return;
 	}
-	
-	
-	
-	
-	// --------------------------------------------------------------------------
-	//
-	// Admin page (supplychain, gascomponent)
-	//
-	// --------------------------------------------------------------------------
-	this.supplychain.param={};
-	this.supplychain.listValues=[];
-	this.supplychain.shownModal = false;
-	this.supplychain.values={};
-	this.supplychain.typedata="supplychainpoint";
-	this.supplychain.casepagenumber=1;
-	this.supplychain.caseitemsperpage=1000;
-	this.supplychain.filtercase = { };
-	
-	// dataoperation = this.supplychain
-
-	this.showList = function( dataoperation )
-	{
-		var self=dataoperation;
-		dataoperation.param.typedata = dataoperation.typedata;
-		var json = angular.toJson(dataoperation.param, false);
-		
-		$http.get( '?page=custompage_gcdmdashboard&action=getlist&json='+json )
-				.then( function ( jsonResult ) {
-					console.log("show returned");
-					dataoperation.listValues  		= jsonResult.data.LISTVALUES;
-					dataoperation.message			= jsonResult.data.MESSAGE;
-					dataoperation.errorMessage		= jsonResult.data.ERRORMESSAGE;
-					dataoperation.listHeaders		= jsonResult.data.LISTHEADERS;
-					dataoperation.listFields		= jsonResult.data.NEWGASCOMPOSITIONFIELDS;
-					dataoperation.casepagenumber	= 1;
-					dataoperation.caseitemsperpage	= 1000;
-				},
-				function(jsonResult) {
-					alert("Can't connect the server "+jsonResult.status);
-				});
-	}
-
-	this.showPage = function ( dataoperation) {
-		this.resetview();
-		dataoperation.isshow = true;
-		this.showList(dataoperation);
-	}
-	
-	
-	this.getColsHeader = function (dataoperation) {
-		return dataoperation.listHeaders;
-	}
-	
-	// --------------------------------------------------------------------------
-	// Modal SupplyChain
-	
-	
-	this.modalAdd = function ( dataoperation ) {
-		console.log("showModal.Add");
-		dataoperation.showModal = true;
-		dataoperation.isChange=false;
-		var self=this;
-		var param = { 'typedata':dataoperation.typedata};
-		var json = angular.toJson(param, false);		
-		$http.get( '?page=custompage_gcdmdashboard&action=getdefaultadd&json='+json )
-		.then( function ( jsonResult ) {
-			dataoperation.values  			= jsonResult.data.VALUES;
-			dataoperation.modalErrorMessage = jsonResult.data.ERRORMESSAGE;
-			dataoperation.isChange			= false;
-		},
-		function(jsonResult) {
-			alert("Can't connect the server "+jsonResult.status);
-		});
-	}
-	
-	// dataoperation = this.supplychain
-	this.modalEdit = function ( dataoperation ) {
-		var listToEdit=[];
-		
-		for (var i=0;i<dataoperation.listValues.length;i++) {
-			console.log("Checked "+dataoperation.listValues [ i ].linechecked+" duid="+dataoperation.listValues [ i ].DUID);
-			if (tdataoperation.listValues [ i ].linechecked)
-				listToEdit.push( dataoperation.listValues [ i ].DUID );
-		}
-		if (listToEdit.length==0) {
-			alert("No line to edit; check one line");
-			return;
-		}
-		if (listToEdit.length>1) {
-			alert("Too much lines to edit; check only one line");
-			return;
-		}
-		
-		dataoperation.showModal = true;
-		dataoperation.isChange=false;
-		var param = { "DUID" : listToEdit[ 0 ], "typedata": dataoperation.typedata };
-		var json = angular.toJson(param, false);
-		var self=this;
-		console.log("Edit: "+json)
-		$http.get( '?page=custompage_gcdmdashboard&action=edit&json='+json )
-		.then( function ( jsonResult ) {
-			dataoperation.values  			= jsonResult.data.VALUES;
-			dataoperation.modalMessage		= jsonResult.data.MESSAGE;
-			dataoperation.modalErrorMessage	= jsonResult.data.ERRORMESSAGE;
-			dataoperation.modalListEvents	= jsonResult.data.LISTEVENTS;
-		},
-		function(jsonResult) {
-			alert("Can't connect the server "+jsonResult.status);
-		});
-	}
-	
-	// click on the delete button
-	this.modalDelete = function( dataoperation ) {
-		console.log("modalDelete");
-		var listToDelete=[];
-		for (var i=0;i<dataoperation.listValues .length;i++) {
-			console.log("Checked "+dataoperation.listValues [ i ].linechecked+" duid="+dataoperation.listValues [ i ].DUID);
-			if (dataoperation.listValues [ i ].linechecked)
-				listToDelete.push( dataoperation.listValues [ i ].DUID );
-		}
-		if (listToDelete.length==0) {
-			alert("No line to delete; check some lines");
-			return;
-		}
-		
-		console.log("listtodelete="+listToDelete);
-		if (confirm("Are you sure to delete ? ")) {
-	        // todo code for deletion
-	    
-		var post = {"typedata": dataoperation.typedata };
-		post.listtodelete = listToDelete;
-		var json = angular.toJson(post, false);
-		var self=this;
-		$http.get( '?page=custompage_gcdmdashboard&action=delete&json='+json )
-				.then( function ( jsonResult ) {
-					dataoperation.listValues  	= jsonResult.data.LISTVALUES;
-					dataoperation.message		= jsonResult.data.MESSAGE;
-					dataoperation.errorMessage	= jsonResult.data.ERRORMESSAGE;
-					dataoperation.listeventst	= jsonResult.data.LISTEVENTS;					
-				},
-				function(jsonResult) {
-					alert('an error occure during retrieve default '+jsonResult.status);
-				});
-		}
-	};
-	
-	
-	this.modalSaveNewValue = function( dataoperation )	{
-		dataoperation.listeventst	= "";
-		
-		
-		var json = angular.toJson(dataoperation.values, false);
-
-		var self=this;
-		$http.get( '?page=custompage_gcdmdashboard&action=save&type='+dataoperation.typedata+'&json='+json )
-				.then( function ( jsonResult ) {
-					dataoperation.values 			= jsonResult.data.NEWGASCOMPOSITIONVALUES;
-					dataoperation.modalMessage 		= jsonResult.data.MESSAGE;
-					dataoperation.modalErrorMessage = jsonResult.data.ERRORMESSAGE;
-					dataoperation.modalListEvents	= jsonResult.data.LISTEVENTS;
-					if (dataoperation.modalErrorMessage == null)
-						dataoperation.isChange=false;
-				},
-				function(jsonResult) {
-					alert('an error occure during retrieve default '+jsonResult.status);
-				});
-		
-	}
-	
-	
-	
-	
-	
 	// --------------------------------------------------------------------------
 	//
 	// Task form

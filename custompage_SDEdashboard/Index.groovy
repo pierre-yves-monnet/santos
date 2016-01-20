@@ -81,7 +81,6 @@ public class Index implements PageController {
 		
 		try {
 			def String indexContent;
-			pageResourceProvider.getResourceAsStream("Index.groovy").withStream { InputStream s-> indexContent = s.getText() };
 			response.setCharacterEncoding("UTF-8");
 	
 			File pageDirectory = pageResourceProvider.getPageDirectory();
@@ -109,9 +108,7 @@ public class Index implements PageController {
 				result = SdeAccess.getProperties(fileExternalProperties);
 				logger.info("GetProperties in file ["+fileExternalProperties+"] : "+result);
             	result.put("isAllowPropertiesView", SdeAccess.isAdminProfile( session.getUserId(), profileAPI));
-				result.put("hasRORole", SdeAccess.hasRole("Role-SDE-RO_User", session));
-				result.put("hasPARole", SdeAccess.hasRole("Role-SDE-PA_User", session));
-				result.put("hasAdminRole", SdeAccess.hasRole("Role-SDE-Admin", session));
+                result.put("isAdmin", SdeAccess.isAdminProfile( session.getUserId(), profileAPI));
 			}
 			else if ("getWellTrackerDashboardList".equals(action))
 			{

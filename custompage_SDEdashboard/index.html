@@ -71,27 +71,26 @@
 	<div class="container-fluid" >
 		<div class="santosHeader voffset2">
 			<!--<img src="pageResource?page=custompage_SDEdashboard&location=img/santos-energy-logo.jpg"/> -->
-			<h3 class="vcenter">Dashboard</h3><p/>
-			<h5 class="vcenter">version: {{dashctrl.properties.version}}</h5>			
+			<h3 class="vcenter">Dashboard</h3>
 		</div>
 		<div style="background-color: #237CCB;">
 			<table><tr>
 			<td>
-				<button ng-show="dashctrl.allowROView()" ng-click="dashctrl.showViewForm();" ng-class="dashctrl.getButtonClass( dashctrl.isshowcases)">Well Tracker Dashboard</button>
+				<button ng-click="dashctrl.showViewForm();" ng-class="dashctrl.getButtonClass( dashctrl.isshowcases)">Well Tracker Dashboard</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowROView()" ng-click="dashctrl.showViewUpdateSde();" ng-class="dashctrl.getButtonClass( dashctrl.isshowUpdateSdeDetails)">Update SDE Details</button>
+				<button ng-click="dashctrl.showViewUpdateSde();" ng-class="dashctrl.getButtonClass( dashctrl.isshowUpdateSdeDetails)">Update SDE Details</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowROView() || dashctrl.allowPAView() || dashctrl.allowAdminView()" ng-click="dashctrl.showViewSystemSummary();" ng-class="dashctrl.getButtonClass( dashctrl.isshowSystemSummary)">System Summary</button>
+				<button ng-click="dashctrl.showViewSystemSummary();" ng-class="dashctrl.getButtonClass( dashctrl.isshowSystemSummary)">System Summary</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowPAView()" ng-click="dashctrl.showViewPADashboard();" 
+				<button ng-click="dashctrl.showViewPADashboard();" 
 						ng-class="dashctrl.getButtonClass( dashctrl.isshowPADashboard)">PA Dashboard</button>
 			</td>
 			<td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowPropertiesView() && dashctrl.allowAdminView()" 
+				<button ng-show="dashctrl.allowPropertiesView()" 
 					ng-click="dashctrl.showProperties();" ng-class="dashctrl.getButtonClass( dashctrl.isshowProperties)">Properties</button>
 			</td>
 			</tr>
@@ -109,7 +108,7 @@
 	<!--                                                                                  -->
 	<!-- ******************************************************************************** -->
 
-	<div class="col-lg-11"  style="margin-left:35px" ng-show="dashctrl.isshowcases && dashctrl.allowROView()">
+	<div class="col-lg-11"  style="margin-left:35px" ng-show="dashctrl.isshowcases">
 		<h1>Well Tracker Dashboard</h1>		
 		<div class="row voffset2">			
 			<div class="col-md-2">
@@ -119,7 +118,7 @@
 		</div>
 			
 			
-		<div class="row voffset2" ng-show="dashctrl.allowROView()">
+		<div class="row voffset2">
 			<div class="col-md-6">
 				<form class="form-inline">
 					<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
@@ -140,7 +139,7 @@
 				
 				
 			
-		<div class="row voffset2" ng-show="dashctrl.allowROView()">
+		<div class="row voffset2">
 			<div class="col-md-12">
 				<table class="table table-striped table-condensed  table-bordered">
 					<thead>
@@ -168,26 +167,17 @@
 								<div ng-show="headerlabel.ctrl == null">
 									{{onetask[headerlabel.id]}}
 								</div>
-								<div ng-show="headerlabel.ctrl == 'text'">
-									{{onetask[headerlabel.id]}}
-								</div>
 								<div ng-show="headerlabel.ctrl == 'link'">
 									<a href="" ng-click="dashctrl.link( headerlabel, onetask)">{{onetask[headerlabel.id]}}</a>
 								</div>
 								<div ng-show="headerlabel.ctrl == 'button'">
 									<!-- display all buttons -->
-									
-									<!-- 
-										Always show the orange button, no need to apply condition to show.
-										Blue and Green buttons are no longer needed.
-										<div ng-show="onetask.initiateSdeRequest">
-									-->									
-									<div ng-show="onetask.INITIATED == 'N'"> 									
+									<div ng-show="onetask.initiateSdeRequest">
 										<button ng-click="dashctrl.initiateSdeRequestbutton( headerlabel, onetask)" class="btn btn-xs  btn-warning"
 										style="background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Initiate SDE Request</button>
 										
 									</div>
-									<!--div ng-show="onetask.accesstask">
+									<div ng-show="onetask.accesstask">
 										<button ng-click="dashctrl.accessTaskButton( headerlabel, onetask)" class="btn btn-xs btn-info" 
 										style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Access SDE Request Task</button>
 									</div>
@@ -195,13 +185,14 @@
 										<button ng-click="dashctrl.accessCaseOverviewButton( headerlabel, onetask)" 
 											class="btn btn-xs btn-success" 
 											style="background-color: #5cb85c;border-color: #5cb85c;padding: 0px 10px;">SDE Overview</button>
-										</div-->
+										</div>
 								</div>
 								<div ng-show="headerlabel.ctrl == 'date'">
 									{{onetask[headerlabel.id] | date:'dd-MM-yyyy' }}
 								</div>
 								<div ng-show="headerlabel.ctrl == 'input'">
-									<input ng-model="onetask[headerlabel.id]"/>
+									<input ng-model="onetask[headerlabel.id]" ng-change="dashctrl.ngChange( headerlabel, onetask)" style="{{dashctrl.ngStyle( headerlabel, onetask )}}"/>
+									<!--    -->
 								</div>
 								<div ng-show="headerlabel.ctrl == 'semaphore'">
 									<button ng-click="dashctrl.showDetails( onetask )" title="Click here to see the details of the line" data-toggle="modal" data-target="#myModalDetails">
@@ -214,9 +205,9 @@
 							</td>
 						</tr>
 					</tbody>
-					<!--tr><td colspan="8"></td><td><button ng-click="dashctrl.saveAssignedRO()" title="Click here to save all Assigned RO fields" 
+					<tr><td colspan="8"></td><td><button ng-click="dashctrl.saveAssignedRO()" title="Click here to save all Assigned RO fields" 
 						 style="background-color: #3498db;border-color: #3498db;padding: 0px 10px;">Update Assign RO</td></td>
-					</tr-->
+					</tr>
 									
 				</table>
 			</div>			
@@ -241,7 +232,9 @@
 			</div>
 		</div>
 		
-		
+		<div ng-show="dashctrl.allowAdminView()">
+			<span class="label label-primary">Get the list:{{dashctrl.admininfo}}</span>
+		</div>
 		<!-- MODAL : how details -->
 		 
 		
@@ -268,7 +261,7 @@
 							<td>{{dashctrl.detailHistory.sdestatus}}</td>
 						</tr>
 							
-						<tr><td style="background-color: #ADADF5">Scheduled Online Date:</td>
+						<tr><td style="background-color: #ADADF5">Scheduled Online Date</td>
 							<td style="text-align: center;">Y</td>
 							<td>{{dashctrl.detailHistory.ScheduledOnlineDate  | date:'dd-MM-yyyy'}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.ScheduledOnlineDate}}</td>
@@ -304,7 +297,7 @@
 						
 						<tr ng-show="dashctrl.detailHistory.BusinessUnit == 'GLNG'">
 							<td style="background-color: #ADADF5">Well Category (Primary):</td>
-							<td style="text-align: center;">Y</td><td>{{dashctrl.detailHistory.WellCategoryPrimary}}</td>
+							<td style="text-align: center;">N</td><td>{{dashctrl.detailHistory.WellCategoryPrimary}}</td>
 							<td ng-show="dashctrl.isshowdetailcontributor">{{dashctrl.detailHistoryDataContributor.WellCategoryPrimary}}</td>
 						</tr>
 						
@@ -453,7 +446,7 @@
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">UWI</span>
+			<th><span class="table-header">UWO</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.UWI" size="10" 
 							class="form-control filter-control"								
 							title="Filter: only lines which contains this value are shown"/>	
@@ -488,7 +481,7 @@
 			<th><span class="table-header">Actual</span></th>
 			<th><span class="table-header">Well Data</span></th>
 			<th><span class="table-header">Comp Data</span></th>
-			<th><span class="table-header">Resp Officer</span></th>
+			<th><span class="table-header">Resp officier</span></th>
 			<th><span class="table-header">EC</span></th>
 			<th><span class="table-header">Enable</span></th>
 			<th><span class="table-header">Ampla</span></th>
@@ -566,7 +559,7 @@
 	<!--                                                                                  -->
 	<!--                                                                                  -->
 	<!-- ******************************************************************************** -->
-	<div class="col-lg-11" ng-show="dashctrl.isshowUpdateSdeDetails && dashctrl.allowROView()">
+	<div class="col-lg-11" ng-show="dashctrl.isshowUpdateSdeDetails">
 		<h1>Update SDE Details</h1>
 			
 		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
@@ -637,96 +630,8 @@
 	<!--                                                                                  -->
 	<!--                                                                                  -->
 	<!-- ******************************************************************************** -->
-	<div class="col-lg-11" ng-show="dashctrl.isshowPADashboard && dashctrl.allowPAView()" style="margin-left:35px">
+	<div class="col-lg-11" ng-show="dashctrl.isshowPADashboard" style="margin-left:35px">
 		<h1>PA Dashboard</h1>
-		
-		<br/><br/>
-
-		<button id="refresh" ng-click="dashctrl.searchPADashboard()"><span class="glyphicon glyphicon-refresh"></span></button>	
-		
-		<table class="table table-striped table-hover table-condensed table-bordered">
-		<tr>		
-			<th><a class="table-header">Date Received</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.DATE_WELL_IDENTIFIED" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">SDE Number</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.SDE_NUMBER" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">UWI</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.WELL_CODE" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">Well Full Name</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.WELL_FULL_NAME" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">Request Type</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_TYPE" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">Business Unit</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.BUSINESS_UNIT" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">Schedule Online Date</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.SCHEDULED_ONLINE_DATE" size="10" 
-							class="form-control filter-control"	
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">Update Effective Date</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.MODIFIED_DATE" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>			
-			<th><a class="table-header">Actual Online Date</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.ACTUAL_ONLINE_DATE" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">Request Status</a>
-				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_STATUS" size="10" 
-							class="form-control filter-control"								
-							title="Filter: only lines which contains this value are shown"/>	
-			</th>
-			<th><a class="table-header">Hold Clarification</a></th>
-			<th><a class="table-header">Do not Load</a></th>
-			<th><a class="table-header">Update EC</a><blockquote/></th>			
-			</tr>
-			<tbody  ng-repeat="onesynthesis in dashctrl.getPADashboardPage() track by $index">
-				<tr>			
-					<td>{{onesynthesis.DATE_WELL_IDENTIFIED | date:'dd-MM-yyyy'}}</td>				
-					<td><a ng-href="#" ng-click="dashctrl.accessTaskButton( null, onesynthesis)">{{onesynthesis.SDE_NUMBER}}</a></td>
-					<td>{{onesynthesis.WELL_CODE}}</td>
-					<td>{{onesynthesis.WELL_FULL_NAME}}</td>
-					<td>{{onesynthesis.REQUEST_TYPE}}</td>
-					<td>{{onesynthesis.BUSINESS_UNIT}}</td>					
-					<td>{{onesynthesis.SCHEDULED_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
-					<td>{{onesynthesis.MODIFIED_DATE | date:'dd-MM-yyyy'}}</td>
-					<td>{{onesynthesis.ACTUAL_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
-				<td>{{onesynthesis.REQUEST_STATUS}}</td>
-				
-				<td><input type="checkbox" ng-model="onesynthesis.ON_HOLD" ng-change="dashctrl.checkPALine( onesynthesis, 'ON_HOLD')"</td>
-				<td><input type="checkbox" ng-model="onesynthesis.DO_NOT_LOAD" ng-change="dashctrl.checkPALine( onesynthesis, 'DO_NOT_LOAD')"></td>
-				<td><input type="checkbox" ng-model="onesynthesis.UPDATE_EC" ng-change="dashctrl.checkPALine( onesynthesis, 'UPDATE_EC') "></td>
-				</tr>
-			</table>
-			<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
-			{{dashctrl.getPADashboardPage()}}
-			</div>
-			<button ng-click="dashctrl.submitPADashboard()" class = "btn btn-success">Submit</button>
-
-		</p>			
-		
-		
-		<!-- Removed Search functionality based on SDE-67
 		<table class="table table-condensed table-bordered" style="background-color: #ADADF5;" >
 		<tr><td colspan="4"><h2>Search</h2></td></tr>
 		<tr>
@@ -739,13 +644,13 @@
 		</tr>
 		<tr>
 			<td>SDE Originator:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteroriginator"></td>
-			<td>Request Type:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterrequesttype"></td>			
+			<td>Request type:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filterrequesttype"></td>			
 		</tr>
 		<tr>
 			<td>Well Online Date Range</td></tr>
 		<tr>
-			<td>From Date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedatefrom"></td>
-			<td>To Date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedateto"></td>
+			<td>From date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedatefrom"></td>
+			<td>To date:</td><td><input type="text" ng-model="dashctrl.padashboard.search.filteronlinedateto"></td>
 		</tr>
 
 		<td colspan="4"><center><button ng-click="dashctrl.searchPADashboard()" class="btn btn-primary">Search</button></center></td>
@@ -756,7 +661,87 @@
 		<span class="label label-success" >{{dashctrl.padashboard.message}}</span><br>
 		</div>
 		<span class="label label-danger" >{{dashctrl.padashboard.errormessage}}</span><br>
-		-->
+			
+		<h2>Result</h2>
+		<table class="table table-striped table-hover table-condensed  table-bordered" syle="border:1">
+		<tr>
+			<th><span class="table-header">Date Received</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.DATE_RECEIVE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">SDE Number</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.SDE_NUMBER" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">UWI</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.UWI" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Well Full Name</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.WELL_FULL_NAME" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Request Type</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_TYPE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Business Unit</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.BUSINESS_UNIT" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Schedule Online Date</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.SCHEDULED_ONLINE_DATE" size="10" 
+							class="form-control filter-control"	
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Update Effective Date</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.UPDATE_EFFECTIVE_DATE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>			
+			<th><span class="table-header">Actual Online Date</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.ACTUAL_ONLINE_DATE" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Request Status</span>
+				<input type="text" ng-model="dashctrl.padashboard.filter.REQUEST_STATUS" size="10" 
+							class="form-control filter-control"								
+							title="Filter: only lines which contains this value are shown"/>	
+			</th>
+			<th><span class="table-header">Hold Clarification</span></th>
+			<th><span class="table-header">Do not Load</span></th>
+			<th><span class="table-header">Update EC</span><blockquote/></th>			
+			</tr>
+			<tbody  ng-repeat="onesynthesis in dashctrl.getPADashboardPage() track by $index">
+				<tr>			
+					<td>{{onesynthesis.DATE_WELL_IDENTIFIED | date:'dd-MM-yyyy'}}</td>				
+					<td><a ng-href="#" ng-click="dashctrl.accessTaskButton( null, onesynthesis)">{{onesynthesis.SDE_NUMBER}}</a></td>
+					<td>{{onesynthesis.WELL_CODE}}</td>
+				<td>{{onesynthesis.WELL_FULL_NAME}}</td>
+				<td>{{onesynthesis.REQUEST_TYPE}}</td>
+					<td>{{onesynthesis.BUSINESS_UNIT}}</td>					
+					<td>{{onesynthesis.SCHEDULED_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
+					<td>{{onesynthesis.MODIFIED_DATE | date:'dd-MM-yyyy'}}</td>
+					<td>{{onesynthesis.ACTUAL_ONLINE_DATE | date:'dd-MM-yyyy'}}</td>
+				<td>{{onesynthesis.REQUEST_STATUS}}</td>
+				
+					<td><input type="checkbox" ng-model="onesynthesis.ON_HOLD" ng-change="dashctrl.checkPALine( onesynthesis, 'ON_HOLD')"</td>
+				<td><input type="checkbox" ng-model="onesynthesis.DO_NOT_LOAD" ng-change="dashctrl.checkPALine( onesynthesis, 'DO_NOT_LOAD')"></td>
+				<td><input type="checkbox" ng-model="onesynthesis.UPDATE_EC" ng-change="dashctrl.checkPALine( onesynthesis, 'UPDATE_EC') "></td>
+				</tr>
+			</table>
+			<div class="form-group" ng-show="dashctrl.properties.debug=='true'">
+			{{dashctrl.getPADashboardPage()}}
+			</div>
+			<button ng-click="dashctrl.submitPADashboard()" 
+			class = "btn btn-success">Submit</button>
 	</div>
 
 	
@@ -767,7 +752,7 @@
 	<!--                                                                                  -->
 	<!--                                                                                  -->
 	<!-- ******************************************************************************** -->
-<div class="col-lg-11" ng-show="dashctrl.isshowProperties && dashctrl.allowAdminView()" style="margin-left:35px">
+<div class="col-lg-11" ng-show="dashctrl.isshowProperties" style="margin-left:35px">
 		<h1>Properties</h1>
 		
 		Update Sde URL : <input ng-model="dashctrl.properties.updatesdeurl" size="60"><p>
@@ -775,7 +760,7 @@
 	
 		Debug : <input ng-model="dashctrl.properties.debug" size="60"><p>
 		
-		Version : <input ng-model="dashctrl.properties.version" disabled="true" readonly="true" size="60"><p>
+		Version : 0.0.6<p>
 	
 		<button ng-click="dashctrl.setproperties();" class="btn btn-lg btn-primary" 
 			style="font-size:15px;background-color: #f39c12;border-color: #f39c12;padding: 0px 10px;">Update properties</button><p>

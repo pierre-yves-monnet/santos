@@ -49,7 +49,6 @@
   display: inline-block;
 }
 .ng-modal-close-x {
-  display:none;
   font-weight: bold;
   font-family: Arial, sans-serif;
 }
