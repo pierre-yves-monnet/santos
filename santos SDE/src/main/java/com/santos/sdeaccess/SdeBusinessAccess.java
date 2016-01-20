@@ -1682,7 +1682,34 @@ public class SdeBusinessAccess {
 
             }
             else {
+                // protection : be sure the template is correct
+                final String wellTemplate = Toolbox.getString(sdeData.data.get(TableDashBoard.WELL_TEMPLATE), null);
 
+                final List<Map<String, String>> listTemplate = Toolbox.getList(sdeData.listsValue.get("template_list"), null);
+
+                if (listTemplate == null || listTemplate.size() == 0)
+                {
+                    if (wellTemplate == null) {
+                        sdeData.data.put(TableDashBoard.WELL_TEMPLATE, "Cooper Gas");
+                    }
+                } else
+                {
+                    // checl that the wellTemplate are in the list
+                    boolean inTheList = false;
+                    String listKey = "";
+                    for (final Map<String, String> oneTemplate : listTemplate)
+                    {
+                        listKey += oneTemplate.get("key") + ",";
+                        if (oneTemplate.get("key") != null && oneTemplate.get("key").equals(wellTemplate)) {
+                            inTheList = true;
+                        }
+                    }
+                    if (!inTheList)
+                    {
+                        logger.severe("Data [" + filterSql + "] Template[" + wellTemplate + "] not in the list of Template [" + listKey + "]");
+                        sdeData.data.put(TableDashBoard.WELL_TEMPLATE, listTemplate.get(0).get("key"));
+                    }
+                }
                 // place in the result a special variable forthecontract to let the UI Designer contract
                 final Map<String, Object> mainData = (Map<String, Object>) sdeData.data.get(getDataModel().getSdeDataName());
                 mainData.put("forthecontract", "A");
