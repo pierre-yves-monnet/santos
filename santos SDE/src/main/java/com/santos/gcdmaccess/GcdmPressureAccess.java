@@ -104,9 +104,6 @@ public class GcdmPressureAccess {
 
             gcdmResult.listValues = GcdmToolbox.executeRequest(con, sqlRequest, listRequestObject, gasComposition.maxRecord, gasComposition.formatDateJson);
 
-
-
-
             // FDR-67 create the header
             completePressureHeader(gcdmResult);
 
@@ -179,7 +176,7 @@ public class GcdmPressureAccess {
 
     /**
      * FDR-35
-     *
+     * 
      * @param gasComposition
      * @return
      */

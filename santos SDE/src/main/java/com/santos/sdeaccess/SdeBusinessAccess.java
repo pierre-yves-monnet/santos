@@ -211,7 +211,7 @@ public class SdeBusinessAccess {
 
     /**
      * key of the information is the number plus the status
-     *
+     * 
      * @author pierre-yves
      */
     public static class SdeNumberStatus {
@@ -299,7 +299,7 @@ public class SdeBusinessAccess {
 
     /**
      * get the list of information
-     *
+     * 
      * @param listSdeNumber
      * @param sdeParameter
      * @return
@@ -424,7 +424,7 @@ public class SdeBusinessAccess {
 
     /**
      * call to get the list
-     *
+     * 
      * @param listSdeNumber
      * @return
      */
@@ -507,7 +507,7 @@ public class SdeBusinessAccess {
 
     /**
      * get the list of information
-     *
+     * 
      * @param listSdeNumber
      * @param sdeParameter
      * @return
@@ -887,7 +887,6 @@ public class SdeBusinessAccess {
                 }
 
                 con = new SdeBusinessAccess().getConnection(false);
-                //                con = main.Main.sdeConnection();
 
                 if (con == null) {
                     sdeResult.status = "Can't access the datasource [" + DATASOURCE_NAME + "]";
@@ -1096,6 +1095,9 @@ public class SdeBusinessAccess {
                     if (key.equalsIgnoreCase("ON_HOLD")) {
                         System.out.println(key);
                         record.put(key, convertBitToBoolean(rs.getString(i)));
+
+                        // determine if checkbox needs to be shown
+                        record.put("SHOW_ON_HOLD", Toolbox.isMonthEarlier((Date) rs.getObject("SCHEDULED_ONLINE_DATE")));
                         continue;
                     }
 
@@ -1107,6 +1109,9 @@ public class SdeBusinessAccess {
                     if (key.equalsIgnoreCase("UPDATE_EC")) {
                         System.out.println(key);
                         record.put(key, convertBitToBoolean(rs.getString(i)));
+
+                        // determine if checkbox needs to be shown
+                        record.put("SHOW_UPDATE_EC", Toolbox.isMonthEarlier((Date) rs.getObject("SCHEDULED_ONLINE_DATE")));
                         continue;
                     }
 
@@ -1217,7 +1222,7 @@ public class SdeBusinessAccess {
 
     /**
      * get the list of information
-     *
+     * 
      * @param listSdeNumber
      * @param sdeParameter
      * @return
@@ -1465,7 +1470,7 @@ public class SdeBusinessAccess {
         /**
          * to allow the load recursively based on the DataModel, the currentData in progress to load should be kept
          * This is the goal of theses methode
-         *
+         * 
          * @param currentData
          */
         public void setPointerData(final Map<String, Object> currentData)
@@ -1582,7 +1587,7 @@ public class SdeBusinessAccess {
 
     /**
      * get the SDE dataModel
-     *
+     * 
      * @return
      */
     public DataModel getDataModel()
@@ -1792,8 +1797,8 @@ public class SdeBusinessAccess {
             sdeData.setPointerData(dashboard);
 
             final HashMap<String, HashMap<String, String>> r_list = new HashMap<String, HashMap<String, String>>();
-            r_list.put("r_pool_layer_short", populateReferenceMap(con, "select RMU, LAYER_SHORT from r_pool" ));
-            r_list.put("r_pool_formation", populateReferenceMap(con, "select RMU, FORMATION from r_pool" ));
+            r_list.put("r_pool_layer_short", populateReferenceMap(con, "select RMU, LAYER_SHORT from r_pool"));
+            r_list.put("r_pool_formation", populateReferenceMap(con, "select RMU, FORMATION from r_pool"));
 
             insert(sdeData, getDataModel(), con, sdeParameter, r_list);
 
@@ -1818,8 +1823,7 @@ public class SdeBusinessAccess {
             logger.severe("~~~~~~~~~~~~~~~~ SdeBusinessAccess.writeSdeData SdeNumber[" + sdeNumber + "] SdeStatus[" + sdeStatus + "]" + e.toString() + " at "
                     + exceptionDetails);
             return sdeData;
-        }
- finally {
+        } finally {
             // release the connection to the datasource
             try {
                 con.close();
@@ -1900,8 +1904,7 @@ public class SdeBusinessAccess {
 
             logger.severe("SdeBusinessAccess.updateAttribut End FAIL --------------------------" + e.toString() + " at " + exceptionDetails);
             return sdeData;
-        }
- finally {
+        } finally {
             // release the connection to the datasource
             try {
                 con.close();
@@ -1926,22 +1929,23 @@ public class SdeBusinessAccess {
         public String colValue;
         public String table;
         public String whereClause;
+        public String orderBy;
 
-        public ListDefinition(final String name, final String colKey, final String colValue, final String table, final String whereClause)
+        public ListDefinition(final String name, final String colKey, final String colValue, final String table, final String whereClause, final String orderBy)
         {
             this.name = name;
             this.colKey = colKey;
             this.colValue = colValue;
             this.table = table;
             this.whereClause = whereClause;
+            this.orderBy = orderBy;
         }
 
     }
 
-
     /**
      * load all lists
-     *
+     * 
      * @param sdeData
      * @param stmt
      * @throws SQLException
@@ -1953,20 +1957,21 @@ public class SdeBusinessAccess {
         final List<ListDefinition> lists = new ArrayList<ListDefinition>();
 
         // final String name, final String colKey, final String colValue, final String table
-        lists.add(new ListDefinition("r_area_numbers_by_field", "area_number", "area_name", "r_area_numbers_by_field", null));
-        lists.add(new ListDefinition("r_genset_make_models", "energy_input_gj_hr", "engine_make_and_model", "r_genset_make_models", null));
-        lists.add(new ListDefinition("ov_well_hole", "distinct op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null));
-        lists.add(new ListDefinition("r_prod_alloc_tag_glng", "distinct ec_template_code", "ec_template_code", "r_prod_alloc_tag", "well_template = 'GLNG'"));
-        lists.add(new ListDefinition("r_well_group", "distinct value", "value", "r_form_data", "type = 'well_group'"));
-        lists.add(new ListDefinition("r_well_category", "value", "value", "r_form_data", "type='well_cat'"));
-        lists.add(new ListDefinition("r_gas_inlet", "value", "value", "r_form_data", "type='gas_inlet'"));
-        lists.add(new ListDefinition("r_wtr_dis", "value", "value", "r_form_data", "type='wtr_dis'"));
-        lists.add(new ListDefinition("r_well_lcyc", "value", "value", "r_form_data", "type='well_lcyc'"));
-        lists.add(new ListDefinition("r_well_opst", "value", "value", "r_form_data", "type='well_opst'"));
+        lists.add(new ListDefinition("r_area_numbers_by_field", "area_number", "area_name", "r_area_numbers_by_field", null, "area_number asc"));
+        lists.add(new ListDefinition("r_genset_make_models", "energy_input_gj_hr", "engine_make_and_model", "r_genset_make_models", null, null));
+        lists.add(new ListDefinition("ov_well_hole", "distinct op_fcty_1_code", "op_fcty_1_code", "ov_well_hole", null, null));
+        lists.add(new ListDefinition("r_prod_alloc_tag_glng", "distinct ec_template_code", "ec_template_code", "r_prod_alloc_tag", "well_template = 'GLNG'",
+                null));
+        lists.add(new ListDefinition("r_well_group", "distinct value", "value", "r_form_data", "type = 'well_group'", null));
+        lists.add(new ListDefinition("r_well_category", "value", "value", "r_form_data", "type='well_cat'", null));
+        lists.add(new ListDefinition("r_gas_inlet", "value", "value", "r_form_data", "type='gas_inlet'", null));
+        lists.add(new ListDefinition("r_wtr_dis", "value", "value", "r_form_data", "type='wtr_dis'", null));
+        lists.add(new ListDefinition("r_well_lcyc", "value", "value", "r_form_data", "type='well_lcyc'", null));
+        lists.add(new ListDefinition("r_well_opst", "value", "value", "r_form_data", "type='well_opst'", null));
         // --------- artificial_lift_glng
-        lists.add(new ListDefinition("artificial_lift_glng", "value", "value", "r_form_data", "type='artsys_code' and business_unit='GLNG'"));
+        lists.add(new ListDefinition("artificial_lift_glng", "value", "value", "r_form_data", "type='artsys_code' and business_unit='GLNG'", null));
         // operator area
-        lists.add(new ListDefinition("operator_area_glng", "value", "value", "r_form_data", "type='operator_area' and business_unit='GLNG'"));
+        lists.add(new ListDefinition("operator_area_glng", "value", "value", "r_form_data", "type='operator_area' and business_unit='GLNG'", null));
         // Select distinct(OP_FCTY_1_CODE) from SDE.OV_WELL_HOLE order by OP_FCTY_1_CODE;
 
         // template list
@@ -2005,7 +2010,7 @@ public class SdeBusinessAccess {
             sdeData.listsValue.put("well_hook_up", listStaticValues);
         }
         else {
-            lists.add(new ListDefinition("well_hook_up", "value", "value", "r_form_data", "type='whup_code' and business_unit='EABU'"));
+            lists.add(new ListDefinition("well_hook_up", "value", "value", "r_form_data", "type='whup_code' and business_unit='EABU'", null));
         }
 
         // --------- well type list
@@ -2013,19 +2018,19 @@ public class SdeBusinessAccess {
         if ("GLNG".equals(businessUnit) && "NEW".equals(requestType))
         {
             logDetails += "Well_type: businessUnit=GLNG & requestType=NEW : select type='wtype' and business_unit='GLNG';";
-            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit='GLNG'"));
+            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit='GLNG'", null));
 
         }
         else if ("GLNG".equals(businessUnit) && "UPDATE".equals(requestType))
         {
             logDetails += "Well_type: businessUnit=GLNG & requestType=UPDATE : select type='wtype' and business_unit like 'GLNG%';";
-            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit like 'GLNG%'"));
+            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='wtype' and business_unit like 'GLNG%'", null));
 
         }
         else if ("EABU".equals(businessUnit))
         {
             logDetails += "Well_type: businessUnit=EABU : select value from SDE.r_form_data where type='ec_wtype' and business_unit='EABU'";
-            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='ec_wtype' and business_unit='EABU'"));
+            lists.add(new ListDefinition("well_type", "value", "value", "r_form_data", "type='ec_wtype' and business_unit='EABU'", null));
 
         }
         else
@@ -2036,15 +2041,15 @@ public class SdeBusinessAccess {
         }
 
         // --------- ec_well_type
-        lists.add(new ListDefinition("ec_well_type", "value", "value", "r_form_data", "type='ec_wtype' and business_unit='BOTH'"));
+        lists.add(new ListDefinition("ec_well_type", "value", "value", "r_form_data", "type='ec_wtype' and business_unit='BOTH'", null));
 
         // --------- artificial_lift
-        lists.add(new ListDefinition("artificial_lift", "value", "value", "r_form_data", "type='artsys_code' and business_unit='EABU'"));
+        lists.add(new ListDefinition("artificial_lift", "value", "value", "r_form_data", "type='artsys_code' and business_unit='EABU'", null));
 
         // --------- rmu_interval_name
         // Changing reference table from 'r_form_data' to 'r_pool'
         //lists.add(new ListDefinition("rmu_interval_name", "value", "value", "r_form_data", "type='rmu' and business_unit='BOTH'"));
-        lists.add(new ListDefinition("rmu_interval_name", "RMU", "RMU", "r_pool", null));
+        lists.add(new ListDefinition("rmu_interval_name", "RMU", "RMU", "r_pool", null, null));
 
         // String suffix
         listStaticValues = new ArrayList<Map<String, Object>>();
@@ -2082,9 +2087,20 @@ public class SdeBusinessAccess {
                     + " from " + definition.table
                     + (definition.whereClause != null ? " where " + definition.whereClause : "")
                     + " order by "
-                    + definition.colValue;
+                    + (definition.orderBy != null ? definition.orderBy : definition.colValue);
 
             final List<Map<String, Object>> listValues = new ArrayList<Map<String, Object>>();
+
+            // add empty row to drop-down
+            // this is not needed for other drop-downs because the form can handle it.
+            // this particular drop-down is part of custom widget, hence cannot be handled by form
+            if (definition.name.equalsIgnoreCase("r_prod_alloc_tag_glng")) {
+                final Map<String, Object> oneValue = new HashMap<String, Object>();
+                oneValue.put("key", null);
+                oneValue.put("value", "");
+                listValues.add(oneValue);
+            }
+
             try
             {
                 if (stmt != null)
@@ -2097,9 +2113,9 @@ public class SdeBusinessAccess {
                         final Object value = rs.getObject(2);
                         if (key != null && value != null)
                         {
-                                oneValue.put("key", key); // keep the same type for the key
-                                oneValue.put("value", value.toString());
-                                listValues.add(oneValue);
+                            oneValue.put("key", key); // keep the same type for the key
+                            oneValue.put("value", value.toString());
+                            listValues.add(oneValue);
                         }
 
                     }
@@ -2180,7 +2196,7 @@ public class SdeBusinessAccess {
      * ex : OrderH => List of OrderL => OrderDelivery. We call OrderDelivery for each OrderL
      * - the condition is build by the childDataLModel.linkToFather AND dataModel.key = PointerHashmap.get( dataModel.key )
      * ex : in OrderL, key is "IdL", then the condition is OrderDelivery.fatherL= OrderL.keyL AND OrderL.IdL=34
-     *
+     * 
      * @param sdeData
      * @param dataModel
      * @param queryCondition
@@ -2314,14 +2330,15 @@ public class SdeBusinessAccess {
      */
     /**
      * recursive loop and update
-     *
+     * 
      * @param sdeData
      * @param dataModel
      * @param con
      * @param sdeParameter
      * @throws SQLException
      */
-    private void insert(final SdeData sdeData, final DataModel dataModel, final Connection con, final SdeParameter sdeParameter, final HashMap<String, HashMap<String, String>> r_list) throws SQLException
+    private void insert(final SdeData sdeData, final DataModel dataModel, final Connection con, final SdeParameter sdeParameter,
+            final HashMap<String, HashMap<String, String>> r_list) throws SQLException
     {
         logger.info(" -- manage level [" + dataModel.getSdeDataName() + "] Table["
                 + dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName) + "]");
@@ -2373,12 +2390,11 @@ public class SdeBusinessAccess {
         String listFieldKey = "";
         String listFieldValue = "";
 
-
         // RMU
         // This field is custom widget in UI.
         // This field is created on the fly by the user, hence has no sequence generated for its primary key
         // The following if statement is a special handling for RMU data
-        if(dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName).equalsIgnoreCase("RMU")){
+        if (dataModel.getTableName(sdeParameter.tableNameUpperCase, sdeParameter.enquoteTableName).equalsIgnoreCase("RMU")) {
 
             logger.info("SdeBusinessAccess.insert :: Found RMU.");
 
@@ -2398,13 +2414,13 @@ public class SdeBusinessAccess {
             dataThisLevel.put("MODIFIED_DATE", new Date());
             // get Basic Well Information key, needed as foreign key
             final Map<String, Object> dashboardMap = (Map<String, Object>) sdeData.data.get("dashboard");
-            if(dashboardMap == null){
+            if (dashboardMap == null) {
                 logger.severe("SdeBusinessAccess.insert :: Could not obtain 'dashboard' map.");
                 return;
             }
 
             final Map<String, Object> basic_well_infoMap = (Map<String, Object>) dashboardMap.get("basic_well_info");
-            if(basic_well_infoMap == null){
+            if (basic_well_infoMap == null) {
                 logger.severe("SdeBusinessAccess.insert :: Could not obtain 'basic_well_info' map.");
                 return;
             }
@@ -2416,25 +2432,23 @@ public class SdeBusinessAccess {
             // PERF_INTERVAL_CODE :
             // To construct the perf_interval_code:
             // basic_well_info.well_bore_interval || / || r_pool.layer_short
-            final String rmu = (String)dataThisLevel.get("RMU");
-            final String wellBoreInterval  = (String)basic_well_infoMap.get("WELL_BORE_INTERVAL");
-            logger.info("SdeBusinessAccess.insert :: Obtained data [rmu="+rmu+"] [wellBoreInterval=" +wellBoreInterval+"]");
+            final String rmu = (String) dataThisLevel.get("RMU");
+            final String wellBoreInterval = (String) basic_well_infoMap.get("WELL_BORE_INTERVAL");
+            logger.info("SdeBusinessAccess.insert :: Obtained data [rmu=" + rmu + "] [wellBoreInterval=" + wellBoreInterval + "]");
             final Map<String, String> r_pool_layer_short = r_list.get("r_pool_layer_short");
             final String layerShort = r_pool_layer_short.get(rmu);
-            dataThisLevel.put("PERF_INTERVAL_CODE", wellBoreInterval+ "/" + layerShort);
+            dataThisLevel.put("PERF_INTERVAL_CODE", wellBoreInterval + "/" + layerShort);
 
             // PERF_INTERVAL_NAME :
             // To construct the perf_interval_name as follows
             // initCap(basic_well_info.well_full_name) || - || r_pool.formation
-            final String wellFullName  = (String)basic_well_infoMap.get("WELL_FULL_NAME");
-            logger.info("SdeBusinessAccess.insert :: Obtained data [wellFullName="+wellFullName+"]");
+            final String wellFullName = (String) basic_well_infoMap.get("WELL_FULL_NAME");
+            logger.info("SdeBusinessAccess.insert :: Obtained data [wellFullName=" + wellFullName + "]");
             final Map<String, String> r_pool_formation = r_list.get("r_pool_formation");
             final String formation = r_pool_formation.get(rmu);
             dataThisLevel.put("PERF_INTERVAL_NAME", Toolbox.formatWellName(wellFullName) + "-" + formation);
 
         }
-
-
 
         for (final String key : dataThisLevel.keySet())
         {
@@ -2610,17 +2624,17 @@ public class SdeBusinessAccess {
 
     /**
      * get the connection
-     *
+     * 
      * @return
      */
     private Connection getConnection(final boolean allowDirectConnection)
     {
 
-//        // TODO :: For unit test only
-//        if(true){
-//            logger.severe("SdeBusinessAccess.getConnection :: Using local database.");
-//            return main.Main.sdeConnection();
-//        }
+        //        // TODO :: For unit test only
+        //        if(true){
+        //            logger.severe("SdeBusinessAccess.getConnection :: Using local database.");
+        //            return main.Main.sdeConnection();
+        //        }
 
         Context ctx = null;
         try
@@ -2630,7 +2644,7 @@ public class SdeBusinessAccess {
         {
             logger.severe("Cant' get an InitialContext : can't access the datasource");
             return null;
-    }
+        }
 
         DataSource ds = null;
         Connection con = null;
@@ -2730,7 +2744,7 @@ public class SdeBusinessAccess {
 
     /**
      * create an acceptable information
-     *
+     * 
      * @param sdeData
      * @param dataModel
      */
@@ -2820,7 +2834,7 @@ public class SdeBusinessAccess {
 
     /**
      * add a value in the list
-     *
+     * 
      * @param listValues
      * @param key
      * @param value
@@ -2835,7 +2849,7 @@ public class SdeBusinessAccess {
 
     /**
      * addFilter
-     *
+     * 
      * @param filter
      * @param attribut
      * @return

@@ -28,7 +28,6 @@ public class GcdmAdminAccess {
 
     static Logger logger = Logger.getLogger("org.bonitasoft.GcdmAdminAccess");
 
-
     /* ******************************************************************************** */
     /*                                                                                  */
     /* AdminParameter Pressure */
@@ -96,7 +95,6 @@ public class GcdmAdminAccess {
 
     }
 
-
     /** get the list of the GasComposition FDR-64 */
     public static GcdmToolbox.GcdmResult getListSupplyChainPoint(final AdminParameter adminParameter,
             final APISession apiSession)
@@ -127,9 +125,6 @@ public class GcdmAdminAccess {
             final List<Object> listRequestObject = new ArrayList<Object>();
 
             gcdmResult.listValues = GcdmToolbox.executeRequest(con, sqlRequest, listRequestObject, adminParameter.maxRecord, adminParameter.formatDateJson);
-
-
-
 
             // FDR-67 create the header
             completeListSupplyChainPointHeader(gcdmResult);
@@ -238,10 +233,9 @@ public class GcdmAdminAccess {
 
     };
 
-
     /**
      * get one specific SupplyChainPoint - FDR-88
-     *
+     * 
      * @param adminParameter
      * @param apiSession
      * @return

@@ -19,7 +19,6 @@ public class GcdmReport {
 
     static Logger logger = Logger.getLogger("org.bonitasoft.GcdmReport");
 
-
     /* ******************************************************************************** */
     /*                                                                                  */
     /* GCDM Report */

@@ -28,17 +28,17 @@ public class ProcessToolbox {
             "Can't start a process", "An error arrive at startup",
             "Check the log");
 
-
     /** start a case in the giving process */
     public static class ProcessToolboxResult
     {
-        public Long processInstance=null;
+
+        public Long processInstance = null;
         public List<BEvent> listEvents = new ArrayList<BEvent>();
     }
 
     /**
      * startACase
-     *
+     * 
      * @param processDefinitionName
      * @param variables
      * @param processAPI
@@ -56,13 +56,13 @@ public class ProcessToolbox {
 
         } catch (final ProcessDefinitionNotFoundException e) {
             logger.severe("Santos.ProcessToolbox : ProcessNotFound process [" + processDefinitionName + "] " + e.toString());
-            processToolboxResult.listEvents.add(new BEvent(eventProcessNotExist, "Process name ["+processDefinitionName+"]"));
+            processToolboxResult.listEvents.add(new BEvent(eventProcessNotExist, "Process name [" + processDefinitionName + "]"));
         } catch (final ProcessActivationException e) {
             logger.severe("Santos.ProcessToolbox : ProcessNotActivated process [" + processDefinitionName + "] " + e.toString());
-            processToolboxResult.listEvents.add( new BEvent(eventNotActivated, "Process name ["+processDefinitionName+"]"));
+            processToolboxResult.listEvents.add(new BEvent(eventNotActivated, "Process name [" + processDefinitionName + "]"));
         } catch (final ProcessExecutionException e) {
             logger.severe("Santos.ProcessToolbox : ProcessStartError process [" + processDefinitionName + "] " + e.toString());
-            processToolboxResult.listEvents.add( new BEvent(eventCantStartProcess, "Process name ["+processDefinitionName+"]") );
+            processToolboxResult.listEvents.add(new BEvent(eventCantStartProcess, "Process name [" + processDefinitionName + "]"));
         }
         return processToolboxResult;
     }

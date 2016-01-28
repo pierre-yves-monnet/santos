@@ -22,8 +22,8 @@ import com.santos.toolbox.Toolbox;
 public class GcdmAccess {
 
     static Logger logger = Logger.getLogger("org.bonitasoft.GcdmAccess");
-    
-    static{
+
+    static {
         logger.info(Toolbox.version);
     }
 
@@ -94,7 +94,7 @@ public class GcdmAccess {
     /**
      * delete from the list
      * FDR-53
-     *
+     * 
      * @param gasCompositionParameter
      * @param session
      * @param processAPI
@@ -119,7 +119,7 @@ public class GcdmAccess {
 
     /**
      * search a new SearchListGasComposition
-     *
+     * 
      * @param newGasCompositionParameter
      * @param session
      * @param processAPI
@@ -140,7 +140,7 @@ public class GcdmAccess {
 
     /**
      * add a new GasComposition
-     *
+     * 
      * @param newGasCompositionParameter
      * @param session
      * @param processAPI

@@ -56,7 +56,7 @@ public class SdeAccess {
     //    private static Logger logger = Logger.getLogger(SdeAccess.class.getName());
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
 
-    static{
+    static {
         logger.info(Toolbox.version);
     }
 
@@ -68,7 +68,7 @@ public class SdeAccess {
     /* ******************************************************************************** */
     /**
      * get the list of all cases
-     *
+     * 
      * @param apiSession
      * @param processAPI
      * @param identityAPI
@@ -139,7 +139,7 @@ public class SdeAccess {
 
     /**
      * get the list of cases, based on the list of tasks accessible by the user.
-     *
+     * 
      * @param listCasesParameter
      * @param apiSession
      * @param processAPI
@@ -203,7 +203,7 @@ public class SdeAccess {
                 //  final Integer sdeStatus = Toolbox.getInteger(sdeInfo.get(TableDashBoard.SDE_STATUS), null);
                 final String submited = (String) sdeInfo.get(TableDashBoard.SUBMITTED);
                 final String initiated = (String) sdeInfo.get(TableDashBoard.INITIATED);
-                
+
                 // keep as is, it will be used to determine to display Initiate SDE Request button.
                 // this will give user a visual clue if the task was closed without Cancel or Submit.
                 caseMap.put("INITIATED", initiated);
@@ -218,14 +218,14 @@ public class SdeAccess {
                     // SDE-75 :: No need to compare scheduledOnlineData logic for Dashboard page
                     caseMap.put("initiateSdeRequest", true);
                     /*
-                    if (scheduledOnlineDate != null &&
-                            (scheduledOnlineDate.after(limitToInitiateSde.getTime()) || scheduledOnlineDate.equals(limitToInitiateSde.getTime()))) {
-                        caseMap.put("initiateSdeRequest", true);
-                    } else {
-                        caseMap.put("initiateSdeRequest", false);
-                    }
-                    */
-                    
+                     * if (scheduledOnlineDate != null &&
+                     * (scheduledOnlineDate.after(limitToInitiateSde.getTime()) || scheduledOnlineDate.equals(limitToInitiateSde.getTime()))) {
+                     * caseMap.put("initiateSdeRequest", true);
+                     * } else {
+                     * caseMap.put("initiateSdeRequest", false);
+                     * }
+                     */
+
                     // rule #51 : if the status is RED, the initiateSdeRequest is not available
                     final String status = Toolbox.getString(sdeInfo.get(SdeBusinessAccess.TableDashBoard.BWD_STATUS), null);
                     if ("RED".equals(status)) {
@@ -243,50 +243,49 @@ public class SdeAccess {
                         caseMap.put("processversion", processDefinition.getVersion());
                         caseMap.put("processid", processDefinition.getId());
                     }
-                } 
-                else{
+                }
+                else {
                     caseMap.put("initiateSdeRequest", false);
                 }
                 // SDE-75 :: Do not return SDE that are Initiated= Y on dashboard list.
                 /*
-                else {
-                    caseMap.put("initiateSdeRequest", false);
-                    caseMap.put("accesstask", false);
-                    // then a task should exist for this SDE Request
-                    final HumanTaskInstance humanTask = mapSdeNumberToTask.get(keySdeNumberStatus.getKey());
-                    if (humanTask != null)
-                    {
-                        caseMap.put("initiateSdeRequest", false);
-
-                        caseMap.put("accesstask", true);
-                        caseMap.put("caseid", humanTask.getParentProcessInstanceId());
-                        caseMap.put("taskid", humanTask.getId());
-                        caseMap.put("taskName", humanTask.getName());
-                        ProcessDefinition processDefinitionTask = processDefinition;
-                        if (processDefinition != null && humanTask.getProcessDefinitionId() != processDefinition.getId())
-                        {
-                            try
-                            {
-                                processDefinitionTask = processAPI.getProcessDefinition(humanTask.getProcessDefinitionId());
-                            } catch (final Exception e) {
-                            };
-                        }
-                        if (processDefinitionTask != null)
-                        {
-                            caseMap.put("processname", processDefinitionTask.getName());
-                            caseMap.put("processversion", processDefinitionTask.getVersion());
-                            caseMap.put("processid", processDefinitionTask.getId());
-                        }
-                    }
-                }
-                */
+                 * else {
+                 * caseMap.put("initiateSdeRequest", false);
+                 * caseMap.put("accesstask", false);
+                 * // then a task should exist for this SDE Request
+                 * final HumanTaskInstance humanTask = mapSdeNumberToTask.get(keySdeNumberStatus.getKey());
+                 * if (humanTask != null)
+                 * {
+                 * caseMap.put("initiateSdeRequest", false);
+                 * caseMap.put("accesstask", true);
+                 * caseMap.put("caseid", humanTask.getParentProcessInstanceId());
+                 * caseMap.put("taskid", humanTask.getId());
+                 * caseMap.put("taskName", humanTask.getName());
+                 * ProcessDefinition processDefinitionTask = processDefinition;
+                 * if (processDefinition != null && humanTask.getProcessDefinitionId() != processDefinition.getId())
+                 * {
+                 * try
+                 * {
+                 * processDefinitionTask = processAPI.getProcessDefinition(humanTask.getProcessDefinitionId());
+                 * } catch (final Exception e) {
+                 * };
+                 * }
+                 * if (processDefinitionTask != null)
+                 * {
+                 * caseMap.put("processname", processDefinitionTask.getName());
+                 * caseMap.put("processversion", processDefinitionTask.getVersion());
+                 * caseMap.put("processid", processDefinitionTask.getId());
+                 * }
+                 * }
+                 * }
+                 */
                 // search if a caseId exist for this one
 
                 caseMap.put("sdenumber", sdeInfo.get(TableDashBoard.SDE_NUMBER));
                 caseMap.put("sdestatus", sdeInfo.get(TableDashBoard.SDE_STATUS));
                 // caseMap.put("glng", "GLNG");
                 // caseMap.put("caseid", processInstance.getId());
-                if(Boolean.TRUE.equals(caseMap.get("initiateSdeRequest"))){
+                if (Boolean.TRUE.equals(caseMap.get("initiateSdeRequest"))) {
                     listCases.add(caseMap);
                 }
             }
@@ -530,7 +529,7 @@ public class SdeAccess {
 
     /**
      * get the list of information
-     *
+     * 
      * @param listSdeNumber
      * @param sdeParameter
      * @return
@@ -577,7 +576,7 @@ public class SdeAccess {
 
     /**
      * create a new Dashboard/ Well info from the given information
-     *
+     * 
      * @param createWellParameter
      * @return
      */
@@ -602,7 +601,7 @@ public class SdeAccess {
 
     /**
      * get the list of information
-     *
+     * 
      * @param listSdeNumber
      * @param sdeParameter
      * @return
@@ -903,7 +902,7 @@ public class SdeAccess {
                             break;
                         }
                         numberOfLoop++;
-                        try {                        
+                        try {
                             Thread.sleep(500);
                         } catch (final InterruptedException e) {
                         }
@@ -946,7 +945,7 @@ public class SdeAccess {
         // calculate the list
         final SdeBusinessAccess sdeBusinessAccess = new SdeBusinessAccess();
 
-        final SdeResult sdeResult = sdeBusinessAccess.getListPaDashboard(paDashboardParameter,  session,   processAPI);
+        final SdeResult sdeResult = sdeBusinessAccess.getListPaDashboard(paDashboardParameter, session, processAPI);
 
         result.put("LISTPADASHBOARD", sdeResult.listRecords);
         result.put("MESSAGE", sdeResult.status);
@@ -975,11 +974,12 @@ public class SdeAccess {
         return false;
 
     }
-    
-    public static boolean hasRole(final String lookupRole, final APISession apiSession) throws ServerAPIException, BonitaHomeNotSetException, UnknownAPITypeException, SearchException {
-    
+
+    public static boolean hasRole(final String lookupRole, final APISession apiSession) throws ServerAPIException, BonitaHomeNotSetException,
+            UnknownAPITypeException, SearchException {
+
         boolean hasRole = false;
-        
+
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
         final IdentityAPI identityAPI = com.bonitasoft.engine.api.TenantAPIAccessor.getIdentityAPI(apiSession);
         final SearchResult<org.bonitasoft.engine.identity.Role> roleResults = identityAPI.searchRoles(builder.done());
@@ -991,18 +991,18 @@ public class SdeAccess {
                 break;
             }
         }
-        
-        if(hasRole == false){
-            logger.severe("SdeAccess.hasRole :: No matching role found for input = "+lookupRole);
+
+        if (hasRole == false) {
+            logger.severe("SdeAccess.hasRole :: No matching role found for input = " + lookupRole);
         }
-        
+
         return hasRole;
 
     }
 
     /**
      * get properties
-     *
+     * 
      * @param propertieFile
      * @return
      */
@@ -1036,7 +1036,7 @@ public class SdeAccess {
 
     /**
      * set the properties file
-     *
+     * 
      * @param propertieFile
      * @param jsonSt
      */
@@ -1112,7 +1112,7 @@ public class SdeAccess {
 
                     ProcessDefinition processDefinition = mapProcessDefinition.get(processInstance.getProcessDefinitionId());
                     if (processDefinition == null)
-                       {
+                    {
                         processDefinition = processAPI.getProcessDefinition(processInstance.getProcessDefinitionId());
                         mapProcessDefinition.put(processInstance.getProcessDefinitionId(), processDefinition);
                     }
@@ -1143,7 +1143,6 @@ public class SdeAccess {
         caseMap.put("WellFullName", sdeInfo.get(SdeBusinessAccess.TableDashBoard.WELL_FULL_NAME));
         caseMap.put("DateWellIdentified", sdeInfo.get(SdeBusinessAccess.TableDashBoard.DATE_WELL_IDENTIFIED));
 
-        
         caseMap.put("WellAlias", sdeInfo.get(SdeBusinessAccess.TableWellInfo.WELL_ALIAS));
         caseMap.put("FieldName", sdeInfo.get(SdeBusinessAccess.TableWellInfo.FIELD_NAME));
 
@@ -1183,7 +1182,7 @@ public class SdeAccess {
 
     /**
      * get the process Definition
-     *
+     * 
      * @param processName
      * @param processVersion
      * @param processAPI
@@ -1270,7 +1269,7 @@ public class SdeAccess {
             final SearchOptionsBuilder searchOptionBuilder = new SearchOptionsBuilder(0, 10000);
             if (processDefinitionId != null) {
                 searchOptionBuilder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
-}
+            }
 
             final SearchResult<HumanTaskInstance> searchResultPendingHumanTask = processAPI.searchHumanTaskInstances(searchOptionBuilder.done());
 
@@ -1299,4 +1298,3 @@ public class SdeAccess {
         return mapSdeNumberToTask;
     }
 }
-

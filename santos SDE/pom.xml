@@ -3,6 +3,10 @@
   <groupId>com.santos.sde</groupId>
   <artifactId>sdeaccess</artifactId>
   <version>1.0</version>
+   <properties>
+       <maven.compiler.source>1.7</maven.compiler.source>
+       <maven.compiler.target>1.7</maven.compiler.target>
+   </properties>
    <dependencies>
   <dependency>
         <groupId>org.bonitasoft.engine</groupId>
@@ -14,11 +18,24 @@
         <artifactId>bonita-server</artifactId>
         <version>7.1.0</version>
     </dependency>
+    
+    <dependency>
+        <groupId>com.bonitasoft</groupId>
+        <artifactId>bonita-client-sp</artifactId>
+        <version>7.1.0</version>
+    </dependency>    
+    <dependency>
+        <groupId>com.bonitasoft</groupId>
+        <artifactId>bonita-common-sp</artifactId>
+        <version>7.1.0</version>
+    </dependency>    
+    
     <dependency>
         <groupId>com.bonitasoft.log.event</groupId>
         <artifactId>bonita-event</artifactId>
         <version>1.0.0</version>
     </dependency>    
+    
     <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>

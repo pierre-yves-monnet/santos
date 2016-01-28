@@ -26,14 +26,14 @@ import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.session.APISession;
 
 /**
- *
  * @author ibiha
  */
 public class SdePAProcessInfo {
 
     private static Logger logger = Logger.getLogger("org.bonitasoft.SdePAProcessInfo");
 
-    public static Map<String, Object> getHumanTasksForSDENumber(final HashMap<String, Object> record, final SdeAccess.ListCasesParameter listCasesParameter, final APISession apiSession,
+    public static Map<String, Object> getHumanTasksForSDENumber(final HashMap<String, Object> record, final SdeAccess.ListCasesParameter listCasesParameter,
+            final APISession apiSession,
             final ProcessAPI processAPI,
             final IdentityAPI identityAPI) {
 
@@ -50,10 +50,12 @@ public class SdePAProcessInfo {
         // Search the SDE Demo process
         logger.info("SdePAProcessInfo.getHumanTasksForSDENumber : search [" + listCasesParameter.processName + "] version[" + listCasesParameter.processVersion
                 + "]");
-        final ProcessDefinition processDefinition = SdeAccess.getProcessDefinition(listCasesParameter.processName, listCasesParameter.processVersion, processAPI);
+        final ProcessDefinition processDefinition = SdeAccess.getProcessDefinition(listCasesParameter.processName, listCasesParameter.processVersion,
+                processAPI);
 
         // to give access to the TASKID, then search all task available for the user. Then create a map of SDENUMBER/SDESTATUS -> TaskInstance
-        final Map<String, HumanTaskInstance> mapSdeNumberToTask = SdeAccess.getAllTasksForAllUsers(processDefinition == null ? null : processDefinition.getId(),
+        final Map<String, HumanTaskInstance> mapSdeNumberToTask = SdeAccess.getAllTasksForAllUsers(
+                processDefinition == null ? null : processDefinition.getId(),
                 apiSession.getUserId(), processAPI);
 
         // -------------- search in the database now
@@ -69,45 +71,45 @@ public class SdePAProcessInfo {
         {
             // ------------------ source is process
 
-//            if (listCasesParameter.filterOnProcesses) {
-//                if (listCasesParameter.listOfProcesses == null || listCasesParameter.listOfProcesses.length == 0) {
-//                    logger.severe("Parameters ask for a Filter on process, but no process is given");
-//                    traceinfo += "No process to filter;";
-//                } else {
-//                    try {
-//                        traceinfo += " FilterOnProcess:";
-//                        searchOptionsBuilder.leftParenthesis();
-//                        int countFilter = 0;
-//
-//                        final SearchOptionsBuilder searchOptionsProcessBuilder = new SearchOptionsBuilder(0, 1000);
-//                        final SearchResult<ProcessDeploymentInfo> searchResultProcess = processAPI.searchProcessDeploymentInfos(searchOptionsProcessBuilder.done());
-//                        for (final ProcessDeploymentInfo processDeploymentInfo : searchResultProcess.getResult()) {
-//                            for (final String processName : listCasesParameter.listOfProcesses) {
-//                                if (processDeploymentInfo.getName().equalsIgnoreCase(processName)) {
-//                                    traceinfo += processDeploymentInfo.getName() + "(" + processDeploymentInfo.getProcessId() + ") ,";
-//                                    if (countFilter > 0) {
-//                                        searchOptionsBuilder.or();
-//                                    }
-//                                    countFilter++;
-//                                    searchOptionsBuilder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDeploymentInfo.getProcessId());
-//                                }
-//                            }
-//                        }
-//                        searchOptionsBuilder.rightParenthesis();
-////                        logger.info("getListCasesForSdeDashboard.Filter on processes :" + traceinfo);
-//                        if (countFilter == 0) {
-//                            logger.severe("No process found with filter [" + listCasesParameter.listOfProcesses);
-//                            searchOptionsBuilder = new SearchOptionsBuilder(0, listCasesParameter.maxResult);
-//                        }
-//                    } catch (final Exception e) {
-//                        final StringWriter sw = new StringWriter();
-//                        e.printStackTrace(new PrintWriter(sw));
-//                        final String exceptionDetails = sw.toString();
-//                        logger.severe("During getListCasesForSdeDashboard " + e.toString() + " at " + exceptionDetails);
-//                    }
-//                }
-//
-//            }
+            //            if (listCasesParameter.filterOnProcesses) {
+            //                if (listCasesParameter.listOfProcesses == null || listCasesParameter.listOfProcesses.length == 0) {
+            //                    logger.severe("Parameters ask for a Filter on process, but no process is given");
+            //                    traceinfo += "No process to filter;";
+            //                } else {
+            //                    try {
+            //                        traceinfo += " FilterOnProcess:";
+            //                        searchOptionsBuilder.leftParenthesis();
+            //                        int countFilter = 0;
+            //
+            //                        final SearchOptionsBuilder searchOptionsProcessBuilder = new SearchOptionsBuilder(0, 1000);
+            //                        final SearchResult<ProcessDeploymentInfo> searchResultProcess = processAPI.searchProcessDeploymentInfos(searchOptionsProcessBuilder.done());
+            //                        for (final ProcessDeploymentInfo processDeploymentInfo : searchResultProcess.getResult()) {
+            //                            for (final String processName : listCasesParameter.listOfProcesses) {
+            //                                if (processDeploymentInfo.getName().equalsIgnoreCase(processName)) {
+            //                                    traceinfo += processDeploymentInfo.getName() + "(" + processDeploymentInfo.getProcessId() + ") ,";
+            //                                    if (countFilter > 0) {
+            //                                        searchOptionsBuilder.or();
+            //                                    }
+            //                                    countFilter++;
+            //                                    searchOptionsBuilder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDeploymentInfo.getProcessId());
+            //                                }
+            //                            }
+            //                        }
+            //                        searchOptionsBuilder.rightParenthesis();
+            ////                        logger.info("getListCasesForSdeDashboard.Filter on processes :" + traceinfo);
+            //                        if (countFilter == 0) {
+            //                            logger.severe("No process found with filter [" + listCasesParameter.listOfProcesses);
+            //                            searchOptionsBuilder = new SearchOptionsBuilder(0, listCasesParameter.maxResult);
+            //                        }
+            //                    } catch (final Exception e) {
+            //                        final StringWriter sw = new StringWriter();
+            //                        e.printStackTrace(new PrintWriter(sw));
+            //                        final String exceptionDetails = sw.toString();
+            //                        logger.severe("During getListCasesForSdeDashboard " + e.toString() + " at " + exceptionDetails);
+            //                    }
+            //                }
+            //
+            //            }
             final HashMap<Long, HashMap<String, Object>> mapCasesByProcessInstance = new HashMap<Long, HashMap<String, Object>>();
             final HashMap<Long, ProcessDefinition> mapProcessDefinition = new HashMap<Long, ProcessDefinition>();
 
@@ -142,9 +144,9 @@ public class SdePAProcessInfo {
                             }
 
                         }
-//                        caseMap.put("sdenumber", sdeNumber);
-//                        caseMap.put("sdestatus", sdeStatus);
-//                        caseMap.put("glnv", "GLNV");
+                        //                        caseMap.put("sdenumber", sdeNumber);
+                        //                        caseMap.put("sdestatus", sdeStatus);
+                        //                        caseMap.put("glnv", "GLNV");
 
                         //caseMap.put("caseid", processInstance.getId());
                         ProcessDefinition processDefinitionInstance = mapProcessDefinition.get(processDefinition.getId());
@@ -160,15 +162,15 @@ public class SdePAProcessInfo {
                         // we accept this processinstance
                         listCases.add(caseMap);
 
-//                        System.out.println(caseMap.get("processname"));
-//                        System.out.println(caseMap.get("processid"));
-//                        System.out.println(caseMap.get("processversion"));
+                        //                        System.out.println(caseMap.get("processname"));
+                        //                        System.out.println(caseMap.get("processid"));
+                        //                        System.out.println(caseMap.get("processversion"));
                         record.put("processname", caseMap.get("processname"));
                         record.put("processversion", caseMap.get("processversion"));
 
-//                        mapCasesByProcessInstance.put(processInstance.getId(), caseMap);
-//                        mapCasesBySdeNumberStatus.put(SdeBusinessAccess.SdeNumberStatus.getInstance(sdeNumber, sdeStatus), caseMap);
-//                        listSdeNumber.add(SdeBusinessAccess.SdeNumberStatus.getInstance(sdeNumber, sdeStatus));
+                        //                        mapCasesByProcessInstance.put(processInstance.getId(), caseMap);
+                        //                        mapCasesBySdeNumberStatus.put(SdeBusinessAccess.SdeNumberStatus.getInstance(sdeNumber, sdeStatus), caseMap);
+                        //                        listSdeNumber.add(SdeBusinessAccess.SdeNumberStatus.getInstance(sdeNumber, sdeStatus));
                     } catch (final Exception e) {
                         // do nothing, it's acceptable
                         traceinfo += "No sdeNumber in processInstance[" + processInstance.getId() + "] sdeNumber(StringIndex1)["
@@ -176,34 +178,34 @@ public class SdePAProcessInfo {
                     }
                 }
 
-//                if (listCases.size() > 0) {
-//
-//                    traceinfo += "Complete now by task informations;";
-//                    // now, let's complete to search all activity for each cases
-//                    final SearchResult<HumanTaskInstance> searchHumanTaskResult = processAPI.searchHumanTaskInstances(searchTaskOptionsBuilder.done());
-//                    for (final HumanTaskInstance humanTaskInstance : searchHumanTaskResult.getResult()) {
-//
-//                        System.out.println("");
-//                        System.out.println(humanTaskInstance.getParentProcessInstanceId());
-//                        System.out.println(humanTaskInstance.getId());
-//                        System.out.println(humanTaskInstance.getName());
-//
-//                        record.put("caseid", humanTaskInstance.getParentProcessInstanceId());
-//                        record.put("taskid", humanTaskInstance.getId());
-//                        record.put("taskName", humanTaskInstance.getName());
-//
-//                        final long processInstanceIdTaskInstance = humanTaskInstance.getParentProcessInstanceId();
-//                        final HashMap<String, Object> caseMap = mapCasesByProcessInstance.get(processInstanceIdTaskInstance);
-//                        if (caseMap == null) {
-//                            // not normal !
-//                            logger.severe("getListCasesForSdeDashboard: processinstance[" + processInstanceIdTaskInstance
-//                                    + "] not found in list of processInstance");
-//                            continue;
-//                        }
-//                        // we consider we wait only one task
-//                        caseMap.put("task", humanTaskInstance.getDisplayName());
-//                    }
-//                }
+                //                if (listCases.size() > 0) {
+                //
+                //                    traceinfo += "Complete now by task informations;";
+                //                    // now, let's complete to search all activity for each cases
+                //                    final SearchResult<HumanTaskInstance> searchHumanTaskResult = processAPI.searchHumanTaskInstances(searchTaskOptionsBuilder.done());
+                //                    for (final HumanTaskInstance humanTaskInstance : searchHumanTaskResult.getResult()) {
+                //
+                //                        System.out.println("");
+                //                        System.out.println(humanTaskInstance.getParentProcessInstanceId());
+                //                        System.out.println(humanTaskInstance.getId());
+                //                        System.out.println(humanTaskInstance.getName());
+                //
+                //                        record.put("caseid", humanTaskInstance.getParentProcessInstanceId());
+                //                        record.put("taskid", humanTaskInstance.getId());
+                //                        record.put("taskName", humanTaskInstance.getName());
+                //
+                //                        final long processInstanceIdTaskInstance = humanTaskInstance.getParentProcessInstanceId();
+                //                        final HashMap<String, Object> caseMap = mapCasesByProcessInstance.get(processInstanceIdTaskInstance);
+                //                        if (caseMap == null) {
+                //                            // not normal !
+                //                            logger.severe("getListCasesForSdeDashboard: processinstance[" + processInstanceIdTaskInstance
+                //                                    + "] not found in list of processInstance");
+                //                            continue;
+                //                        }
+                //                        // we consider we wait only one task
+                //                        caseMap.put("task", humanTaskInstance.getDisplayName());
+                //                    }
+                //                }
             } catch (final SearchException e) {
                 final StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
@@ -219,66 +221,59 @@ public class SdePAProcessInfo {
             }
 
             /*
-
-
-
-             var processName			= oneTask.processname;
-             var processVersion		= oneTask.processversion;
-             var taskName			= oneTask.taskName;
-             var caseId				= oneTask.caseid;
-             var taskId				= oneTask.taskid;
-
-
+             * var processName = oneTask.processname;
+             * var processVersion = oneTask.processversion;
+             * var taskName = oneTask.taskName;
+             * var caseId = oneTask.caseid;
+             * var taskId = oneTask.taskid;
              */
             // call to complete by the business information
-//            if (listCasesParameter.completeWithBusinessData && listSdeNumber.size() > 0) {
-//                traceinfo += "Complete with BusinessData for [" + listSdeNumber.size() + "] event;";
-////xxxxx
-//
-//                SdeBusinessAccess.PADashboardParameter paDashboardParameter = new SdeBusinessAccess.PADashboardParameter();
-//                //final SdeBusinessAccess.SdeResult sdeResult = sdeBusinessAccess.getListPaDashboard(paDashboardParameter);
-////                if (sdeResult.status != null) {
-////                    traceinfo += "sdeBusinessAccess.Status:" + sdeResult.status + ";";
-////                }
-////                traceinfo += "ListSource[" + listSdeNumber.size() + "] NumberResult[" + sdeResult.listSdeInformation.size() + "]";
-////                for (final SdeBusinessAccess.SdeNumberStatus keySdeNumberStatus : sdeResult.listSdeInformation.keySet()) {
-////                    final Map<String, Object> sdeInfo = sdeResult.listSdeInformation.get(keySdeNumberStatus);
-////
-////
-////                    System.out.println("mapCasesBySdeNumberStatus.keySet()  "+mapCasesBySdeNumberStatus.keySet());
-////
-////                    System.out.println("keySdeNumberStatus " + keySdeNumberStatus);
-////
-////
-////                    final HashMap<String, Object> caseMap = mapCasesBySdeNumberStatus.get(keySdeNumberStatus);
-////
-////
-////
-////                    if (caseMap == null) {
-////                        // not normal !
-////
-////                        System.out.println("getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
-////                        logger.severe("getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
-////                        continue;
-////                    }
-////
-//////                    setResultFromDatabase(caseMap, sdeInfo);
-////                }
-//
-//            }
+            //            if (listCasesParameter.completeWithBusinessData && listSdeNumber.size() > 0) {
+            //                traceinfo += "Complete with BusinessData for [" + listSdeNumber.size() + "] event;";
+            ////xxxxx
+            //
+            //                SdeBusinessAccess.PADashboardParameter paDashboardParameter = new SdeBusinessAccess.PADashboardParameter();
+            //                //final SdeBusinessAccess.SdeResult sdeResult = sdeBusinessAccess.getListPaDashboard(paDashboardParameter);
+            ////                if (sdeResult.status != null) {
+            ////                    traceinfo += "sdeBusinessAccess.Status:" + sdeResult.status + ";";
+            ////                }
+            ////                traceinfo += "ListSource[" + listSdeNumber.size() + "] NumberResult[" + sdeResult.listSdeInformation.size() + "]";
+            ////                for (final SdeBusinessAccess.SdeNumberStatus keySdeNumberStatus : sdeResult.listSdeInformation.keySet()) {
+            ////                    final Map<String, Object> sdeInfo = sdeResult.listSdeInformation.get(keySdeNumberStatus);
+            ////
+            ////
+            ////                    System.out.println("mapCasesBySdeNumberStatus.keySet()  "+mapCasesBySdeNumberStatus.keySet());
+            ////
+            ////                    System.out.println("keySdeNumberStatus " + keySdeNumberStatus);
+            ////
+            ////
+            ////                    final HashMap<String, Object> caseMap = mapCasesBySdeNumberStatus.get(keySdeNumberStatus);
+            ////
+            ////
+            ////
+            ////                    if (caseMap == null) {
+            ////                        // not normal !
+            ////
+            ////                        System.out.println("getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
+            ////                        logger.severe("getListCasesForSdeDashboard: SdeNumber[" + keySdeNumberStatus + "] not found in list of cases");
+            ////                        continue;
+            ////                    }
+            ////
+            //////                    setResultFromDatabase(caseMap, sdeInfo);
+            ////                }
+            //
+            //            }
             final Boolean KEEP_RECORD = (Boolean) record.get("KEEP_RECORD");
 
             if (KEEP_RECORD) {
 
-                final String line
-                        = "SDE_NUMBER = " + SDE_NUMBER + ""
+                final String line = "SDE_NUMBER = " + SDE_NUMBER + ""
                         + " [processname=" + record.get("processname") + "]"
                         + " [processversion=" + record.get("processversion") + "]"
                         + " [taskName" + record.get("taskName") + "]"
                         + " [caseid" + record.get("caseid") + "]"
                         + " [taskid" + record.get("taskid") + "]";
                 logger.info("SdePAProcessInfo.getHumanTasksForSDENumber ::  Keeping Human Task Information for " + line);
-
 
             } else {
                 logger.info("SdePAProcessInfo.getHumanTasksForSDENumber ::  Skipping Human Task Information for SDE_NUMBER = " + SDE_NUMBER);
@@ -288,17 +283,16 @@ public class SdePAProcessInfo {
 
         /**
          * *****************************
-         *
          * var processName var processVersion var taskName var caseId var taskId * *****************************
          */
         // last case : if there are a caseId, doe not show the initiateSdeRequest
-//        for (final Map<String, Object> caseMap : listCases) {
-//            if (caseMap.get("caseid") != null) {
-//                caseMap.put("initiateSdeRequest", false);
-//            }
-//        }
-//        result.put("listcases", listCases);
-//        logger.info("listCases= " + result + "] trace=" + traceinfo);
+        //        for (final Map<String, Object> caseMap : listCases) {
+        //            if (caseMap.get("caseid") != null) {
+        //                caseMap.put("initiateSdeRequest", false);
+        //            }
+        //        }
+        //        result.put("listcases", listCases);
+        //        logger.info("listCases= " + result + "] trace=" + traceinfo);
         return record;
     }
 }

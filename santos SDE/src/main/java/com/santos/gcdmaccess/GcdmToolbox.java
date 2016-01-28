@@ -29,7 +29,6 @@ import org.bonitasoft.engine.profile.ProfileCriterion;
 import org.bonitasoft.log.event.BEvent;
 import org.bonitasoft.log.event.BEventFactory;
 
-
 public class GcdmToolbox {
 
     static Logger logger = Logger.getLogger("org.bonitasoft.SdeAccess");
@@ -109,7 +108,7 @@ public class GcdmToolbox {
             return oneField;
         }
 
-        public Map<String, Object>  addEditFields(final String id, final String display, final typeColumn typeofField,
+        public Map<String, Object> addEditFields(final String id, final String display, final typeColumn typeofField,
                 final boolean mandatory,
                 final boolean readonly, final String[] listValues) {
 
@@ -211,7 +210,7 @@ public class GcdmToolbox {
 
     /**
      * get the connection
-     *
+     * 
      * @return
      */
     protected static Connection getConnection(final boolean allowDirectConnection)
