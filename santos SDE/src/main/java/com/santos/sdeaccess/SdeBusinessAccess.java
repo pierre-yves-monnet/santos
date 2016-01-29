@@ -1039,6 +1039,15 @@ public class SdeBusinessAccess {
                     "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
                     "minus " +
                     "select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8) ";
+            
+            // TODO :: Remove after System Test & before User Acceptance Test
+            // new version : included UPDATE_EC as part of filtering.
+            sqlRequest = "select * from DASHBOARD where  SDE_STATUS <> 0 and SDE_STATUS <> 1 and (DO_NOT_LOAD ='N' or DO_NOT_LOAD is null) and " +                    
+                    "REQUEST_STATUS <> 'Integration Success' and " +
+                    "SDE_NUMBER in (" +
+                    "select SDE_NUMBER from  DASHBOARD where (SDE_STATUS = 1) " +
+                    "minus " +
+                    "select SDE_NUMBER from  DASHBOARD where SDE_STATUS = 2 or SDE_STATUS = 8) ";
 
             if (paDashboardParameter.filtersdenumber != null && paDashboardParameter.filtersdenumber.trim().length() > 0) {
                 sqlRequest += " and " + "SDE_NUMBER" + " = '" + paDashboardParameter.filtersdenumber + "'";
