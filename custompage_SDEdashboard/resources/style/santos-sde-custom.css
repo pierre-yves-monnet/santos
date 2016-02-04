@@ -1,0 +1,142 @@
+/* Custom CSS for the Santos SDE application */
+
+/* Please note that the style of the Santos logo on the login page must be maintained in 
+/dash/bonita/7.1.0/dev/bpm/webapps/bonita/login.jsp */
+
+/* This CSS file is held in:
+  /dash/bonita/7.1.0/dev/bpm/bonita/client/tenants/1/work/theme/portal (for login)
+  /dash/bonita/7.1.0/dev/bpm/bonita/client/tenants/1/work/pages/custompage_SDEdashboard/resources/style
+*/
+
+/* The Santos logo in the internal pages is created the size shown and is copied to 
+   /dash/bonita/7.1.0/dev/bpm/bonita/client/tenants/1/work/theme/portal/skin/images/logo.png
+*/
+
+#LoginPage #LoginFormContainer {
+  width: 560px;
+}
+
+#LoginPage #LoginFormContainer #logo {
+  width: 240px;
+}
+
+#LoginPage #LoginHeader {
+  background-color: #0088ce;
+  background: -moz-linear-gradient(top, #0088ce 0%, #0088ce 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0088ce), color-stop(100%, #0088ce));
+  background: -webkit-linear-gradient(top, #0088ce 0%, #0088ce 100%);
+  background: -o-linear-gradient(top, #0088ce 0%, #0088ce 100%);
+  background: linear-gradient(to bottom, #0088ce 0%, #0088ce 100%);
+  background: linear-gradient(#0088ce 0%, #0088ce 100%);
+  behavior: url();
+}
+
+/* Make the login button the full height */
+#LoginPage #LoginFormContainer > .body .formactions button,
+#LoginPage #LoginFormContainer > .body .formactions input[type="submit"],
+#LoginPage #LoginFormContainer > .body .formactions input[type="button"],
+#LoginPage #LoginFormContainer > .body .formactions a.button {
+  outline-color: #0088ce;
+  border-color: #0088ce;
+  height: 30px;
+  background: #0088ce;
+}
+
+/* Height of the Santos logo in the internal forms */
+#header #login {
+  height: 50px;
+}
+
+/* strip of colour across page under Santos logo */
+#header #menu {
+  height: 30px;
+  background: #237CCB;
+}
+
+/* The SDE tab header */
+#header #menu > div > ul.dropdownmenu > li {
+  height: 30px;
+}
+
+/* Remove the old Santos logo from internal forms */
+.santosHeader {
+  background-image: url("");
+}
+
+/* Separate the Santos log from the login form */
+#LoginPage #LoginFormContainer #logo {
+  margin-right: 20px;
+}
+
+.voffset2 {
+  margin-top: 0px;
+}
+
+.container-fluid {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.santosHeader {
+  background-color: #0088CE;
+  padding: 0px;
+  height: 0px;
+}
+
+.footerpusher > .body > #body > .page > .body {
+  padding-top: 79px;
+}
+
+/* Tab headings */
+.btn-success {
+  background-color: #0057B8;
+  border-color: #000000;
+}
+
+.btn-success:hover, .btn-success:focus, .btn-success:active, .active.btn-success,
+.open .btn-success.dropdown-toggle {
+  background-color: #00205B;
+  border-color: #000000;
+}
+
+.btn-primary {
+  background-color: #0057B8;
+  border-color: #000000;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .active.btn-primary, 
+.open .btn-primary.dropdown-toggle {
+  background-color: #00205B;
+  border-color: #000000;
+}
+
+/* heading line in Well Tracker */
+a {
+  color: #00205B;
+  font-weight: bold;
+}
+
+a:hover, a:focus {
+  color: #000000;
+  font-weight: bold;
+}
+
+.pagination > li > a, .pagination > li > span {
+  background-color: #0057B8;
+  border-color: #000000;
+}
+
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, 
+.pagination > .active > span:hover, .pagination > .active > a:focus, 
+.pagination > .active > span:focus {
+  background-color: #00205B;
+  border-color: #000000;
+}
+
+.pagination > .disabled > span, .pagination > .disabled > span:hover, 
+.pagination > .disabled > span:focus, .pagination > .disabled > a, 
+.pagination > .disabled > a:hover, .pagination > .disabled > a:focus {
+  background-color: #0088CE;
+  border-color: #000000;
+}
+
