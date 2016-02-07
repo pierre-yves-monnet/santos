@@ -78,21 +78,21 @@
 		<div style="background-color: #237CCB;">
 			<table><tr>
 			<td>
-				<button ng-show="dashctrl.allowROView()" ng-click="dashctrl.showViewForm();" ng-class="dashctrl.getButtonClass( dashctrl.isshowcases)">Well Tracker Dashboard</button>
+				<button id="welltrackerdash" ng-show="dashctrl.allowROView()" ng-click="dashctrl.showViewForm();" ng-class="dashctrl.getButtonClass( dashctrl.isshowcases)">Well Tracker Dashboard</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowROView()" ng-click="dashctrl.showViewUpdateSde();" ng-class="dashctrl.getButtonClass( dashctrl.isshowUpdateSdeDetails)">Update SDE Details</button>
+				<button id="updatesdedetail" ng-show="dashctrl.allowROView()" ng-click="dashctrl.showViewUpdateSde();" ng-class="dashctrl.getButtonClass( dashctrl.isshowUpdateSdeDetails)">Update SDE Details</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowROView() || dashctrl.allowPAView() || dashctrl.allowAdminView()" ng-click="dashctrl.showViewSystemSummary();" ng-class="dashctrl.getButtonClass( dashctrl.isshowSystemSummary)">System Summary</button>
+				<button id="systemsummary" ng-show="dashctrl.allowROView() || dashctrl.allowPAView() || dashctrl.allowAdminView()" ng-click="dashctrl.showViewSystemSummary();" ng-class="dashctrl.getButtonClass( dashctrl.isshowSystemSummary)">System Summary</button>
 			</td><td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowPAView()" ng-click="dashctrl.showViewPADashboard();" 
+				<button id="padashboard" ng-show="dashctrl.allowPAView()" ng-click="dashctrl.showViewPADashboard();" 
 						ng-class="dashctrl.getButtonClass( dashctrl.isshowPADashboard)">PA Dashboard</button>
 			</td>
 			<td style="background-color: #237CCB; color:#FFFFFF;">&nbsp;&nbsp;</td>
 			<td>
-				<button ng-show="dashctrl.allowPropertiesView() && dashctrl.allowAdminView()" 
+				<button id="properties" ng-show="dashctrl.allowPropertiesView() && dashctrl.allowAdminView()" 
 					ng-click="dashctrl.showProperties();" ng-class="dashctrl.getButtonClass( dashctrl.isshowProperties)">Properties</button>
 			</td>
 			</tr>
