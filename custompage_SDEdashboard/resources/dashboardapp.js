@@ -203,9 +203,9 @@ appCommand.controller('DashboardControler',
 						
 					})
 					.error( function(e) {
-						self.errormessage	= "An error occured during create SDE Request";
+						self.errormessage	= "An error occurred whilst initiating the SDE request. Please contact the Service Centre.";
 						self.message="";
-						alert('an error occure during create SDE Request');
+						alert('An error occurred whilst retrieving the well data. Please contact the Service Centre.');
 						console.log('error receive' , e);
 						});
 		}
@@ -538,7 +538,9 @@ appCommand.controller('DashboardControler',
 	
 	var self=this;		 
 		var json= angular.toJson(this.padashboard.listdata, false);	
-		
+	
+	alert("Your request has been queued for submission.");
+	
 	$http.get( '?page=custompage_SDEdashboard&action=setPADashboard&json='+json )
 			.then( function ( jsonResult ) {			
 						self.padashboard.listdata = jsonResult.data.LISTPADASHBOARD	

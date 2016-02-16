@@ -936,8 +936,9 @@ public class SdeBusinessAccess {
                             + sqlON_HOLD + ""
                             + sqlDO_NOT_LOAD + ""
                             + sqlUPDATE_EC + ""
+                            + " ,REQUEST_STATUS = 'Queued for submission' "
                             + " where SDE_STATUS=9 and " + TableDashBoard.SDE_NUMBER + " = '" + SDE_NUMBER + "'";
-
+                    
                     final Statement stmt = con.prepareStatement(jsonSt);
                     stmt.executeUpdate(sqlRequest);
                     stmt.close();
@@ -1120,7 +1121,7 @@ public class SdeBusinessAccess {
                         record.put(key, convertBitToBoolean(rs.getString(i)));
 
                         // determine if checkbox needs to be shown
-                        record.put("SHOW_UPDATE_EC", Toolbox.isMonthEarlier((Date) rs.getObject("SCHEDULED_ONLINE_DATE")));
+                        record.put("SHOW_UPDATE_EC", Toolbox.isMonthEarlier((Date) rs.getObject("SCHEDULED_ONLINE_DATE")));                        
                         continue;
                     }
 
@@ -1130,7 +1131,7 @@ public class SdeBusinessAccess {
                 SdePAProcessInfo.getHumanTasksForSDENumber(record, new SdeAccess.ListCasesParameter(), session, TenantAPIAccessor.getProcessAPI(session),
                         TenantAPIAccessor.getIdentityAPI(session));
 
-                if ((boolean) record.get("KEEP_RECORD") == true) {
+                if ((Boolean) record.get("KEEP_RECORD") == true) {
                     logger.info("SdeBusinessAccess.getListPaDashboard :: Read  [" + record + "]");
                     sdeResult.listRecords.add(record);
                 }
@@ -1260,23 +1261,26 @@ public class SdeBusinessAccess {
             sqlRequest = "select "
                     + " (select 'Y' from " + dashBoardTable + " d1 where d1.sde_number=" + dashBoardTable + ".sde_number and d1.sde_status=2) as sde_status2,"
                     + " (select 'Y' from " + dashBoardTable + " d1 where d1.sde_number=" + dashBoardTable + ".sde_number and d1.sde_status=8) as sde_status8,"
-                    + " * "
+                    + " " + dashBoardTable +".* "
                     + " from "
                     + dashBoardTable + ", "
                     + wellInfo.getTableName(systemSummaryParameter.tableNameUpperCase, systemSummaryParameter.enquoteTableName)
                     + " where  " + wellInfo.getLinkToFather();
 
+            logger.info("Initial SQL query [" + sqlRequest + "]");
+
             final List<Object> listRequestObject = new ArrayList<Object>();
-            sqlRequest += addFilter(systemSummaryParameter.filterUWI, TableDashBoard.WELL_CODE);
-            sqlRequest += addFilter(systemSummaryParameter.filterSdeNumber, TableDashBoard.SDE_NUMBER);
-            sqlRequest += addFilter(systemSummaryParameter.filterSdeStatus, TableDashBoard.SDE_STATUS);
-            sqlRequest += addFilter(systemSummaryParameter.filterWellTemplate, TableDashBoard.WELL_TEMPLATE);
-            sqlRequest += addFilter(systemSummaryParameter.filterWellCategory, TableDashBoard.WELL_CATEGORY_PRIMARY);
+            sqlRequest += addFilter(systemSummaryParameter.filterUWI, dashBoardTable + "." + TableDashBoard.WELL_CODE);
+            sqlRequest += addFilter(systemSummaryParameter.filterSdeNumber, dashBoardTable + "." + TableDashBoard.SDE_NUMBER);
+            sqlRequest += addFilter(systemSummaryParameter.filterSdeStatus, dashBoardTable + "." + TableDashBoard.SDE_STATUS);
+            sqlRequest += addFilter(systemSummaryParameter.filterWellTemplate, dashBoardTable + "." + TableDashBoard.WELL_TEMPLATE);
+            sqlRequest += addFilter(systemSummaryParameter.filterWellCategory, dashBoardTable + "." + TableDashBoard.WELL_CATEGORY_PRIMARY);
 
-            sqlRequest += addFilter(systemSummaryParameter.filterWellFullName, TableDashBoard.WELL_FULL_NAME);
-            sqlRequest += addFilter(systemSummaryParameter.filterBusinessUnit, TableDashBoard.BUSINESS_UNIT);
-            sqlRequest += addFilter(systemSummaryParameter.filterRequestType, TableDashBoard.REQUEST_TYPE);
+            sqlRequest += addFilter(systemSummaryParameter.filterWellFullName, dashBoardTable + "." + TableDashBoard.WELL_FULL_NAME);
+            sqlRequest += addFilter(systemSummaryParameter.filterBusinessUnit, dashBoardTable + "." + TableDashBoard.BUSINESS_UNIT);
+            sqlRequest += addFilter(systemSummaryParameter.filterRequestType, dashBoardTable + "." + TableDashBoard.REQUEST_TYPE);
 
+            logger.info("Intermediate SQL query [" + sqlRequest + "]");
             if (systemSummaryParameter.filterOnlineDateFrom != null)
             {
                 sqlRequest += " and " + TableDashBoard.SCHEDULED_ONLINE_DATE + " > ? ";
@@ -2617,10 +2621,10 @@ public class SdeBusinessAccess {
     private Connection getDirectConnection()
     {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName("oracle.jdbc.driver.OracleDriver");
 
             Connection connection = null;
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/santosSDE", "bonita", "bonita");
+            connection = DriverManager.getConnection("jdbc:oracle:thin:@exa2-scan2:1521/dprjtest", "sde", "santos");
             return connection;
         } catch (final ClassNotFoundException e) {
             logger.severe("error " + e.toString());

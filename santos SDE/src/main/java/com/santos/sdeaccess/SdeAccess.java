@@ -979,6 +979,8 @@ public class SdeAccess {
             UnknownAPITypeException, SearchException {
 
         boolean hasRole = false;
+        
+        logger.info("lookupRole = " + lookupRole);
 
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
         final IdentityAPI identityAPI = com.bonitasoft.engine.api.TenantAPIAccessor.getIdentityAPI(apiSession);
@@ -986,6 +988,8 @@ public class SdeAccess {
 
         for (Role role : roleResults.getResult()) {
 
+            logger.info("role = " + role);
+            
             if (role.getName().equalsIgnoreCase(lookupRole)) {
                 hasRole = true;
                 break;
@@ -996,6 +1000,9 @@ public class SdeAccess {
             logger.severe("SdeAccess.hasRole :: No matching role found for input = " + lookupRole);
         }
 
+        
+        logger.info("hasRole = " + hasRole); 
+        
         return hasRole;
 
     }
