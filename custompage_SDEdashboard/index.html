@@ -451,37 +451,37 @@
 		<tr>
 			<th><span class="table-header">SDENbr</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.SDE_NUMBER" size="10" 
-							class="form-control filter-control"								
+							class="form-control form-control-sml filter-control-sml"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
 			<th><span class="table-header">UWI</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.UWI" size="10" 
-							class="form-control filter-control"								
+							class="form-control form-control-sml filter-control-sml"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
-			<th><span class="table-header">Well Full Name</span>
+			<th><span class="table-header">Well&nbsp;Full&nbsp;Name</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.WELL_FULL_NAME" size="10" 
-							class="form-control filter-control"								
+							class="form-control form-control-sml filter-control-sml"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
 			<th><span class="table-header">Request Type</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.REQUEST_TYPE" size="10" 
-							class="form-control filter-control"								
+							class="form-control form-control-sml filter-control-sml"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
 			<th><span class="table-header">Business Unit</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.BUSINESS_UNIT" size="10" 
-							class="form-control filter-control"	
+							class="form-control form-control-sml filter-control-sml"	
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
 			<th><span class="table-header">Well Template</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.WELL_TEMPLATE" size="10" 
-							class="form-control filter-control"								
+							class="form-control form-control-sml filter-control-sml"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>			
 			<th><span class="table-header">Well Category</span>
 				<input type="text" ng-model="dashctrl.systemSummary.filter.WELL_CATEGORY_PRIMARY" size="10" 
-							class="form-control filter-control"								
+							class="form-control form-control-sml filter-control-sml"								
 							title="Filter: only lines which contains this value are shown"/>	
 			</th>
 			<th><span class="table-header">Day to Online</span></th>
@@ -503,7 +503,7 @@
 			<th><span class="table-header">Date</span></th>
 			
 			</tr>
-			<tbody  ng-repeat="onesynthesis in dashctrl.getSystemSummaryPage() track by $index">
+			<tbody class="form-control-sml" ng-repeat="onesynthesis in dashctrl.getSystemSummaryPage() track by $index">
 			<tr >
 				<td>{{onesynthesis.SDE_NUMBER}}</td>
 				<td>{{onesynthesis.WELL_CODE}}</td>

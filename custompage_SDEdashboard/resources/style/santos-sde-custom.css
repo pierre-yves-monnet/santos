@@ -18,6 +18,12 @@
 
 #LoginPage #LoginFormContainer #logo {
   width: 240px;
+  height: 75px;
+  /* align: center; */
+  background-color: #0088ce;
+}
+
+#logo {
 }
 
 #LoginPage #LoginHeader {
@@ -140,3 +146,26 @@ a:hover, a:focus {
   border-color: #000000;
 }
 
+/* Page numbers along bottom of table */
+.col-md-4 {
+  width: 90%;
+}
+
+/* For the System Summary Report */
+.filter-control-sml {
+	height: 17px;
+	width: 90px;
+}
+.form-control-sml {
+	font-size: 11px;
+}
+
+/*
+.glyphicon {
+	font-family: webdings;
+	align: center;
+}
+.glyphicon-ok:before {
+	content: "a";
+}
+*/
